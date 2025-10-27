@@ -1,12 +1,29 @@
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { Header } from "@/components/landing/Header";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { StepsSection } from "@/components/landing/StepsSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { TrustSection } from "@/components/landing/TrustSection";
+import { ExamplesSection } from "@/components/landing/ExamplesSection";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import { FAQSection } from "@/components/landing/FAQSection";
+import { CallToActionSection } from "@/components/landing/CallToActionSection";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-1 items-center sm:items-start">
-        <h1>Blank page</h1>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        <HeroSection />
+        <StepsSection />
+        <FeaturesSection />
+        <TrustSection />
+        <ExamplesSection />
+        <TestimonialsSection />
+        <FAQSection />
+        <CallToActionSection />
       </main>
-      <MadeWithDyad />
+      <Footer />
     </div>
   );
 }
