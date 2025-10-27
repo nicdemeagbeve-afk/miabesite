@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, Bot, Globe } from "lucide-react";
+import { ClipboardList, Bot, Globe } from "lucide-react";
 
 export function StepsSection() {
   const steps = [
     {
-      icon: <Form className="h-8 w-8 text-primary" />,
+      icon: <ClipboardList className="h-8 w-8 text-primary" />,
       title: "1. Tu remplis un court formulaire",
       description: "Nom, activité, couleurs — et c’est tout !",
     },
