@@ -10,7 +10,9 @@ import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { SiteInfoStep } from "./steps/SiteInfoStep";
-import { PersonalInfoStep } from "./steps/PersonalInfoStep"; // Import the new step
+import { PersonalInfoStep } from "./steps/PersonalInfoStep";
+import { SkillsStep } from "./steps/SkillsStep";
+import { BrandingStep } from "./steps/BrandingStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -26,6 +28,15 @@ const wizardFormSchema = z.object({
   businessDomain: z.string().min(1, { message: "Veuillez sélectionner un domaine d'activité." }),
   profilePicture: z.any().optional(), // For file input, validation will be more complex if actual upload is needed
   logo: z.any().optional(), // For file input
+  skills: z.array(z.object({
+    value: z.string().min(1, "La compétence ne peut pas être vide."),
+  })).max(25, "Vous ne pouvez ajouter que 25 compétences maximum.").default([{ value: "" }]),
+  slogan: z.string().max(100, "Le slogan ne peut pas dépasser 100 caractères.").optional(),
+  brandingDescription: z.string().max(500, "La description ne peut pas dépasser 500 caractères.").optional(),
+  autobiography: z.string().max(1000, "L'autobiographie ne peut pas dépasser 1000 caractères.").optional(),
+  brandingImages: z.array(z.object({
+    file: z.any().optional(), // File object, validation for actual file type/size would be here
+  })).max(5, "Vous ne pouvez ajouter que 5 images de branding maximum.").default([{ file: undefined }]),
 });
 
 type WizardFormData = z.infer<typeof wizardFormSchema>;
@@ -41,24 +52,43 @@ const steps = [
     component: PersonalInfoStep,
     schema: wizardFormSchema.pick({ firstName: true, lastName: true, age: true, businessDomain: true, profilePicture: true, logo: true }),
   },
+  {
+    id: "skills",
+    component: SkillsStep,
+    schema: wizardFormSchema.pick({ skills: true }),
+  },
+  {
+    id: "branding",
+    component: BrandingStep,
+    schema: wizardFormSchema.pick({ slogan: true, brandingDescription: true, autobiography: true, brandingImages: true }),
+  },
   // Add more steps here
 ];
 
 export function SiteCreationWizard() {
   const [currentStep, setCurrentStep] = React.useState(0);
+
+  // Explicitly define defaultValues to match WizardFormData type
+  const defaultValues: WizardFormData = {
+    siteName: "",
+    siteType: "",
+    siteDescription: "",
+    firstName: "",
+    lastName: "",
+    age: undefined,
+    businessDomain: "",
+    profilePicture: undefined,
+    logo: undefined,
+    skills: [{ value: "" }],
+    slogan: undefined,
+    brandingDescription: undefined,
+    autobiography: undefined,
+    brandingImages: [{ file: undefined }],
+  };
+
   const methods = useForm<WizardFormData>({
     resolver: zodResolver(wizardFormSchema),
-    defaultValues: {
-      siteName: "",
-      siteType: "",
-      siteDescription: "",
-      firstName: "",
-      lastName: "",
-      age: undefined, // Initialize age as undefined to match the transformed type
-      businessDomain: "",
-      profilePicture: undefined,
-      logo: undefined,
-    },
+    defaultValues: defaultValues, // Use the explicitly typed defaultValues
     mode: "onChange", // Validate on change to enable/disable next button
   });
 
