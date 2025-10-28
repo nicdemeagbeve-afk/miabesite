@@ -4,23 +4,8 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, MessageSquare } from "lucide-react";
 
-interface SiteData {
-  id: string;
-  user_id: string;
-  subdomain: string;
-  site_data: any; // This will contain the full wizard form data
-  status: string;
-  template_type: string;
-  created_at: string;
-}
-
-interface DashboardStatsProps {
-  siteData: SiteData;
-}
-
-export function DashboardStats({ siteData }: DashboardStatsProps) {
+export function DashboardStats() {
   // Placeholder data - in a real app, these would come from an API
-  // For now, they are still placeholders, but now they are tied to a specific site.
   const totalSales = "125 000 F CFA";
   const totalVisits = 1245;
   const totalContacts = 42;

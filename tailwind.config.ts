@@ -90,11 +90,5 @@ export default {
   		}
   	}
   },
-  safelist: [
-    {
-      pattern: /(bg|text|border)-(red|blue|green|yellow|black|purple|orange|gray)-(500|600|800)/,
-      variants: ['hover', 'focus'],
-    },
-  ],
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;

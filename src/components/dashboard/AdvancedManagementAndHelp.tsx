@@ -8,11 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Globe, Download, HelpCircle, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
-interface AdvancedManagementAndHelpProps {
-  subdomain: string;
-}
-
-export function AdvancedManagementAndHelp({ subdomain }: AdvancedManagementAndHelpProps) {
+export function AdvancedManagementAndHelp() {
   const [customDomain, setCustomDomain] = React.useState("");
 
   const handleLinkDomain = () => {
@@ -21,15 +17,15 @@ export function AdvancedManagementAndHelp({ subdomain }: AdvancedManagementAndHe
       return;
     }
     // Simulate domain linking process
-    toast.info(`Tentative de liaison du domaine : ${customDomain} pour le site ${subdomain}. Cela peut prendre quelques minutes.`);
-    console.log("Liaison du domaine:", customDomain, "pour le site:", subdomain);
+    toast.info(`Tentative de liaison du domaine : ${customDomain}. Cela peut prendre quelques minutes.`);
+    console.log("Liaison du domaine:", customDomain);
     // In a real app, this would trigger an API call
   };
 
   const handleDownloadCode = () => {
     // Simulate code download
     toast.success("Le téléchargement du code source va commencer.");
-    console.log("Téléchargement du code source pour le site:", subdomain);
+    console.log("Téléchargement du code source...");
     // In a real app, this would initiate a file download
   };
 

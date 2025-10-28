@@ -23,15 +23,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
 
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
 });
 
 export default function ForgotPasswordPage() {
-  const supabase = createClient();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,17 +36,10 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { email } = values;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/auth/update-password`, // Redirect to a page where user can update password
-    });
-
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé.");
-    }
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Handle forgot password logic here
+    console.log(values);
+    toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé.");
   }
 
   return (
@@ -77,8 +67,8 @@ export default function ForgotPasswordPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Envoi en cours..." : "Réinitialiser le mot de passe"}
+              <Button type="submit" className="w-full">
+                Réinitialiser le mot de passe
               </Button>
             </form>
           </Form>

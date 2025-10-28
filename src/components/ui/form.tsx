@@ -56,24 +56,19 @@ const useFormField = () => {
 
   const fieldState = getFieldState(fieldContext.name, formState);
 
-  if (!itemContext) {
-    throw new Error("useFormField should be used within <FormItem>");
-  }
-
-  if (!fieldContext) {
+  if (!fieldContext.name) {
     throw new Error("useFormField should be used within <FormField>");
   }
 
+  const id = itemContext.id;
+
   return {
-    id: itemContext.id,
+    id,
     name: fieldContext.name,
-    formItemId: `${itemContext.id}-form-item`,
-    formDescriptionId: `${itemContext.id}-form-item-description`,
-    formMessageId: `${itemContext.id}-form-item-message`,
+    formItemId: `${id}-form-item`,
+    formDescriptionId: `${id}-form-item-description`,
+    formMessageId: `${id}-form-item-message`,
     ...fieldState,
-    formState, // Expose formState
-    fieldContext, // Expose fieldContext
-    getFieldState, // Expose getFieldState
   };
 };
 
@@ -112,23 +107,18 @@ const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  const { formItemId, formDescriptionId, formMessageId, formState, fieldContext, getFieldState } = useFormField();
-
-  const { invalid } = getFieldState(
-    fieldContext.name,
-    formState
-  );
+  const { formItemId, formDescriptionId, formMessageId } = useFormField();
 
   return (
     <Slot
       ref={ref}
       id={formItemId}
       aria-describedby={
-        !invalid
+        !formState.errors[fieldContext.name]
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={invalid}
+      aria-invalid={!!formState.errors[fieldContext.name]}
       {...props}
     />
   );
