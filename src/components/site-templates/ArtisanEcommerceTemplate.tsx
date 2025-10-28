@@ -27,7 +27,7 @@ import {
   Star,
   Palette,
   PencilRuler,
-  Tool, // Corrected: Tools -> Tool
+  Wrench, // Corrected: Tool -> Wrench
   StarHalf,
   Check,
 } from 'lucide-react';
@@ -239,7 +239,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <ShoppingCart className="h-6 w-6" /> Voir les produits
             </a>
             <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
-              <Tool className="h-6 w-6" /> Découvrir les services
+              <Wrench className="h-6 w-6" /> Découvrir les services
             </a>
           </div>
         </div>
@@ -364,7 +364,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                 <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}>
                   <div className={cn("h-20 w-20 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-6", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}>
                     {index === 0 && <PencilRuler className="h-10 w-10" />}
-                    {index === 1 && <Tool className="h-10 w-10" />}
+                    {index === 1 && <Wrench className="h-10 w-10" />}
                     {index === 2 && <Palette className="h-10 w-10" />}
                   </div>
                   <h3 className={cn("text-xl font-semibold mb-3", secondaryColorTextClass)}>{service.title}</h3>

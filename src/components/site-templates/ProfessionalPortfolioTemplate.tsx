@@ -15,8 +15,7 @@ import {
   Linkedin,
   ChevronUp,
   Hammer,
-  Tool,
-  Wrench,
+  Wrench, // Corrected: Tool -> Wrench
   PaintRoller,
   Star,
 } from 'lucide-react';
@@ -117,7 +116,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
 
   const skills = [
     {
-      icon: <Tool className="h-6 w-6" />,
+      icon: <Wrench className="h-6 w-6" />, // Corrected: Tool -> Wrench
       category: "Rénovation",
       items: [
         { name: "Rénovation complète", level: "Expert" },
@@ -187,7 +186,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
                 <p className={cn("text-sm font-medium", accentColorTextClass)}>Réalisations & Compétences</p>
               </div>
             </div>
-            <div className={cn("hidden md:flex items-center gap-8", isMobileMenuOpen ? 'flex' : 'hidden')}>
+            <div className={cn("hidden md:flex items-center gap-8")}>
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Accueil</a>
               <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Compétences</a>
               <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Réalisations</a>
@@ -235,7 +234,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
             <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Un savoir-faire diversifié pour répondre à tous vos besoins</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {skills.map((skillCategory, index) => (
+            {skills.map((skillCategory: any, index: number) => (
               <div key={index} className="bg-white rounded-xl p-8 shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}>
                 <div className="flex items-center gap-4 mb-6">
                   <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-700), var(--${siteData.secondaryColor}-500))` }}>
@@ -244,7 +243,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
                   <h3 className={cn("text-2xl font-semibold", primaryColorTextClass)}>{skillCategory.category}</h3>
                 </div>
                 <ul className="list-none space-y-3">
-                  {skillCategory.items.map((skill, skillIndex) => (
+                  {skillCategory.items.map((skill: any, skillIndex: number) => (
                     <li key={skillIndex} className="flex justify-between items-center pb-3 border-b border-gray-200 last:border-b-0">
                       <span className="font-medium text-gray-700">{skill.name}</span>
                       <span className={cn("font-semibold", secondaryColorTextClass)}>{skill.level}</span>
@@ -293,13 +292,13 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
           </div>
           {/* Filters (simplified for now, can be made dynamic later) */}
           <div className="flex justify-center gap-4 mb-12 flex-wrap">
-            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Tous</button>
-            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Rénovation</button>
-            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Réparation</button>
-            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Finitions</button>
+            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Tous</button>
+            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Rénovation</button>
+            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Réparation</button>
+            <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Finitions</button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolioItems.map((item, index) => (
+            {portfolioItems.map((item: any, index: number) => (
               <div key={index} className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                 <div className="h-64 overflow-hidden">
                   <Image src={item.image} alt={item.title} width={400} height={256} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
@@ -308,7 +307,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
                   <h3 className={cn("text-xl font-semibold mb-2", primaryColorTextClass)}>{item.title}</h3>
                   <p className="text-gray-600 mb-4 text-sm">{item.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {item.tags?.map((tag, tagIndex) => (
+                    {item.tags?.map((tag: string, tagIndex: number) => (
                       <span key={tagIndex} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
                         {tag}
                       </span>
@@ -333,9 +332,9 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
           </div>
           <div className="relative">
             <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex -ml-8"> {/* Adjust margin to compensate for slide padding */}
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="flex-none w-full pl-8"> {/* Add padding to each slide */}
+              <div className="flex -ml-8">
+                {testimonials.map((testimonial: any, index: number) => (
+                  <div key={index} className="flex-none w-full pl-8">
                     <div className="bg-white rounded-xl p-12 shadow-lg text-center relative">
                       <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
                       <p className="text-xl italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
@@ -448,7 +447,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
               </h3>
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method, index) => (
+                {paymentMethods.map((method: string, index: number) => (
                   <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
                     {method}
                   </span>

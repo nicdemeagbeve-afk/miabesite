@@ -16,9 +16,8 @@ import {
   Linkedin,
   ChevronUp,
   Star,
-  Tool,
-  Palette,
   Wrench,
+  Palette,
   Hammer,
   PaintRoller,
   CheckCircle,
@@ -70,10 +69,12 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
   const secondaryColorTextClass = `text-${siteData.secondaryColor}-500`;
   const secondaryColorHoverBgClass = `hover:bg-${siteData.secondaryColor}-600`;
 
+  const accentColorClass = `bg-${siteData.secondaryColor}-500`;
+  const accentColorTextClass = `text-${siteData.secondaryColor}-500`;
+  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`; // Defined accentColorBorderClass
+
   const whatsappBgClass = 'bg-[#25D366]';
   const whatsappHoverBgClass = 'hover:bg-[#128C7E]';
-
-  const accentColorBorderClass = `border-${siteData.primaryColor}-500`;
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -148,7 +149,8 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Portfolio</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
+              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
             </div>
             <button className="md:hidden text-gray-700 text-2xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X /> : <Menu />}
@@ -175,7 +177,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
           <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass)}>
+          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", 'bg-[#25D366]', 'hover:bg-[#128C7E]')}>
             <MessageSquare className="h-6 w-6" /> Contactez-moi sur WhatsApp
           </a>
         </div>
@@ -220,7 +222,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                     <Image src={product.image} alt={product.title} width={400} height={208} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                      <Tool className="h-12 w-12" />
+                      <Wrench className="h-12 w-12" />
                     </div>
                   )}
                 </div>
@@ -407,28 +409,28 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
       </section>
 
       {/* Footer */}
-      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
+      <footer className={cn("py-12 text-white", primaryColorDarkBgClass)}>
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
                 {siteData.publicName}
               </h3>
-              <p className="text-gray-300">Créations uniques et services sur mesure pour valoriser votre intérieur. Qualité artisanale et satisfaction client garanties.</p>
+              <p className="text-gray-300">Votre artisan de confiance pour tous vos projets de rénovation et réparation. Qualité, professionnalisme et satisfaction client garantis.</p>
               <div className="flex gap-4 mt-4">
                 {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-6 w-6" />
+                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Facebook className="h-5 w-5" />
                   </a>
                 )}
                 {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-6 w-6" />
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Instagram className="h-5 w-5" />
                   </a>
                 )}
                 {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-6 w-6" />
+                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <MessageSquare className="h-5 w-5" />
                   </a>
                 )}
               </div>
@@ -436,45 +438,20 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Liens Rapides
+                Liens rapides
               </h3>
               <ul className="space-y-2 text-gray-300">
                 <li><a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="hover:text-blue-500 transition-colors">Accueil</a></li>
-                <li><a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="hover:text-blue-500 transition-colors">Produits</a></li>
+                <li><a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="hover:text-blue-500 transition-colors">À propos</a></li>
                 <li><a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="hover:text-blue-500 transition-colors">Services</a></li>
+                <li><a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="hover:text-blue-500 transition-colors">Portfolio</a></li>
                 <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-blue-500 transition-colors">Contact</a></li>
               </ul>
             </div>
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Contact
-              </h3>
-              <div className="space-y-3 text-gray-300">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <p>Dakar, Sénégal</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Modes de Paiement
+                Modes de paiement
               </h3>
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
@@ -487,7 +464,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </div>
           </div>
 
-          <div className="text-center pt-8 border-t border-white/10 opacity-70">
+          <div className="text-center pt-8 border-t border-white/10">
             <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate';
 import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate';
 import { ServicePortfolioTemplate } from '@/components/site-templates/ServicePortfolioTemplate';
 import { ProfessionalPortfolioTemplate } from '@/components/site-templates/ProfessionalPortfolioTemplate';
-import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate'; // Import the new template
+import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
 
 // Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
@@ -38,17 +38,17 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   // Fetch site data and template_type from Supabase based on the subdomain
   const { data: site, error } = await supabase
     .from('sites')
-    .select('site_data, template_type') // Select both site_data and template_type
+    .select('site_data, template_type')
     .eq('subdomain', subdomain)
     .single();
 
   if (error || !site) {
     console.error('Error fetching site data:', error);
-    notFound(); // Show a 404 page if site not found or error
+    notFound();
   }
 
   const siteData: SiteData = site.site_data as SiteData;
-  const templateType: string = site.template_type || 'default'; // Get template_type, default to 'default'
+  const templateType: string = site.template_type || 'default';
 
   // Dynamically render the correct template based on templateType
   switch (templateType) {
@@ -58,10 +58,10 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
       return <ServicePortfolioTemplate siteData={siteData} />;
     case 'professional-portfolio':
       return <ProfessionalPortfolioTemplate siteData={siteData} />;
-    case 'artisan-ecommerce': // New case for the artisan-ecommerce template
+    case 'artisan-ecommerce':
       return <ArtisanEcommerceTemplate siteData={siteData} />;
     case 'default':
-    default: // Fallback to DefaultTemplate if type is unknown or not set
+    default:
       return <DefaultTemplate siteData={siteData} />;
   }
 }
