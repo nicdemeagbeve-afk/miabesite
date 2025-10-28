@@ -6,6 +6,7 @@ import React from 'react';
 interface SiteData {
   publicName: string;
   whatsappNumber: string;
+  secondaryPhoneNumber?: string; // Added for completeness
   email?: string;
   heroSlogan: string;
   aboutStory: string;
@@ -19,6 +20,9 @@ interface SiteData {
     actionButton: string;
   }>;
   subdomain: string;
+  facebookLink?: string; // Added for completeness
+  instagramLink?: string; // Added for completeness
+  linkedinLink?: string; // Added for completeness
   // Add other fields as needed from your wizard form
 }
 
@@ -40,52 +44,84 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
 
   const siteData: SiteData = site.site_data as SiteData;
 
-  // Basic rendering for demonstration.
-  // In a real application, you would use a more sophisticated template component
-  // that takes siteData as props and renders a full website.
+  // Construct dynamic class names for Tailwind
+  const primaryBgClass = `bg-${siteData.primaryColor}-600`;
+  const primaryDarkBgClass = `bg-${siteData.primaryColor}-800`;
+  const secondaryBgClass = `bg-${siteData.secondaryColor}-500`;
+  const secondaryHoverBgClass = `hover:bg-${siteData.secondaryColor}-600`; // Add hover state
+
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
-      <header className={`bg-${siteData.primaryColor}-600 text-white p-6 rounded-lg shadow-md mb-8`}>
-        <h1 className="text-4xl font-bold text-center">{siteData.publicName}</h1>
-        <p className="text-xl text-center mt-2">{siteData.heroSlogan}</p>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header Section */}
+      <header className={`py-12 px-4 md:px-8 ${primaryBgClass} text-white text-center`}>
+        <div className="container mx-auto max-w-4xl">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">{siteData.publicName}</h1>
+          <p className="text-xl md:text-2xl font-light">{siteData.heroSlogan}</p>
+        </div>
       </header>
 
-      <section className="max-w-4xl mx-auto bg-card text-card-foreground p-8 rounded-lg shadow-md mb-8">
-        <h2 className="text-3xl font-semibold mb-4">À Propos de Nous</h2>
-        <p className="text-lg">{siteData.aboutStory}</p>
-        {siteData.email && (
-          <p className="mt-4 text-muted-foreground">Contact: {siteData.email}</p>
-        )}
-        <p className="mt-2 text-muted-foreground">WhatsApp: {siteData.whatsappNumber}</p>
+      {/* About Section */}
+      <section className="py-12 px-4 md:px-8 bg-card text-card-foreground">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-center">À Propos de Nous</h2>
+          <p className="text-lg leading-relaxed mb-4">{siteData.aboutStory}</p>
+          <div className="text-center text-muted-foreground">
+            {siteData.email && (
+              <p className="mt-2">Email: <a href={`mailto:${siteData.email}`} className="underline hover:text-primary">{siteData.email}</a></p>
+            )}
+            <p className="mt-2">WhatsApp: <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">{siteData.whatsappNumber}</a></p>
+            {siteData.secondaryPhoneNumber && (
+              <p className="mt-2">Téléphone: <a href={`tel:${siteData.secondaryPhoneNumber}`} className="underline hover:text-primary">{siteData.secondaryPhoneNumber}</a></p>
+            )}
+          </div>
+        </div>
       </section>
 
+      {/* Products and Services Section */}
       {siteData.productsAndServices && siteData.productsAndServices.length > 0 && (
-        <section className="max-w-4xl mx-auto bg-card text-card-foreground p-8 rounded-lg shadow-md mb-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">Nos Offres</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {siteData.productsAndServices.map((product, index) => (
-              <div key={index} className="border p-4 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold mb-2">{product.title}</h3>
-                <p className="text-muted-foreground mb-2">{product.description}</p>
-                {product.price !== undefined && (
-                  <p className="text-lg font-semibold text-primary">
-                    {product.price} {product.currency}
-                  </p>
-                )}
-                <button className={`mt-4 w-full bg-${siteData.secondaryColor}-500 text-white py-2 rounded-md hover:opacity-90 transition-opacity`}>
-                  {product.actionButton === 'buy' && 'Acheter'}
-                  {product.actionButton === 'quote' && 'Demander un devis'}
-                  {product.actionButton === 'book' && 'Réserver'}
-                  {product.actionButton === 'contact' && 'Contacter'}
-                </button>
-              </div>
-            ))}
+        <section className="py-12 px-4 md:px-8 bg-muted text-muted-foreground">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl md:text-4xl font-semibold mb-8 text-center">Nos Offres</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {siteData.productsAndServices.map((product, index) => (
+                <div key={index} className="bg-card text-card-foreground border border-border p-6 rounded-lg shadow-md flex flex-col">
+                  <h3 className="text-xl font-bold mb-2">{product.title}</h3>
+                  <p className="text-muted-foreground text-sm flex-1 mb-4">{product.description}</p>
+                  {product.price !== undefined && (
+                    <p className="text-2xl font-semibold text-primary mb-4">
+                      {product.price} {product.currency}
+                    </p>
+                  )}
+                  <button className={`mt-auto w-full ${secondaryBgClass} ${secondaryHoverBgClass} text-white py-3 rounded-md transition-colors`}>
+                    {product.actionButton === 'buy' && 'Acheter'}
+                    {product.actionButton === 'quote' && 'Demander un devis'}
+                    {product.actionButton === 'book' && 'Réserver'}
+                    {product.actionButton === 'contact' && 'Contacter'}
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      <footer className={`bg-${siteData.primaryColor}-800 text-white p-4 text-center rounded-lg shadow-md mt-8`}>
-        <p>&copy; 2025 {siteData.publicName}. Tous droits réservés.</p>
+      {/* Footer Section */}
+      <footer className={`py-8 px-4 md:px-8 ${primaryDarkBgClass} text-white text-center`}>
+        <div className="container mx-auto max-w-4xl">
+          <p className="text-sm">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
+          {/* Social media links could go here */}
+          <div className="flex justify-center gap-4 mt-4">
+            {siteData.facebookLink && (
+              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">Facebook</a>
+            )}
+            {siteData.instagramLink && (
+              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">Instagram</a>
+            )}
+            {siteData.linkedinLink && (
+              <a href={siteData.linkedinLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">LinkedIn</a>
+            )}
+          </div>
+        </div>
       </footer>
     </div>
   );
