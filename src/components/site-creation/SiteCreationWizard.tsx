@@ -9,11 +9,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
+import { IdentityContactStep } from "./steps/IdentityContactStep"; // Import the new step
 
-// Define a minimal placeholder schema for the wizard form
+// Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
-  // This schema will be populated with new fields as steps are added
-  // For now, it's empty or can have a placeholder field if needed for initial setup
+  publicName: z.string().min(3, { message: "Le nom public est requis et doit contenir au moins 3 caractères." }),
+  profilePicture: z.any().optional(), // File object
+  location: z.string().min(3, { message: "La localisation est requise." }),
+  whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro de téléphone valide (ex: +225 07 00 00 00 00)." }),
+  socialMediaLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')), // Optional URL or empty string
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -24,15 +28,24 @@ const steps: {
   component: React.ComponentType<any>;
   schema: z.ZodSchema<any>;
 }[] = [
-  // All existing steps have been removed. New steps will be added here.
+  {
+    id: "identityContact",
+    component: IdentityContactStep,
+    schema: wizardFormSchema.pick({ publicName: true, profilePicture: true, location: true, whatsappNumber: true, socialMediaLink: true }),
+  },
+  // New steps will be added here.
 ];
 
 export function SiteCreationWizard() {
   const [currentStep, setCurrentStep] = React.useState(0);
 
-  // Define defaultValues based on the (currently empty) WizardFormData type
+  // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
-    // All existing default values have been removed. New defaults will be added as steps are defined.
+    publicName: "",
+    profilePicture: undefined,
+    location: "",
+    whatsappNumber: "",
+    socialMediaLink: "",
   };
 
   const methods = useForm<WizardFormData>({
