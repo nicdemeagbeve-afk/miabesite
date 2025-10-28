@@ -49,7 +49,7 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
-  showTestimonials?: boolean; // Added showTestimonials
+  showTestimonials?: boolean;
   businessLocation?: string; // Added businessLocation
   showContactForm?: boolean; // Added showContactForm
 }
@@ -119,9 +119,9 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
       ];
 
   const testimonials = [
-    { quote: "J'ai fait appel à Artisan Pro pour la rénovation complète de ma salle de bain. Le travail a été réalisé dans les délais et le budget convenus. Je recommande vivement ses services !", author: "Marie Diop", location: "Dakar" },
-    { quote: "Excellent travail pour l'aménagement de ma cuisine. L'artisan a su comprendre mes besoins et proposer des solutions adaptées. Professionnalisme et qualité du travail.", author: "Jean Ndiaye", location: "Pikine" },
-    { quote: "Intervention rapide et efficace pour réparer une fuite d'eau. Prix raisonnable et travail soigné. Je ne vais plus chercher ailleurs pour mes travaux de réparation.", author: "Fatou Sarr", location: "Guédiawaye" },
+    { quote: "J'ai fait appel à Artisan Pro pour la rénovation complète de ma salle de bain. Le travail a été réalisé dans les délais et le budget convenus. Je recommande vivement ses services !", author: "Marie Diop", location: siteData.businessLocation || "Dakar" },
+    { quote: "Excellent travail pour l'aménagement de ma cuisine. L'artisan a su comprendre mes besoins et proposer des solutions adaptées. Professionnalisme et qualité du travail.", author: "Jean Ndiaye", location: siteData.businessLocation || "Pikine" },
+    { quote: "Intervention rapide et efficace pour réparer une fuite d'eau. Prix raisonnable et travail soigné. Je ne vais plus chercher ailleurs pour mes travaux de réparation.", author: "Fatou Sarr", location: siteData.businessLocation || "Guédiawaye" },
   ];
 
   const paymentMethods = siteData.paymentMethods && siteData.paymentMethods.length > 0
@@ -152,7 +152,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Portfolio</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
@@ -170,7 +170,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Portfolio</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
@@ -279,8 +279,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      {siteData.showTestimonials !== false && ( // Conditionally render
+      {siteData.showTestimonials !== false && (
         <section id="temoignages" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="text-center mb-12">
@@ -464,12 +463,14 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                   </div>
                   <p>{siteData.whatsappNumber}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5" />
+                {siteData.email && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.email}</p>
                   </div>
-                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
-                </div>
+                )}
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-5 w-5" />

@@ -15,7 +15,7 @@ import {
   Linkedin,
   ChevronUp,
   Hammer,
-  Wrench, // Corrected: Tool -> Wrench
+  Wrench,
   PaintRoller,
   Star,
 } from 'lucide-react';
@@ -47,7 +47,7 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
-  showTestimonials?: boolean; // Added showTestimonials
+  showTestimonials?: boolean;
   businessLocation?: string; // Added businessLocation
   showContactForm?: boolean; // Added showContactForm
 }
@@ -89,7 +89,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('change', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   React.useEffect(() => {
@@ -119,7 +119,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
 
   const skills = [
     {
-      icon: <Wrench className="h-6 w-6" />, // Corrected: Tool -> Wrench
+      icon: <Wrench className="h-6 w-6" />,
       category: "Rénovation",
       items: [
         { name: "Rénovation complète", level: "Expert" },
@@ -165,9 +165,9 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
       ];
 
   const testimonials = [
-    { quote: "J'ai confié la rénovation complète de mon appartement à cet artisan et je suis absolument ravi du résultat. Le travail a été réalisé dans les délais, avec un professionnalisme remarquable. Je recommande vivement !", author: "Thomas Martin", location: "Propriétaire à Dakar", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-    { quote: "Une intervention rapide et efficace pour réparer une fuite d'eau qui menaçait de causer des dégâts importants. L'artisan a su identifier le problème rapidement et proposer une solution durable. Prix très correct pour la qualité du travail.", author: "Sophie Diallo", location: "Particulier à Pikine", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { quote: "La rénovation de ma cuisine a été un véritable succès grâce au professionnalisme et à l'expertise de cet artisan. Il a su comprendre mes besoins et proposer des solutions à la fois esthétiques et fonctionnelles. Un travail de qualité !", author: "Robert Ndiaye", location: "Restaurateur à Mermoz", avatar: "https://randomuser.me/api/portraits/men/67.jpg" },
+    { quote: "J'ai confié la rénovation complète de mon appartement à cet artisan et je suis absolument ravi du résultat. Le travail a été réalisé dans les délais, avec un professionnalisme remarquable. Je recommande vivement !", author: "Thomas Martin", location: siteData.businessLocation || "Dakar", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
+    { quote: "Une intervention rapide et efficace pour réparer une fuite d'eau qui menaçait de causer des dégâts importants. L'artisan a su identifier le problème rapidement et proposer une solution durable. Prix très correct pour la qualité du travail.", author: "Sophie Diallo", location: siteData.businessLocation || "Pikine", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
+    { quote: "La rénovation de ma cuisine a été un véritable succès grâce au professionnalisme et à l'expertise de cet artisan. Il a su comprendre mes besoins et proposer des solutions à la fois esthétiques et fonctionnelles. Un travail de qualité !", author: "Robert Ndiaye", location: siteData.businessLocation || "Mermoz", avatar: "https://randomuser.me/api/portraits/men/67.jpg" },
   ];
 
   const paymentMethods = siteData.paymentMethods && siteData.paymentMethods.length > 0
@@ -197,7 +197,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Accueil</a>
               <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Compétences</a>
               <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Réalisations</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Contact</a>
@@ -214,7 +214,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>
               <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>
               <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Réalisations</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
@@ -331,8 +331,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      {siteData.showTestimonials !== false && ( // Conditionally render
+      {siteData.showTestimonials !== false && (
         <section id="temoignages" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
             <div className="text-center mb-12">
@@ -439,12 +438,14 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
                   </div>
                   <p>{siteData.whatsappNumber}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5" />
+                {siteData.email && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.email}</p>
                   </div>
-                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
-                </div>
+                )}
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-5 w-5" />

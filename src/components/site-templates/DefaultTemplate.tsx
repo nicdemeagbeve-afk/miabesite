@@ -16,6 +16,7 @@ interface SiteData {
   subdomain: string;
   logoOrPhoto?: string | null; // Added logoOrPhoto
   showTestimonials?: boolean; // Added showTestimonials for consistency
+  businessLocation?: string; // Added businessLocation
 }
 
 interface DefaultTemplateProps {
@@ -56,7 +57,12 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
       >
         <MessageSquare className="h-6 w-6" /> Contactez-nous sur WhatsApp
       </Link>
-      <p className="mt-8 text-sm text-gray-500">
+      {siteData.businessLocation && (
+        <p className="mt-4 text-sm text-gray-500">
+          Localisation: {siteData.businessLocation}
+        </p>
+      )}
+      <p className="mt-2 text-sm text-gray-500">
         Sous-domaine: {siteData.subdomain}.miabesite.site
       </p>
     </div>

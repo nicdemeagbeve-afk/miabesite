@@ -27,7 +27,7 @@ import {
   Star,
   Palette,
   PencilRuler,
-  Wrench, // Corrected: Tool -> Wrench
+  Wrench,
   StarHalf,
   Check,
 } from 'lucide-react';
@@ -59,7 +59,9 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
-  showTestimonials?: boolean; // Added showTestimonials
+  showTestimonials?: boolean;
+  businessLocation?: string; // Added businessLocation
+  showContactForm?: boolean; // Added showContactForm
 }
 
 interface ArtisanEcommerceTemplateProps {
@@ -98,7 +100,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('change', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
@@ -127,9 +129,9 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   const services = siteData.productsAndServices.filter(item => item.actionButton !== 'buy');
 
   const testimonials = [
-    { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
-    { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
-    { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
+    { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: siteData.businessLocation || "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
+    { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: siteData.businessLocation || "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
+    { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: siteData.businessLocation || "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
   ];
 
   return (
@@ -188,7 +190,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
               <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Avis Clients</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>
@@ -221,7 +223,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>
               <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Avis Clients</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
@@ -409,8 +411,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         </section>
       )}
 
-      {/* Testimonials Section */}
-      {siteData.showTestimonials !== false && ( // Conditionally render
+      {siteData.showTestimonials !== false && (
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="text-center mb-12">
@@ -503,7 +504,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <p>Dakar, Sénégal</p>
+                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -513,10 +514,18 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5" />
+                    <MessageSquare className="h-5 w-5" />
                   </div>
-                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
+                  <p>{siteData.whatsappNumber}</p>
                 </div>
+                {siteData.email && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.email}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -527,7 +536,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
                 {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-lg text-sm font-semibold">
+                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
                     {method}
                   </span>
                 ))}
@@ -542,9 +551,12 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       </footer>
 
       {/* Back to Top Button */}
-      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", primaryColorClass, primaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+      >
         <ChevronUp className="h-6 w-6" />
-      </a>
+      </button>
     </div>
   );
 }

@@ -3,9 +3,9 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X } from 'lucide-react'; // Added Menu and X
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner'; // Import toast for notifications
+import { toast } from 'sonner';
 
 interface SiteData {
   publicName: string;
@@ -28,7 +28,8 @@ interface SiteData {
   subdomain: string;
   facebookLink?: string;
   instagramLink?: string;
-  showTestimonials?: boolean; // Added showTestimonials
+  showTestimonials?: boolean;
+  businessLocation?: string; // Added businessLocation
 }
 
 interface EcommerceTemplateProps {
@@ -83,9 +84,9 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
 
   const testimonials = [
-    { quote: "J'ai acheté plusieurs articles et la qualité est toujours au rendez-vous. Livraison rapide et service client impeccable !", author: "Fatou Diallo", location: "Dakar" },
-    { quote: "Ma boutique préférée pour les produits artisanaux. Chaque pièce est unique et faite avec passion. Je recommande vivement !", author: "Moussa Traoré", location: "Abidjan" },
-    { quote: "Des créations magnifiques et un excellent rapport qualité-prix. J'adore mes nouveaux bijoux !", author: "Aïcha Koné", location: "Lomé" },
+    { quote: "J'ai acheté plusieurs articles et la qualité est toujours au rendez-vous. Livraison rapide et service client impeccable !", author: "Fatou Diallo", location: siteData.businessLocation || "Dakar" },
+    { quote: "Ma boutique préférée pour les produits artisanaux. Chaque pièce est unique et faite avec passion. Je recommande vivement !", author: "Moussa Traoré", location: siteData.businessLocation || "Abidjan" },
+    { quote: "Des créations magnifiques et un excellent rapport qualité-prix. J'adore mes nouveaux bijoux !", author: "Aïcha Koné", location: siteData.businessLocation || "Lomé" },
   ];
 
   return (
@@ -110,7 +111,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             <div className="hidden md:flex items-center gap-6">
               <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Produits</a>
               <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
@@ -134,7 +135,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             <nav className="flex flex-col items-center gap-4">
               <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>
               <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>
-              {siteData.showTestimonials !== false && ( // Conditionally render
+              {siteData.showTestimonials !== false && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
               )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
@@ -215,7 +216,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
         </div>
       </section>
 
-      {siteData.showTestimonials !== false && ( // Conditionally render
+      {siteData.showTestimonials !== false && (
         <section id="testimonials" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2>
