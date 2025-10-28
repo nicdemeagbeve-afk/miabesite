@@ -29,17 +29,17 @@ export function DashboardSidebar() {
   ];
 
   return (
-    <aside className="w-full lg:w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border p-4 flex flex-col">
+    <aside className="sticky top-0 h-screen w-full lg:w-64 bg-card text-card-foreground border-r border-border p-4 flex flex-col">
       <nav className="space-y-2 flex-1">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
               pathname === item.href
-                ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                : "text-sidebar-foreground"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground"
             )}
           >
             {item.icon}
@@ -47,7 +47,7 @@ export function DashboardSidebar() {
           </Link>
         ))}
       </nav>
-      <div className="mt-auto pt-4 border-t border-sidebar-border">
+      <div className="mt-auto pt-4 border-t border-border">
         <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
           <Link href="/create-site">
             <PlusCircle className="mr-2 h-5 w-5" /> Créer un site
