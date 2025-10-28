@@ -8,10 +8,23 @@ import { Input } from "@/components/ui/input";
 import { CheckCircle, XCircle, Link as LinkIcon, Eye, Copy } from "lucide-react";
 import { toast } from "sonner";
 
-export function OverviewAndQuickActions() {
-  // Placeholder for site status and URL. In a real app, these would come from an API.
-  const siteStatus = "online"; // Can be "online" or "offline"
-  const siteUrl = "https://monentreprise.miabesite.site";
+interface SiteData {
+  id: string;
+  user_id: string;
+  subdomain: string;
+  site_data: any; // This will contain the full wizard form data
+  status: string;
+  template_type: string;
+  created_at: string;
+}
+
+interface OverviewAndQuickActionsProps {
+  siteData: SiteData;
+}
+
+export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsProps) {
+  const siteStatus = siteData.status;
+  const siteUrl = `${window.location.origin}/sites/${siteData.subdomain}`; // Construct dynamic URL
   const recentViews = 37; // Placeholder for recent views
 
   const handleCopyLink = () => {
@@ -31,15 +44,15 @@ export function OverviewAndQuickActions() {
       <CardContent className="space-y-6">
         {/* Statut du Site */}
         <div className="flex items-center gap-4">
-          {siteStatus === "online" ? (
+          {siteStatus === "published" ? ( // Changed from "online" to "published" to match DB
             <CheckCircle className="h-8 w-8 text-green-500" />
           ) : (
             <XCircle className="h-8 w-8 text-red-500" />
           )}
           <div>
             <p className="text-lg font-semibold">Statut du Site :</p>
-            <Badge variant={siteStatus === "online" ? "default" : "destructive"} className="text-base px-3 py-1">
-              {siteStatus === "online" ? "En ligne" : "Hors ligne"}
+            <Badge variant={siteStatus === "published" ? "default" : "destructive"} className="text-base px-3 py-1">
+              {siteStatus === "published" ? "En ligne" : "Hors ligne"}
             </Badge>
           </div>
         </div>
