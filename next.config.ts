@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co', // Adjust this to your Supabase project's hostname
+        port: '',
+        pathname: '/storage/v1/object/public/site-assets/**', // Adjust to your bucket name
+      },
+    ],
+  },
 };
 
 export default nextConfig;

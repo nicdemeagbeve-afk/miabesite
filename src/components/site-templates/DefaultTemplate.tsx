@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image'; // Import Image component
 
 // Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
@@ -10,11 +11,13 @@ interface SiteData {
   aboutStory: string;
   primaryColor: string;
   secondaryColor: string;
+  logoOrPhoto?: string | null; // Add logoOrPhotoUrl
   productsAndServices: Array<{
     title: string;
     price?: number;
     currency: string;
     description: string;
+    image?: string | null; // Add imageUrl for products
     actionButton: string;
   }>;
   subdomain: string;
@@ -39,6 +42,15 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
       {/* Header Section */}
       <header className={`py-12 px-4 md:px-8 ${primaryBgClass} text-white text-center`}>
         <div className="container mx-auto max-w-4xl">
+          {siteData.logoOrPhoto && (
+            <Image
+              src={siteData.logoOrPhoto}
+              alt={`${siteData.publicName} Logo`}
+              width={120}
+              height={120}
+              className="mx-auto mb-4 rounded-full object-cover"
+            />
+          )}
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{siteData.publicName}</h1>
           <p className="text-xl md:text-2xl font-light">{siteData.heroSlogan}</p>
         </div>
@@ -69,6 +81,15 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {siteData.productsAndServices.map((product, index) => (
                 <div key={index} className="bg-card text-card-foreground border border-border p-6 rounded-lg shadow-md flex flex-col">
+                  {product.image && (
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      width={300}
+                      height={200}
+                      className="w-full h-48 object-cover rounded-md mb-4"
+                    />
+                  )}
                   <h3 className="text-xl font-bold mb-2">{product.title}</h3>
                   <p className="text-muted-foreground text-sm flex-1 mb-4">{product.description}</p>
                   {product.price !== undefined && (

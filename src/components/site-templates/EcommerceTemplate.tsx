@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image'; // Import Image component
 
 // Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
@@ -10,11 +11,13 @@ interface SiteData {
   aboutStory: string;
   primaryColor: string;
   secondaryColor: string;
+  logoOrPhoto?: string | null; // Add logoOrPhotoUrl
   productsAndServices: Array<{
     title: string;
     price?: number;
     currency: string;
     description: string;
+    image?: string | null; // Add imageUrl for products
     actionButton: string;
   }>;
   subdomain: string;
@@ -39,7 +42,18 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
       {/* Header Section */}
       <header className={`py-6 px-4 md:px-8 ${primaryBgClass} ${primaryTextClass} text-center shadow-md`}>
         <div className="container mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-center">
-          <h1 className="text-3xl font-bold mb-2 sm:mb-0">{siteData.publicName}</h1>
+          <div className="flex items-center gap-4">
+            {siteData.logoOrPhoto && (
+              <Image
+                src={siteData.logoOrPhoto}
+                alt={`${siteData.publicName} Logo`}
+                width={40}
+                height={40}
+                className="rounded-full object-cover"
+              />
+            )}
+            <h1 className="text-3xl font-bold mb-2 sm:mb-0">{siteData.publicName}</h1>
+          </div>
           <nav className="flex gap-4 text-lg">
             <a href="#products" className="hover:underline">Produits</a>
             <a href="#about" className="hover:underline">À Propos</a>
@@ -67,10 +81,19 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {siteData.productsAndServices.map((product, index) => (
                 <div key={index} className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden flex flex-col">
-                  {/* Placeholder for product image */}
-                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
-                    Image du produit
-                  </div>
+                  {product.image ? (
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
+                      Image du produit
+                    </div>
+                  )}
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-50">{product.title}</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-base flex-1 mb-4">{product.description}</p>

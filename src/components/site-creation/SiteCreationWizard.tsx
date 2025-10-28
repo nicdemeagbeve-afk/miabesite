@@ -9,7 +9,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
+import { uploadFileToSupabase } from "@/lib/supabase/storage"; // Import the upload utility
+import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
 
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
@@ -26,7 +28,7 @@ const baseWizardFormSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }).optional().or(z.literal('')),
   primaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur principale." }),
   secondaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur secondaire." }),
-  logoOrPhoto: z.any().optional(), // File object
+  logoOrPhoto: z.any().optional(), // File object or string URL
 
   // Étape 2: Contenu (Les Pages Clés)
   heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(60, { message: "Le slogan ne peut pas dépasser 60 caractères." }),
@@ -43,7 +45,7 @@ const baseWizardFormSchema = z.object({
     ),
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(200, "La description ne peut pas dépasser 200 caractères."),
-    image: z.any().optional(), // File object
+    image: z.any().optional(), // File object or string URL
     actionButton: z.string().min(1, "L'action du bouton est requise."),
   })).min(1, { message: "Veuillez ajouter au moins un produit ou service." }).max(3, "Vous ne pouvez ajouter que 3 produits/services maximum."),
 
@@ -60,7 +62,7 @@ const baseWizardFormSchema = z.object({
   paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   depositRequired: z.boolean(),
-  templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }), // Add templateType
+  templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }),
 });
 
 // The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
@@ -121,14 +123,15 @@ const steps: {
       paymentMethods: true,
       deliveryOption: true,
       depositRequired: true,
-      templateType: true, // Include templateType in this step's schema
+      templateType: true,
     }),
   },
 ];
 
 export function SiteCreationWizard() {
   const [currentStep, setCurrentStep] = React.useState(0);
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
+  const supabase = createClient(); // Initialize client-side Supabase client
 
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
@@ -136,8 +139,8 @@ export function SiteCreationWizard() {
     whatsappNumber: "",
     secondaryPhoneNumber: "",
     email: "",
-    primaryColor: "blue", // Default color
-    secondaryColor: "red", // Default color
+    primaryColor: "blue",
+    secondaryColor: "red",
     logoOrPhoto: undefined,
 
     heroSlogan: "",
@@ -145,43 +148,41 @@ export function SiteCreationWizard() {
     portfolioProofLink: "",
     portfolioProofDescription: "",
 
-    productsAndServices: [], // Initialize with an empty array, ProductsServicesStep will add one if needed
+    productsAndServices: [],
 
     subdomain: "",
-    contactButtonAction: "whatsapp", // Default to WhatsApp
+    contactButtonAction: "whatsapp",
     facebookLink: "",
     instagramLink: "",
     linkedinLink: "",
     paymentMethods: [],
     deliveryOption: "",
     depositRequired: false,
-    templateType: "default", // Default template type
+    templateType: "default",
   };
 
   const methods = useForm<WizardFormData>({
     resolver: zodResolver(wizardFormSchema as z.ZodSchema<WizardFormData>),
     defaultValues: defaultValues,
-    mode: "onChange", // Validate on change to enable/disable next button
+    mode: "onChange",
   });
 
   const {
     handleSubmit,
     trigger,
-    formState: { isSubmitting, errors }, // Get errors from formState
-    getValues, // Get all form values
+    formState: { isSubmitting, errors },
+    getValues,
+    setValue, // Added setValue to update form fields
   } = methods;
 
-  // Determine if the current step is valid based on its schema and current errors
   const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;
   const currentStepFieldNames = Object.keys(currentStepSchema.shape) as (keyof WizardFormData)[];
 
-  // Check if any field in the current step has an error
   const isCurrentStepValid = !currentStepFieldNames.some(fieldName => errors[fieldName]);
 
   const handleNext = async () => {
     if (currentStep >= steps.length - 1) return;
 
-    // Trigger validation for only the current step's fields
     const result = await trigger(currentStepFieldNames);
 
     if (result) {
@@ -197,14 +198,53 @@ export function SiteCreationWizard() {
 
   const onSubmit: SubmitHandler<WizardFormData> = async (data) => {
     try {
-      // Filter out file objects for now, as they need separate handling (e.g., Supabase Storage)
-      // For simplicity, we'll send only text data to the API route.
+      // Get current user for folder path
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer un site.");
+        router.push('/login');
+        return;
+      }
+      const userId = user.id;
+
       const dataToSend = { ...data };
-      delete dataToSend.logoOrPhoto;
-      dataToSend.productsAndServices = dataToSend.productsAndServices.map(product => {
-        const { image, ...rest } = product;
-        return rest;
-      });
+      const subdomain = data.subdomain; // Get subdomain for folder path
+
+      // Handle logo/photo upload
+      if (data.logoOrPhoto instanceof File) {
+        toast.loading("Téléchargement du logo...", { id: "logo-upload" });
+        const logoUrl = await uploadFileToSupabase(data.logoOrPhoto, 'site-assets', `${userId}/${subdomain}/logo`);
+        if (logoUrl) {
+          dataToSend.logoOrPhoto = logoUrl;
+          toast.success("Logo téléchargé !", { id: "logo-upload" });
+        } else {
+          toast.error("Échec du téléchargement du logo.", { id: "logo-upload" });
+          return; // Stop submission if logo upload fails
+        }
+      } else if (data.logoOrPhoto === undefined) {
+        dataToSend.logoOrPhoto = null; // Ensure it's null if no file was selected
+      }
+
+      // Handle product images upload
+      const updatedProductsAndServices = await Promise.all(
+        data.productsAndServices.map(async (product, index) => {
+          if (product.image instanceof File) {
+            toast.loading(`Téléchargement de l'image produit ${index + 1}...`, { id: `product-image-${index}` });
+            const imageUrl = await uploadFileToSupabase(product.image, 'site-assets', `${userId}/${subdomain}/products`);
+            if (imageUrl) {
+              toast.success(`Image produit ${index + 1} téléchargée !`, { id: `product-image-${index}` });
+              return { ...product, image: imageUrl };
+            } else {
+              toast.error(`Échec du téléchargement de l'image produit ${index + 1}.`, { id: `product-image-${index}` });
+              throw new Error(`Failed to upload product image ${index + 1}`); // Stop if any product image fails
+            }
+          } else if (product.image === undefined) {
+            return { ...product, image: null }; // Ensure it's null if no file was selected
+          }
+          return product; // Return product as is if image is already a URL or not a file
+        })
+      );
+      dataToSend.productsAndServices = updatedProductsAndServices;
 
       const response = await fetch('/api/create-site', {
         method: 'POST',
@@ -217,10 +257,9 @@ export function SiteCreationWizard() {
       const result = await response.json();
 
       if (!response.ok) {
-        // Handle specific error messages from the API
-        if (response.status === 409) { // Conflict, e.g., subdomain taken
+        if (response.status === 409) {
           toast.error(result.error || "Ce sous-domaine est déjà pris.");
-        } else if (response.status === 400 && result.details) { // Zod validation errors
+        } else if (response.status === 400 && result.details) {
           result.details.forEach((err: any) => toast.error(err.message));
         } else {
           toast.error(result.error || "Erreur lors de la création du site.");
@@ -229,11 +268,10 @@ export function SiteCreationWizard() {
       }
 
       toast.success("Votre site est en cours de création ! Redirection...");
-      // Redirect to the newly created site's dashboard or the site itself
-      router.push(`/dashboard/overview`); // Or `/sites/${data.subdomain}` if you want to view it directly
-    } catch (error) {
+      router.push(`/dashboard/${data.subdomain}/overview`);
+    } catch (error: any) {
       console.error("Failed to create site:", error);
-      toast.error("Une erreur inattendue est survenue lors de la création du site.");
+      toast.error(error.message || "Une erreur inattendue est survenue lors de la création du site.");
     }
   };
 
@@ -254,7 +292,7 @@ export function SiteCreationWizard() {
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   isSubmitting={isSubmitting}
-                  isValid={isCurrentStepValid} // Pass the current step's validity
+                  isValid={isCurrentStepValid}
                 />
               </form>
             </Form>

@@ -11,9 +11,7 @@ const siteCreationSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   primaryColor: z.string().min(1),
   secondaryColor: z.string().min(1),
-  // logoOrPhoto is handled separately as a file, not directly in JSONB
-  // For now, we'll assume it's not part of the direct JSONB payload for simplicity
-  // If you need to store a URL to the uploaded image, you'd add a string field here.
+  logoOrPhoto: z.string().url().nullable().optional(), // Expect a URL string or null
 
   heroSlogan: z.string().min(10).max(60),
   aboutStory: z.string().min(50).max(300),
@@ -28,7 +26,7 @@ const siteCreationSchema = z.object({
     ),
     currency: z.string().min(1),
     description: z.string().min(10).max(200),
-    // image is handled separately
+    image: z.string().url().nullable().optional(), // Expect a URL string or null
     actionButton: z.string().min(1),
   })).min(1).max(3),
 
@@ -44,7 +42,7 @@ const siteCreationSchema = z.object({
   paymentMethods: z.array(z.string()).min(1),
   deliveryOption: z.string().min(1),
   depositRequired: z.boolean(),
-  templateType: z.string().min(1), // Add templateType to the schema
+  templateType: z.string().min(1),
 });
 
 export async function POST(request: Request) {
@@ -86,7 +84,7 @@ export async function POST(request: Request) {
         subdomain: validatedData.subdomain,
         site_data: validatedData, // Store the entire validated object
         status: 'published', // Default to published for now
-        template_type: validatedData.templateType, // Use the templateType from validatedData
+        template_type: validatedData.templateType,
       })
       .select()
       .single();
