@@ -13,6 +13,7 @@ import { WizardNavigation } from "./WizardNavigation";
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
 import { ContentStep } from "./steps/ContentStep";
+import { ProductsServicesStep } from "./steps/ProductsServicesStep"; // New step import
 import { ConfigurationNetworkStep } from "./steps/ConfigurationNetworkStep";
 
 // Define the base schema as a ZodObject
@@ -29,6 +30,10 @@ const baseWizardFormSchema = z.object({
   // Étape 2: Contenu (Les Pages Clés)
   heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(60, { message: "Le slogan ne peut pas dépasser 60 caractères." }),
   aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(300, { message: "Votre histoire/mission ne peut pas dépasser 300 caractères." }),
+  portfolioProofLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  portfolioProofDescription: z.string().max(200, { message: "La description ne peut pas dépasser 200 caractères." }).optional().or(z.literal('')),
+
+  // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
     price: z.preprocess(
@@ -40,10 +45,8 @@ const baseWizardFormSchema = z.object({
     image: z.any().optional(), // File object
     actionButton: z.string().min(1, "L'action du bouton est requise."),
   })).min(1, { message: "Veuillez ajouter au moins un produit ou service." }).max(3, "Vous ne pouvez ajouter que 3 produits/services maximum."),
-  portfolioProofLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
-  portfolioProofDescription: z.string().max(200, { message: "La description ne peut pas dépasser 200 caractères." }).optional().or(z.literal('')),
 
-  // Étape 3: Configuration et Réseaux
+  // Étape 3 (maintenant Étape 4): Configuration et Réseaux
   subdomain: z.string()
     .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
     .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
@@ -91,9 +94,16 @@ const steps: {
     schema: baseWizardFormSchema.pick({
       heroSlogan: true,
       aboutStory: true,
-      productsAndServices: true,
       portfolioProofLink: true,
       portfolioProofDescription: true,
+    }),
+  },
+  {
+    id: "productsServices", // New step ID
+    title: "Produits & Services",
+    component: ProductsServicesStep,
+    schema: baseWizardFormSchema.pick({
+      productsAndServices: true,
     }),
   },
   {
@@ -128,9 +138,10 @@ export function SiteCreationWizard() {
 
     heroSlogan: "",
     aboutStory: "",
-    productsAndServices: [], // Initialize with an empty array, ContentStep will add one if needed
     portfolioProofLink: "",
     portfolioProofDescription: "",
+
+    productsAndServices: [], // Initialize with an empty array, ProductsServicesStep will add one if needed
 
     subdomain: "",
     contactButtonAction: "whatsapp", // Default to WhatsApp
