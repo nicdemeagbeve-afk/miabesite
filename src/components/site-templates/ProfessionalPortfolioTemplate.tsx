@@ -175,13 +175,17 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6">
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
-              <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
-                <Hammer className="h-6 w-6" />
-              </div>
+              {siteData.logoOrPhoto ? (
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+              ) : (
+                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
+                  {siteData.publicName.charAt(0)}
+                </div>
+              )}
               <div className="flex flex-col">
                 <h1 className={cn("text-xl font-bold", primaryColorTextClass)}>{siteData.publicName}</h1>
                 <p className={cn("text-sm font-medium", accentColorTextClass)}>Réalisations & Compétences</p>
@@ -376,8 +380,8 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
           <h2 className="text-4xl font-bold mb-4">Prêt à concrétiser votre projet ?</h2>
           <p className="text-lg md:text-xl mb-8 opacity-90">N'hésitez pas à me contacter pour discuter de vos besoins et obtenir un devis personnalisé</p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg")}>
-              <MessageSquare className="h-6 w-6" /> Contact WhatsApp
+            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
+              <MessageSquare className="h-6 w-6" /> Discuter de mon projet
             </a>
             {siteData.secondaryPhoneNumber && (
               <a href={`tel:${siteData.secondaryPhoneNumber}`} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">

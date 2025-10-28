@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image'; // Import Image component
 
 interface SiteData {
   publicName: string;
@@ -13,6 +14,7 @@ interface SiteData {
   primaryColor: string;
   secondaryColor: string;
   subdomain: string;
+  logoOrPhoto?: string | null; // Added logoOrPhoto
   showTestimonials?: boolean; // Added showTestimonials for consistency
 }
 
@@ -28,6 +30,15 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 text-center">
+      {siteData.logoOrPhoto && (
+        <Image
+          src={siteData.logoOrPhoto}
+          alt={`${siteData.publicName} Logo`}
+          width={100}
+          height={100}
+          className="rounded-full object-cover mb-4"
+        />
+      )}
       <h1 className={cn("text-4xl md:text-5xl font-bold mb-4", primaryColorTextClass)}>
         Bienvenue sur {siteData.publicName}!
       </h1>
@@ -41,7 +52,7 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
         href={`https://wa.me/${siteData.whatsappNumber}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, `hover:bg-${siteData.primaryColor}-700`)}
+        className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, `hover:bg-${siteData.primaryColor}-700`)}
       >
         <MessageSquare className="h-6 w-6" /> Contactez-nous sur WhatsApp
       </Link>

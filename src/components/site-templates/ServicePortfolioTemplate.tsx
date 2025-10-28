@@ -129,7 +129,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
   return (
     <div className="font-sans antialiased text-gray-800 bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6">
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
           <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", 'bg-[#25D366]', 'hover:bg-[#128C7E]')}>
+          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 ease-in-out transform", 'bg-[#25D366]', 'hover:bg-[#128C7E]')}>
             <MessageSquare className="h-6 w-6" /> Contactez-moi sur WhatsApp
           </a>
         </div>
@@ -194,7 +194,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               À propos de nous
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -216,7 +216,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Nos Services
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -239,7 +239,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                     </div>
                   )}
                   <p className="text-gray-600 mb-6 text-sm">{product.description}</p>
-                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-5 py-2 rounded-md font-bold text-white transition-colors duration-300", secondaryColorClass, secondaryColorHoverBgClass)}>
+                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-5 py-2 rounded-lg font-bold text-white transition-colors duration-300", secondaryColorClass, secondaryColorHoverBgClass)}>
                     {product.actionButton === 'buy' && 'Acheter'}
                     {product.actionButton === 'quote' && 'Demander un devis'}
                     {product.actionButton === 'book' && 'Réserver'}
@@ -258,7 +258,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Nos Réalisations
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -284,7 +284,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             <div className="text-center mb-12">
               <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
                 Témoignages Clients
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -312,7 +312,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Contactez-nous
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -369,19 +369,19 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <form className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
-                  <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
-                  <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                  <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div>
                   <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
-                  <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Sélectionnez un service</option>
                     {siteData.productsAndServices.map((product: any, idx: number) => (
                       <option key={idx} value={product.title}>{product.title}</option>
@@ -390,9 +390,9 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
-                  <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-md min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                  <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
                 </div>
-                <button type="submit" className={cn("w-full px-6 py-3 rounded-md font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}>
+                <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}>
                   Envoyer le message
                 </button>
               </form>
@@ -416,28 +416,28 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
       </section>
 
       {/* Footer */}
-      <footer className={cn("py-12 text-white", primaryColorDarkBgClass)}>
+      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
                 {siteData.publicName}
               </h3>
-              <p className="text-gray-300">Votre artisan de confiance pour tous vos projets de rénovation et réparation. Qualité, professionnalisme et satisfaction client garantis.</p>
+              <p className="text-gray-300">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p>
               <div className="flex gap-4 mt-4">
                 {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-5 w-5" />
+                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Facebook className="h-6 w-6" />
                   </a>
                 )}
                 {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-5 w-5" />
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Instagram className="h-6 w-6" />
                   </a>
                 )}
                 {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-5 w-5" />
+                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <MessageSquare className="h-6 w-6" />
                   </a>
                 )}
               </div>
@@ -445,15 +445,34 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Liens rapides
+                Contact
               </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="hover:text-blue-500 transition-colors">Accueil</a></li>
-                <li><a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="hover:text-blue-500 transition-colors">À propos</a></li>
-                <li><a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="hover:text-blue-500 transition-colors">Services</a></li>
-                <li><a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="hover:text-blue-500 transition-colors">Portfolio</a></li>
-                <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-blue-500 transition-colors">Contact</a></li>
-              </ul>
+              <div className="space-y-3 text-gray-300">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <p>Dakar, Sénégal</p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -463,7 +482,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
                 {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-lg text-sm font-semibold">
                     {method}
                   </span>
                 ))}
@@ -471,14 +490,14 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </div>
           </div>
 
-          <div className="text-center pt-8 border-t border-white/10">
+          <div className="text-center pt-8 border-t border-white/10 opacity-70">
             <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
           </div>
         </div>
       </footer>
 
       {/* Back to Top Button */}
-      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", primaryColorClass, primaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
+      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
         <ChevronUp className="h-6 w-6" />
       </a>
     </div>

@@ -91,13 +91,17 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6">
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
-              <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
-                <Store className="h-6 w-6" />
-              </div>
+              {siteData.logoOrPhoto ? (
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+              ) : (
+                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
+                  {siteData.publicName.charAt(0)}
+                </div>
+              )}
               <div className="flex flex-col">
                 <h1 className={cn("text-xl font-bold", primaryColorTextClass)}>{siteData.publicName}</h1>
                 <p className="text-sm text-gray-600">Boutique en ligne</p>
@@ -155,7 +159,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
           <Link
             href="#products"
             onClick={(e) => handleSmoothScroll(e, '#products')}
-            className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}
+            className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-lg bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}
           >
             <ShoppingCart className="h-6 w-6" /> Acheter maintenant
           </Link>
@@ -189,7 +193,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
                     )}
                     <button
                       onClick={() => handleAddToCart(product.title)}
-                      className={cn("w-full px-5 py-2 rounded-md font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
+                      className={cn("w-full px-5 py-2 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
                     >
                       Ajouter au panier
                     </button>
@@ -244,7 +248,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
                 href={`https://wa.me/${siteData.whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E]")}
+                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E]")}
               >
                 <MessageSquare className="h-6 w-6" /> Discuter sur WhatsApp
               </a>
@@ -252,7 +256,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             {siteData.secondaryPhoneNumber && (
               <a
                 href={`tel:${siteData.secondaryPhoneNumber}`}
-                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", secondaryColorClass, secondaryColorHoverBgClass)}
+                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", secondaryColorClass, secondaryColorHoverBgClass)}
               >
                 <Phone className="h-6 w-6" /> Appeler {siteData.secondaryPhoneNumber}
               </a>
@@ -260,7 +264,7 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             {siteData.email && (
               <a
                 href={`mailto:${siteData.email}`}
-                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, primaryColorHoverBgClass)}
+                className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, primaryColorHoverBgClass)}
               >
                 <Mail className="h-6 w-6" /> Envoyer un e-mail
               </a>

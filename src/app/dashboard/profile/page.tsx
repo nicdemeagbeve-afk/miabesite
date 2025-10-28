@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, DollarSign, CheckCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import Link from "next/link"; // Added missing import for Link
+import Link from "next/link";
 import Image from "next/image";
 
 const profileFormSchema = z.object({
@@ -181,16 +181,16 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 md:p-8 text-center">
-        <h1 className="text-3xl font-bold mb-8">Chargement du Profil...</h1>
-        <p className="text-muted-foreground">Veuillez patienter.</p>
+      <div className="container mx-auto p-4 md:p-8">
+        <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Chargement du Profil...</h1>
+        <p className="text-muted-foreground text-center">Veuillez patienter.</p>
       </div>
     );
   }
 
-  const getInitials = (email: string | null) => {
-    if (!email) return "U";
-    return email.charAt(0).toUpperCase();
+  const getInitials = (nameOrEmail: string | null) => {
+    if (!nameOrEmail) return "U";
+    return nameOrEmail.charAt(0).toUpperCase();
   };
 
   const plans = [
@@ -250,7 +250,7 @@ export default function ProfilePage() {
                       <AvatarImage src={avatarPreview} alt="Profile Picture" />
                     ) : (
                       <AvatarFallback className="text-4xl">
-                        {getInitials(user?.email)}
+                        {getInitials(user?.user_metadata?.full_name || user?.email)}
                       </AvatarFallback>
                     )}
                   </Avatar>

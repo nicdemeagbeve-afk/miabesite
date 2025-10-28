@@ -135,7 +135,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className={cn("bg-gray-800 text-white py-2 text-sm", secondaryColorClass)}>
           <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
             <div className="flex gap-6">
@@ -157,10 +157,10 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                 </a>
               )}
               {siteData.instagramLink && (
-                <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                  <Instagram className="h-4 w-4" />
-                </a>
-              )}
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
+                    <Instagram className="h-4 w-4" />
+                  </a>
+                )}
               {siteData.whatsappNumber && (
                 <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
                   <MessageSquare className="h-4 w-4" />
@@ -172,22 +172,26 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         <div className="container mx-auto px-4 md:px-6">
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
-              <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}>
-                <Store className="h-6 w-6" />
-              </div>
+              {siteData.logoOrPhoto ? (
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+              ) : (
+                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}>
+                  {siteData.publicName.charAt(0)}
+                </div>
+              )}
               <div className="flex flex-col">
                 <h1 className={cn("text-xl font-bold", secondaryColorTextClass)}>{siteData.publicName}</h1>
                 <p className={cn("text-sm font-medium", primaryColorTextClass)}>Produits & Services Sur Mesure</p>
               </div>
             </div>
             <div className={cn("hidden md:flex items-center gap-8")}>
-              <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
-              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
-              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
+              <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
+              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
+              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
               {siteData.showTestimonials !== false && ( // Conditionally render
-                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Avis Clients</a>
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Avis Clients</a>
               )}
-              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>
+              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#" className={cn("relative text-gray-700 text-xl hover:text-red-500 transition-colors")}>
@@ -248,10 +252,10 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
           <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
           <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}>
+            <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}>
               <ShoppingCart className="h-6 w-6" /> Voir les produits
             </a>
-            <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+            <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
               <Wrench className="h-6 w-6" /> Découvrir les services
             </a>
           </div>
@@ -301,7 +305,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             <div className="text-center mb-12">
               <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", secondaryColorTextClass)}>
                 Nos Produits Phares
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-lg", primaryColorClass)}></span>
               </h2>
               <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Découvrez une sélection de nos créations artisanales les plus populaires</p>
             </div>
@@ -315,8 +319,8 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {products.map((product: any, index: number) => (
                 <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 relative group">
-                  {index === 0 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white z-10", primaryColorClass)}>Nouveau</span>}
-                  {index === 1 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white z-10", primaryColorClass)}>Bestseller</span>}
+                  {index === 0 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold text-white z-10", primaryColorClass)}>Nouveau</span>}
+                  {index === 1 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold text-white z-10", primaryColorClass)}>Bestseller</span>}
                   <div className="h-56 overflow-hidden relative">
                     {product.image ? (
                       <Image src={product.image} alt={product.title} width={400} height={224} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -348,9 +352,9 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                         </span>
                       )}
                       {index === 0 && <span className="text-gray-500 line-through">55,000 XOF</span>}
-                      {index === 0 && <span className={cn("px-2 py-1 rounded-md text-xs font-bold text-white", successColorClass)}>-18%</span>}
+                      {index === 0 && <span className={cn("px-2 py-1 rounded-lg text-xs font-bold text-white", successColorClass)}>-18%</span>}
                     </div>
-                    <button onClick={() => handleAddToCart(product.title)} className={cn("w-full py-3 rounded-md font-bold text-white transition-colors duration-300 flex items-center justify-center gap-2", secondaryColorClass, secondaryColorHoverBgClass)}>
+                    <button onClick={() => handleAddToCart(product.title)} className={cn("w-full py-3 rounded-lg font-bold text-white transition-colors duration-300 flex items-center justify-center gap-2", secondaryColorClass, secondaryColorHoverBgClass)}>
                       <ShoppingCart className="h-5 w-5" /> Ajouter au panier
                     </button>
                   </div>
@@ -368,7 +372,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             <div className="text-center mb-12">
               <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", secondaryColorTextClass)}>
                 Nos Services Sur Mesure
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-lg", primaryColorClass)}></span>
               </h2>
               <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Des prestations adaptées à vos besoins spécifiques</p>
             </div>
@@ -393,7 +397,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                     <li className="flex items-center gap-2"><Check className={cn("h-5 w-5", successColorTextClass)} /> 3 propositions de design</li>
                     <li className="flex items-center gap-2"><Check className={cn("h-5 w-5", successColorTextClass)} /> Ajustements illimités</li>
                   </ul>
-                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`} target="_blank" rel="noopener noreferrer" className={cn("w-full py-3 rounded-md font-bold text-white transition-colors duration-300 flex items-center justify-center gap-2", secondaryColorClass, secondaryColorHoverBgClass)}>
+                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`} target="_blank" rel="noopener noreferrer" className={cn("w-full py-3 rounded-lg font-bold text-white transition-colors duration-300 flex items-center justify-center gap-2", secondaryColorClass, secondaryColorHoverBgClass)}>
                     <ShoppingCart className="h-5 w-5" /> {service.actionButton === 'quote' && 'Demander un devis'}
                     {service.actionButton === 'book' && 'Réserver ce service'}
                     {service.actionButton === 'contact' && 'Contacter pour ce service'}
@@ -412,7 +416,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             <div className="text-center mb-12">
               <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", secondaryColorTextClass)}>
                 Avis Clients
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-lg", primaryColorClass)}></span>
               </h2>
               <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Ce que disent nos clients satisfaits</p>
             </div>
@@ -455,7 +459,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
                 {siteData.publicName}
               </h3>
               <p className="text-gray-300">Créations uniques et services sur mesure pour valoriser votre intérieur. Qualité artisanale et satisfaction client garanties.</p>
@@ -479,7 +483,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
                 Liens Rapides
               </h3>
               <ul className="space-y-2 text-gray-300">
@@ -491,7 +495,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
                 Contact
               </h3>
               <div className="space-y-3 text-gray-300">
@@ -517,13 +521,13 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
                 Modes de Paiement
               </h3>
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
                 {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-lg text-sm font-semibold">
                     {method}
                   </span>
                 ))}
