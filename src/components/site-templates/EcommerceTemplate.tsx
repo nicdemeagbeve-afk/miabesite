@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X } from 'lucide-react'; // Added Menu and X
 import { cn } from '@/lib/utils';
 
 interface SiteData {
