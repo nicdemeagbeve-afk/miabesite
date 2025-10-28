@@ -9,11 +9,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
 import { ContentStep } from "./steps/ContentStep";
-import { ProductsServicesStep } from "./steps/ProductsServicesStep"; // New step import
+import { ProductsServicesStep } from "./steps/ProductsServicesStep";
 import { ConfigurationNetworkStep } from "./steps/ConfigurationNetworkStep";
 
 // Define the base schema as a ZodObject
@@ -125,6 +126,7 @@ const steps: {
 
 export function SiteCreationWizard() {
   const [currentStep, setCurrentStep] = React.useState(0);
+  const router = useRouter(); // Initialize useRouter
 
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
@@ -163,6 +165,7 @@ export function SiteCreationWizard() {
     handleSubmit,
     trigger,
     formState: { isSubmitting, errors }, // Get errors from formState
+    getValues, // Get all form values
   } = methods;
 
   // Determine if the current step is valid based on its schema and current errors
@@ -190,11 +193,45 @@ export function SiteCreationWizard() {
   };
 
   const onSubmit: SubmitHandler<WizardFormData> = async (data) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Site creation data:", data);
-    toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
-    // In a real app, you would redirect the user or show a success page
+    try {
+      // Filter out file objects for now, as they need separate handling (e.g., Supabase Storage)
+      // For simplicity, we'll send only text data to the API route.
+      const dataToSend = { ...data };
+      delete dataToSend.logoOrPhoto;
+      dataToSend.productsAndServices = dataToSend.productsAndServices.map(product => {
+        const { image, ...rest } = product;
+        return rest;
+      });
+
+      const response = await fetch('/api/create-site', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Handle specific error messages from the API
+        if (response.status === 409) { // Conflict, e.g., subdomain taken
+          toast.error(result.error || "Ce sous-domaine est déjà pris.");
+        } else if (response.status === 400 && result.details) { // Zod validation errors
+          result.details.forEach((err: any) => toast.error(err.message));
+        } else {
+          toast.error(result.error || "Erreur lors de la création du site.");
+        }
+        return;
+      }
+
+      toast.success("Votre site est en cours de création ! Redirection...");
+      // Redirect to the newly created site's dashboard or the site itself
+      router.push(`/dashboard/overview`); // Or `/sites/${data.subdomain}` if you want to view it directly
+    } catch (error) {
+      console.error("Failed to create site:", error);
+      toast.error("Une erreur inattendue est survenue lors de la création du site.");
+    }
   };
 
   const CurrentStepComponent = steps.length > 0 ? steps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;
