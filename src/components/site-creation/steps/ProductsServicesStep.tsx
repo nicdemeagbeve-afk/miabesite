@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFormContext, useFieldArray } from "react-hook-form";
+import { useFormContext, useFieldArray, ControllerRenderProps, FieldValues } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -64,7 +64,7 @@ export function ProductsServicesStep() {
       </p>
 
       <div className="space-y-8">
-        {fields.map((item, index) => (
+        {fields.map((item: Record<string, any>, index: number) => ( // Explicitly type item and index
           <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
             {fields.length > 1 && (index < fields.length -1 || (index === fields.length -1 && watch(`productsAndServices.${index}.title`) === "")) && (
               <Button
@@ -81,7 +81,7 @@ export function ProductsServicesStep() {
             <FormField
               control={control}
               name={`productsAndServices.${index}.title`}
-              render={({ field }) => (
+              render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.title`> }) => (
                 <FormItem>
                   <FormLabel>Titre du Produit/Service</FormLabel>
                   <FormControl>
@@ -95,7 +95,7 @@ export function ProductsServicesStep() {
               <FormField
                 control={control}
                 name={`productsAndServices.${index}.price`}
-                render={({ field }) => (
+                render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.price`> }) => (
                   <FormItem>
                     <FormLabel>Prix/Tarif</FormLabel>
                     <FormControl>
@@ -108,7 +108,7 @@ export function ProductsServicesStep() {
               <FormField
                 control={control}
                 name={`productsAndServices.${index}.currency`}
-                render={({ field }) => (
+                render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.currency`> }) => (
                   <FormItem>
                     <FormLabel>Devise</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -133,7 +133,7 @@ export function ProductsServicesStep() {
             <FormField
               control={control}
               name={`productsAndServices.${index}.description`}
-              render={({ field }) => (
+              render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.description`> }) => (
                 <FormItem>
                   <FormLabel>Description Détaillée</FormLabel>
                   <FormControl>
@@ -150,7 +150,7 @@ export function ProductsServicesStep() {
             <FormField
               control={control}
               name={`productsAndServices.${index}.image`}
-              render={({ field: { value, onChange, ...fieldProps } }) => (
+              render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.image`> }) => (
                 <FormItem>
                   <FormLabel>Image du Produit/Service (Optionnel)</FormLabel>
                   <FormControl>
@@ -179,7 +179,7 @@ export function ProductsServicesStep() {
             <FormField
               control={control}
               name={`productsAndServices.${index}.actionButton`}
-              render={({ field }) => (
+              render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.actionButton`> }) => (
                 <FormItem>
                   <FormLabel>Bouton d'Action</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>

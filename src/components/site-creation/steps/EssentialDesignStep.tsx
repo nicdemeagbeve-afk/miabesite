@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, ControllerRenderProps, FieldValues } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -44,7 +44,7 @@ export function EssentialDesignStep() {
       <FormField
         control={control}
         name="publicName"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "publicName"> }) => (
           <FormItem>
             <FormLabel>Nom Public & Activité</FormLabel>
             <FormControl>
@@ -61,7 +61,7 @@ export function EssentialDesignStep() {
       <FormField
         control={control}
         name="whatsappNumber"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "whatsappNumber"> }) => (
           <FormItem>
             <FormLabel>Numéro WhatsApp (Obligatoire)</FormLabel>
             <FormControl>
@@ -75,7 +75,7 @@ export function EssentialDesignStep() {
       <FormField
         control={control}
         name="secondaryPhoneNumber"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "secondaryPhoneNumber"> }) => (
           <FormItem>
             <FormLabel>Numéro de Téléphone Secondaire (Optionnel)</FormLabel>
             <FormControl>
@@ -89,7 +89,7 @@ export function EssentialDesignStep() {
       <FormField
         control={control}
         name="email"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "email"> }) => (
           <FormItem>
             <FormLabel>E-mail (Optionnel)</FormLabel>
             <FormControl>
@@ -104,7 +104,7 @@ export function EssentialDesignStep() {
         <FormField
           control={control}
           name="primaryColor"
-          render={({ field }) => (
+          render={({ field }: { field: ControllerRenderProps<FieldValues, "primaryColor"> }) => (
             <FormItem>
               <FormLabel>Couleur Principale du Site</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -128,7 +128,7 @@ export function EssentialDesignStep() {
         <FormField
           control={control}
           name="secondaryColor"
-          render={({ field }) => (
+          render={({ field }: { field: ControllerRenderProps<FieldValues, "secondaryColor"> }) => (
             <FormItem>
               <FormLabel>Couleur Secondaire du Site</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -154,7 +154,7 @@ export function EssentialDesignStep() {
       <FormField
         control={control}
         name="logoOrPhoto"
-        render={({ field: { value, onChange, ...fieldProps } }) => (
+        render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, "logoOrPhoto"> }) => (
           <FormItem>
             <FormLabel>Logo ou Photo de Profil (Optionnel)</FormLabel>
             <FormControl>

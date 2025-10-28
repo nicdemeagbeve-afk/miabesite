@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler, ControllerRenderProps, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
+import { Form } from "@/components/ui/form"; // Import Form component
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { createClient } from "@/lib/supabase/client"; // Import Supabase client
@@ -39,7 +39,7 @@ const baseWizardFormSchema = z.object({
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
     price: z.preprocess(
-      (val) => (val === '' ? undefined : val),
+      (val: unknown) => (val === '' ? undefined : val), // Explicitly type 'val'
       z.number().min(0, "Le prix ne peut pas être négatif.").optional()
     ),
     currency: z.string().min(1, "La devise est requise."),
@@ -52,8 +52,8 @@ const baseWizardFormSchema = z.object({
   subdomain: z.string()
     .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
     .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
-    .transform(s => s.toLowerCase()) // Ensure lowercase
-    .refine(s => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }),
+    .transform((s: string) => s.toLowerCase()) // Explicitly type 's'
+    .refine((s: string) => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }), // Explicitly type 's'
   contactButtonAction: z.string().min(1, { message: "Veuillez sélectionner une action pour le bouton de contact." }),
   facebookLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
   instagramLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
@@ -193,7 +193,7 @@ export function SiteCreationWizard() {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const onSubmit: SubmitHandler<WizardFormData> = async (data) => {
+  const onSubmit: SubmitHandler<WizardFormData> = async (data: WizardFormData) => { // Explicitly type 'data'
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
@@ -239,7 +239,7 @@ export function SiteCreationWizard() {
       const siteDataToSave = {
         ...data,
         logoOrPhoto: logoUrl,
-        productsAndServices: data.productsAndServices.map((product, index) => ({
+        productsAndServices: data.productsAndServices.map((product: typeof data.productsAndServices[number], index: number) => ({ // Explicitly type 'product' and 'index'
           ...product,
           image: productImages[index] || product.image, // Use uploaded URL or original if not uploaded
         })),
@@ -282,21 +282,19 @@ export function SiteCreationWizard() {
       <Card className="w-full max-w-2xl p-6">
         <CardContent>
           <WizardProgress currentStep={currentStep} totalSteps={steps.length} />
-          <FormProvider {...methods}>
-            <Form {...methods}>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                <CurrentStepComponent />
-                <WizardNavigation
-                  currentStep={currentStep}
-                  totalSteps={steps.length}
-                  onNext={handleNext}
-                  onPrevious={handlePrevious}
-                  isSubmitting={isSubmitting}
-                  isValid={isCurrentStepValid} // Pass the current step's validity
-                />
-              </form>
-            </Form>
-          </FormProvider>
+          <Form {...methods}> {/* Use Form component here */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              <CurrentStepComponent />
+              <WizardNavigation
+                currentStep={currentStep}
+                totalSteps={steps.length}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                isSubmitting={isSubmitting}
+                isValid={isCurrentStepValid} // Pass the current step's validity
+              />
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

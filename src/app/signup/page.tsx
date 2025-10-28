@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Form,
+  Form, // Import Form component
   FormControl,
   FormField,
   FormItem,
@@ -30,7 +30,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine((data: { password?: string; confirmPassword?: string }) => data.password === data.confirmPassword, { // Explicitly type 'data'
   message: "Les mots de passe ne correspondent pas.",
   path: ["confirmPassword"],
 });
@@ -81,7 +81,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "email"> }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
@@ -94,7 +94,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "password"> }) => (
                   <FormItem>
                     <FormLabel>Mot de passe</FormLabel>
                     <FormControl>
@@ -107,7 +107,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="confirmPassword"
-                render={({ field }) => (
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "confirmPassword"> }) => (
                   <FormItem>
                     <FormLabel>Confirmer le mot de passe</FormLabel>
                     <FormControl>

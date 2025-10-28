@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, ControllerRenderProps, FieldValues } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -54,7 +54,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="subdomain"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "subdomain"> }) => (
           <FormItem>
             <FormLabel>Ton adresse web (Sous-domaine)</FormLabel>
             <div className="flex items-center">
@@ -79,7 +79,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="contactButtonAction"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "contactButtonAction"> }) => (
           <FormItem>
             <FormLabel>Action du Bouton "Contact/Commander"</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -110,7 +110,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="facebookLink"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "facebookLink"> }) => (
           <FormItem>
             <FormLabel>Lien Facebook</FormLabel>
             <FormControl>
@@ -123,7 +123,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="instagramLink"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "instagramLink"> }) => (
           <FormItem>
             <FormLabel>Lien Instagram</FormLabel>
             <FormControl>
@@ -136,7 +136,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="linkedinLink"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "linkedinLink"> }) => (
           <FormItem>
             <FormLabel>Lien LinkedIn</FormLabel>
             <FormControl>
@@ -162,7 +162,7 @@ export function ConfigurationNetworkStep() {
                   key={method.id}
                   control={control}
                   name="paymentMethods"
-                  render={({ field }) => {
+                  render={({ field }: { field: ControllerRenderProps<FieldValues, "paymentMethods"> }) => {
                     return (
                       <FormItem
                         key={method.id}
@@ -171,7 +171,7 @@ export function ConfigurationNetworkStep() {
                         <FormControl>
                           <Checkbox
                             checked={field.value?.includes(method.id)}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean) => {
                               return checked
                                 ? field.onChange([...(field.value || []), method.id])
                                 : field.onChange(
@@ -199,7 +199,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="deliveryOption"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "deliveryOption"> }) => (
           <FormItem>
             <FormLabel>Livraison / Déplacement</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -224,7 +224,7 @@ export function ConfigurationNetworkStep() {
       <FormField
         control={control}
         name="depositRequired"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "depositRequired"> }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
             <FormControl>
               <Checkbox

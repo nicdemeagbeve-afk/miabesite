@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, ControllerRenderProps, FieldValues } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -26,7 +26,7 @@ export function ContentStep() {
       <FormField
         control={control}
         name="heroSlogan"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "heroSlogan"> }) => (
           <FormItem>
             <FormLabel>Slogan Accrocheur (Bannière d'Accueil)</FormLabel>
             <FormControl>
@@ -43,7 +43,7 @@ export function ContentStep() {
       <FormField
         control={control}
         name="aboutStory"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "aboutStory"> }) => (
           <FormItem>
             <FormLabel>Mon Histoire / Ma Mission (Page "À Propos")</FormLabel>
             <FormControl>
@@ -70,7 +70,7 @@ export function ContentStep() {
       <FormField
         control={control}
         name="portfolioProofLink"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "portfolioProofLink"> }) => (
           <FormItem>
             <FormLabel>Lien vers vos Réalisations (Optionnel)</FormLabel>
             <FormControl>
@@ -86,7 +86,7 @@ export function ContentStep() {
       <FormField
         control={control}
         name="portfolioProofDescription"
-        render={({ field }) => (
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "portfolioProofDescription"> }) => (
           <FormItem>
             <FormLabel>Description Courte d'un Projet (Optionnel)</FormLabel>
             <FormControl>
