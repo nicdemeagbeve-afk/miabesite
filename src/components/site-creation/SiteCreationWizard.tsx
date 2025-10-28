@@ -32,15 +32,40 @@ const wizardFormSchema = z.object({
 
   productCategory: z.string().min(1, { message: "Veuillez sélectionner une catégorie de produit." }),
   products: z.array(z.object({
-    name: z.string().min(1, "Le nom du produit ne peut pas être vide."),
+    name: z.string().optional(), // Make name optional here, will be refined below
     image: z.any().optional(), // File object
     price: z.preprocess(
       (val) => (val === '' ? undefined : val),
       z.number().min(0, "Le prix ne peut pas être négatif.").optional()
     ),
-    currency: z.string().min(1, "La devise est requise."),
+    currency: z.string().optional(), // Make currency optional here, will be refined below
     description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional(),
-  })).max(3, "Vous ne pouvez ajouter que 3 produits maximum.").optional().transform(val => val ?? [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }]),
+  })).superRefine((products, ctx) => {
+    const activeProducts = products.filter(p => p.name || p.image || p.price !== undefined || p.currency || p.description);
+    if (activeProducts.length > 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom, // Corrected ZodIssueCode
+        message: "Vous ne pouvez ajouter que 3 produits maximum.",
+        path: ["products"],
+      });
+    }
+    activeProducts.forEach((product, index) => {
+      if (!product.name || product.name.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le nom du produit est requis si d'autres informations sont fournies.",
+          path: ["products", index, "name"],
+        });
+      }
+      if (!product.currency || product.currency.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La devise est requise si d'autres informations sont fournies.",
+          path: ["products", index, "currency"],
+        });
+      }
+    });
+  }).optional().transform(val => val ?? []), // Default to empty array
 
   paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
@@ -100,12 +125,12 @@ export function SiteCreationWizard() {
     socialMediaLink: "",
     activityTitle: "",
     mainDomain: "",
-    expertiseDomains: [],
+    expertiseDomains: [], // Default to empty array
     shortDescription: "",
     portfolioLink: "",
     portfolioImages: [],
     productCategory: "",
-    products: [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }],
+    products: [], // Default to empty array
     paymentMethods: [],
     deliveryOption: "",
     typicalLeadTime: "",
@@ -121,14 +146,21 @@ export function SiteCreationWizard() {
   const {
     handleSubmit,
     trigger,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, errors }, // Get errors from formState
   } = methods;
+
+  // Determine if the current step is valid based on its schema and current errors
+  const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;
+  const currentStepFieldNames = Object.keys(currentStepSchema.shape) as (keyof WizardFormData)[];
+
+  // Check if any field in the current step has an error
+  const isCurrentStepValid = !currentStepFieldNames.some(fieldName => errors[fieldName]);
 
   const handleNext = async () => {
     if (currentStep >= steps.length - 1) return;
 
-    const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;
-    const result = await trigger(Object.keys(currentStepSchema.shape) as (keyof WizardFormData)[]);
+    // Trigger validation for only the current step's fields
+    const result = await trigger(currentStepFieldNames);
 
     if (result) {
       setCurrentStep((prev) => prev + 1);
@@ -166,7 +198,7 @@ export function SiteCreationWizard() {
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   isSubmitting={isSubmitting}
-                  isValid={isValid}
+                  isValid={isCurrentStepValid} // Pass the current step's validity
                 />
               </form>
             </Form>
