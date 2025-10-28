@@ -12,7 +12,8 @@ import { WizardNavigation } from "./WizardNavigation";
 import { IdentityContactStep } from "./steps/IdentityContactStep";
 import { SkillsServicesStep } from "./steps/SkillsServicesStep";
 import { ProductsStep } from "./steps/ProductsStep";
-import { TermsConditionsStep } from "./steps/TermsConditionsStep"; // Import the new step
+import { TermsConditionsStep } from "./steps/TermsConditionsStep";
+import { SubdomainStep } from "./steps/SubdomainStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -44,6 +45,12 @@ const wizardFormSchema = z.object({
   paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   typicalLeadTime: z.string().min(3, { message: "Veuillez indiquer un délai typique." }),
+
+  subdomain: z.string()
+    .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
+    .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
+    .transform(s => s.toLowerCase()) // Ensure lowercase
+    .refine(s => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }),
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -74,7 +81,11 @@ const steps: {
     component: TermsConditionsStep,
     schema: wizardFormSchema.pick({ paymentMethods: true, deliveryOption: true, typicalLeadTime: true }),
   },
-  // New steps will be added here.
+  {
+    id: "subdomain",
+    component: SubdomainStep,
+    schema: wizardFormSchema.pick({ subdomain: true }),
+  },
 ];
 
 export function SiteCreationWizard() {
@@ -96,6 +107,7 @@ export function SiteCreationWizard() {
     paymentMethods: [],
     deliveryOption: "",
     typicalLeadTime: "",
+    subdomain: "",
   };
 
   const methods = useForm<WizardFormData>({
