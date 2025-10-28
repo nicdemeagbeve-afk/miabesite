@@ -10,7 +10,8 @@ import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { IdentityContactStep } from "./steps/IdentityContactStep";
-import { SkillsServicesStep } from "./steps/SkillsServicesStep"; // Import the new step
+import { SkillsServicesStep } from "./steps/SkillsServicesStep";
+import { ProductsStep } from "./steps/ProductsStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -26,6 +27,18 @@ const wizardFormSchema = z.object({
   })).max(5, "Vous ne pouvez ajouter que 5 domaines d'expertise maximum.").optional().transform(val => val ?? [{ value: "" }]),
   shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(500, { message: "La description courte ne peut pas dépasser 500 caractères." }),
   portfolioLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+
+  productCategory: z.string().min(1, { message: "Veuillez sélectionner une catégorie de produit." }),
+  products: z.array(z.object({
+    name: z.string().min(1, "Le nom du produit ne peut pas être vide."),
+    image: z.any().optional(), // File object
+    price: z.preprocess(
+      (val) => (val === '' ? undefined : val),
+      z.number().min(0, "Le prix ne peut pas être négatif.").optional()
+    ),
+    currency: z.string().min(1, "La devise est requise."),
+    description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional(),
+  })).max(3, "Vous ne pouvez ajouter que 3 produits maximum.").optional().transform(val => val ?? [{ name: "", image: undefined, price: "", currency: "XOF", description: "" }]),
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -46,6 +59,11 @@ const steps: {
     component: SkillsServicesStep,
     schema: wizardFormSchema.pick({ activityTitle: true, expertiseDomains: true, shortDescription: true, portfolioLink: true }),
   },
+  {
+    id: "products",
+    component: ProductsStep,
+    schema: wizardFormSchema.pick({ productCategory: true, products: true }),
+  },
   // New steps will be added here.
 ];
 
@@ -63,6 +81,8 @@ export function SiteCreationWizard() {
     expertiseDomains: [{ value: "" }],
     shortDescription: "",
     portfolioLink: "",
+    productCategory: "",
+    products: [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }],
   };
 
   const methods = useForm<WizardFormData>({
