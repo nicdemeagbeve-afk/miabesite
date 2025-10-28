@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -10,13 +10,22 @@ import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { SiteInfoStep } from "./steps/SiteInfoStep";
+import { PersonalInfoStep } from "./steps/PersonalInfoStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
   siteName: z.string().min(3, { message: "Le nom du site est requis et doit contenir au moins 3 caractères." }),
   siteType: z.string().min(1, { message: "Veuillez sélectionner un type d'activité." }),
   siteDescription: z.string().min(20, { message: "Veuillez décrire votre activité en au moins 20 caractères." }),
-  // Add more fields for future steps here
+  firstName: z.string().min(2, { message: "Le prénom est requis." }),
+  lastName: z.string().min(2, { message: "Le nom est requis." }),
+  age: z.preprocess(
+    (val) => (val === '' ? undefined : val), // Convert empty string to undefined
+    z.number().min(18, { message: "Vous devez avoir au moins 18 ans." }).max(120, { message: "L'âge semble irréaliste." }).optional()
+  ),
+  businessDomain: z.string().min(1, { message: "Veuillez sélectionner un domaine d'activité." }),
+  profilePicture: z.any().optional(), // For file input, validation will be more complex if actual upload is needed
+  logo: z.any().optional(), // For file input
 });
 
 type WizardFormData = z.infer<typeof wizardFormSchema>;
@@ -27,12 +36,12 @@ const steps = [
     component: SiteInfoStep,
     schema: wizardFormSchema.pick({ siteName: true, siteType: true, siteDescription: true }),
   },
+  {
+    id: "personalInfo",
+    component: PersonalInfoStep,
+    schema: wizardFormSchema.pick({ firstName: true, lastName: true, age: true, businessDomain: true, profilePicture: true, logo: true }),
+  },
   // Add more steps here
-  // {
-  //   id: "design",
-  //   component: DesignStep,
-  //   schema: wizardFormSchema.pick({ colorScheme: true, fontStyle: true }),
-  // },
 ];
 
 export function SiteCreationWizard() {
@@ -43,6 +52,12 @@ export function SiteCreationWizard() {
       siteName: "",
       siteType: "",
       siteDescription: "",
+      firstName: "",
+      lastName: "",
+      age: undefined, // Initialize age as undefined to match the transformed type
+      businessDomain: "",
+      profilePicture: undefined,
+      logo: undefined,
     },
     mode: "onChange", // Validate on change to enable/disable next button
   });
@@ -68,7 +83,7 @@ export function SiteCreationWizard() {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const onSubmit = async (data: WizardFormData) => {
+  const onSubmit: SubmitHandler<WizardFormData> = async (data) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
     console.log("Site creation data:", data);
