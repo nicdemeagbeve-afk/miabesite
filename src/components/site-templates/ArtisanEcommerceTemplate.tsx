@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Menu,
   X,
-  MessageSquare, // Corrected: Whatsapp -> MessageSquare
+  MessageSquare,
   Phone,
   Mail,
   MapPin,
@@ -18,7 +18,7 @@ import {
   Search,
   User,
   ShoppingCart,
-  Truck, // Corrected: ShippingFast -> Truck
+  Truck,
   ShieldCheck,
   Lock,
   Headset,
@@ -28,20 +28,19 @@ import {
   Palette,
   PencilRuler,
   Tool, // Corrected: Tools -> Tool
-  StarHalf, // For half-star rating
-  Check, // For service features
+  StarHalf,
+  Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner'; // Import toast for notifications
+import { toast } from 'sonner';
 
-// Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
   publicName: string;
   whatsappNumber: string;
   secondaryPhoneNumber?: string;
   email?: string;
   heroSlogan: string;
-  aboutStory: string; // Used for hero description
+  aboutStory: string;
   primaryColor: string;
   secondaryColor: string;
   logoOrPhoto?: string | null;
@@ -69,9 +68,8 @@ interface ArtisanEcommerceTemplateProps {
 export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
-  const [cartCount, setCartCount] = React.useState(0); // Placeholder for cart count
+  const [cartCount, setCartCount] = React.useState(0);
 
-  // Dynamic Tailwind classes based on siteData colors
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
   const primaryColorBorderClass = `border-${siteData.primaryColor}-600`;
@@ -82,9 +80,9 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   const secondaryColorTextClass = `text-${siteData.secondaryColor}-700`;
   const secondaryColorHoverBgClass = `hover:bg-${siteData.secondaryColor}-800`;
 
-  const accentColorClass = `bg-${siteData.secondaryColor}-500`; // Using secondary for accent
+  const accentColorClass = `bg-${siteData.secondaryColor}-500`;
   const accentColorTextClass = `text-${siteData.secondaryColor}-500`;
-  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`; // Defined accentColorBorderClass
+  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`;
 
   const successColorClass = 'bg-green-600';
   const successColorTextClass = 'text-green-600';
@@ -106,7 +104,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
-      const offset = 100; // Adjust for sticky header
+      const offset = 100;
       window.scrollTo({
         top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
         behavior: 'smooth',
@@ -124,7 +122,6 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
     ? siteData.paymentMethods
     : ["Mobile Money", "Wave", "Carte Bancaire", "Virement", "Cash"];
 
-  // Separate products and services from productsAndServices array
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
   const services = siteData.productsAndServices.filter(item => item.actionButton !== 'buy');
 
@@ -176,7 +173,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                 <p className={cn("text-sm font-medium", primaryColorTextClass)}>Produits & Services Sur Mesure</p>
               </div>
             </div>
-            <div className={cn("hidden md:flex items-center gap-8", isMobileMenuOpen ? 'flex' : 'hidden')}>
+            <div className={cn("hidden md:flex items-center gap-8")}>
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
               <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
@@ -297,13 +294,13 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
             {/* Product Filters (simplified for now) */}
             <div className="flex justify-center gap-4 mb-12 flex-wrap">
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Tous</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Décoration</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Mobilier</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Accessoires</button>
+              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Tous</button>
+              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Décoration</button>
+              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Mobilier</button>
+              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Accessoires</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product, index) => (
+              {products.map((product: any, index: number) => (
                 <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 relative group">
                   {index === 0 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white z-10", primaryColorClass)}>Nouveau</span>}
                   {index === 1 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white z-10", primaryColorClass)}>Bestseller</span>}
@@ -363,7 +360,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Des prestations adaptées à vos besoins spécifiques</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service, index) => (
+              {services.map((service: any, index: number) => (
                 <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}>
                   <div className={cn("h-20 w-20 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-6", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}>
                     {index === 0 && <PencilRuler className="h-10 w-10" />}
@@ -411,7 +408,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
               { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
               { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
-            ].map((testimonial, index) => (
+            ].map((testimonial: any, index: number) => (
               <div key={index} className="bg-gray-100 rounded-xl p-8 shadow-lg relative">
                 <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
                 <p className="text-lg italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
@@ -514,7 +511,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               </h3>
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method, index) => (
+                {paymentMethods.map((method: string, index: number) => (
                   <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
                     {method}
                   </span>

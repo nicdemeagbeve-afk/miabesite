@@ -1,4 +1,3 @@
-MessageSquare, Tools -> Tool).">
 "use client";
 
 import React from 'react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 import {
   Menu,
   X,
-  MessageSquare, // Corrected: Whatsapp -> MessageSquare
+  MessageSquare,
   Phone,
   Mail,
   MapPin,
@@ -17,16 +16,15 @@ import {
   Linkedin,
   ChevronUp,
   Star,
-  Tool, // Corrected: Tools -> Tool
+  Tool,
   Palette,
   Wrench,
   Hammer,
   PaintRoller,
   CheckCircle,
 } from 'lucide-react';
-import { cn } from '@/lib/utils'; // Assuming cn utility is available
+import { cn } from '@/lib/utils';
 
-// Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
   publicName: string;
   whatsappNumber: string;
@@ -62,7 +60,6 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
 
-  // Dynamic Tailwind classes based on siteData colors
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
   const primaryColorBorderClass = `border-${siteData.primaryColor}-600`;
@@ -75,6 +72,8 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
   const whatsappBgClass = 'bg-[#25D366]';
   const whatsappHoverBgClass = 'hover:bg-[#128C7E]';
+
+  const accentColorBorderClass = `border-${siteData.primaryColor}-500`;
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -93,16 +92,15 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
-      const offset = 80; // Adjust for sticky header
+      const offset = 80;
       window.scrollTo({
         top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
         behavior: 'smooth',
       });
-      setIsMobileMenuOpen(false); // Close mobile menu after clicking a link
+      setIsMobileMenuOpen(false);
     }
   };
 
-  // Placeholder for portfolio items as siteData only has one link/description
   const portfolioItems = siteData.portfolioProofLink
     ? [{
         image: siteData.portfolioProofLink.match(/\.(jpeg|jpg|gif|png|svg)$/) ? siteData.portfolioProofLink : 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
@@ -116,7 +114,6 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         { image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', title: "Aménagement Terrasse", description: "Création d'un espace extérieur fonctionnel." },
       ];
 
-  // Placeholder for testimonials as siteData doesn't support multiple structured testimonials
   const testimonials = [
     { quote: "J'ai fait appel à Artisan Pro pour la rénovation complète de ma salle de bain. Le travail a été réalisé dans les délais et le budget convenus. Je recommande vivement ses services !", author: "Marie Diop", location: "Dakar" },
     { quote: "Excellent travail pour l'aménagement de ma cuisine. L'artisan a su comprendre mes besoins et proposer des solutions adaptées. Professionnalisme et qualité du travail.", author: "Jean Ndiaye", location: "Pikine" },
@@ -146,13 +143,12 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                 <p className="text-sm text-gray-600">Expert en Rénovation</p>
               </div>
             </div>
-            <div className={cn("hidden md:flex items-center gap-6", isMobileMenuOpen ? 'flex' : 'hidden')}>
+            <div className={cn("hidden md:flex items-center gap-6")}>
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Accueil</a>
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Portfolio</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
-              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
+              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
             </div>
             <button className="md:hidden text-gray-700 text-2xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X /> : <Menu />}
@@ -217,7 +213,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {siteData.productsAndServices.map((product, index) => (
+            {siteData.productsAndServices.map((product: any, index: number) => (
               <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                 <div className="h-52 overflow-hidden">
                   {product.image ? (
@@ -259,7 +255,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {portfolioItems.map((item, index) => (
+            {portfolioItems.map((item: any, index: number) => (
               <div key={index} className="relative rounded-lg overflow-hidden shadow-lg group">
                 <Image src={item.image} alt={item.title} width={400} height={250} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -284,12 +280,12 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial: any, index: number) => (
               <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
                 <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span>
                 <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
                 <div className="flex items-center gap-4">
-                  <Image src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${45 + index}.jpg`} alt="Client" width={50} height={50} className="rounded-full object-cover" />
+                  <Image src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${45 + index}.jpg`} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
                   <div>
                     <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
                     <p className="text-sm text-gray-600">{testimonial.location}</p>
@@ -378,7 +374,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                   <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
                   <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Sélectionnez un service</option>
-                    {siteData.productsAndServices.map((product, idx) => (
+                    {siteData.productsAndServices.map((product: any, idx: number) => (
                       <option key={idx} value={product.title}>{product.title}</option>
                     ))}
                   </select>
@@ -396,29 +392,43 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         </div>
       </section>
 
+      {/* Newsletter Section */}
+      <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-700) 0%, var(--${siteData.primaryColor}-600) 100%)` }}>
+        <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+          <h2 className="text-4xl font-bold mb-4">Restez Informé</h2>
+          <p className="text-lg md:text-xl mb-8 opacity-90">Inscrivez-vous à notre newsletter pour recevoir nos nouveautés et offres exclusives</p>
+          <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
+            <input type="email" placeholder="Votre adresse email" required className="flex-1 px-6 py-3 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" />
+            <button type="submit" className={cn("px-8 py-3 rounded-full font-bold text-lg text-white transition-colors duration-300", accentColorClass, "hover:bg-orange-600")}>
+              S'abonner
+            </button>
+          </form>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className={cn("py-12 text-white", primaryColorDarkBgClass)}>
+      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
                 {siteData.publicName}
               </h3>
-              <p className="text-gray-300">Votre artisan de confiance pour tous vos projets de rénovation et réparation. Qualité, professionnalisme et satisfaction client garantis.</p>
+              <p className="text-gray-300">Créations uniques et services sur mesure pour valoriser votre intérieur. Qualité artisanale et satisfaction client garanties.</p>
               <div className="flex gap-4 mt-4">
                 {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-5 w-5" />
+                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Facebook className="h-6 w-6" />
                   </a>
                 )}
                 {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-5 w-5" />
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Instagram className="h-6 w-6" />
                   </a>
                 )}
                 {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-5 w-5" />
+                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <MessageSquare className="h-6 w-6" />
                   </a>
                 )}
               </div>
@@ -426,24 +436,49 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Liens rapides
+                Liens Rapides
               </h3>
               <ul className="space-y-2 text-gray-300">
                 <li><a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="hover:text-blue-500 transition-colors">Accueil</a></li>
-                <li><a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="hover:text-blue-500 transition-colors">À propos</a></li>
+                <li><a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="hover:text-blue-500 transition-colors">Produits</a></li>
                 <li><a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="hover:text-blue-500 transition-colors">Services</a></li>
-                <li><a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="hover:text-blue-500 transition-colors">Portfolio</a></li>
                 <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-blue-500 transition-colors">Contact</a></li>
               </ul>
             </div>
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Modes de paiement
+                Contact
+              </h3>
+              <div className="space-y-3 text-gray-300">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <p>Dakar, Sénégal</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+                Modes de Paiement
               </h3>
               <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
               <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method, index) => (
+                {paymentMethods.map((method: string, index: number) => (
                   <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
                     {method}
                   </span>
@@ -452,7 +487,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             </div>
           </div>
 
-          <div className="text-center pt-8 border-t border-white/10">
+          <div className="text-center pt-8 border-t border-white/10 opacity-70">
             <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
           </div>
         </div>

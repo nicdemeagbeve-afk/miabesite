@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Menu,
   X,
-  MessageSquare, // Corrected: Whatsapp -> MessageSquare
+  MessageSquare,
   Phone,
   Mail,
   MapPin,
@@ -15,22 +15,21 @@ import {
   Linkedin,
   ChevronUp,
   Hammer,
-  Tool, // Corrected: Tools -> Tool
+  Tool,
   Wrench,
   PaintRoller,
   Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import useEmblaCarousel from 'embla-carousel-react'; // For the testimonial slider
+import useEmblaCarousel from 'embla-carousel-react';
 
-// Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
   publicName: string;
   whatsappNumber: string;
   secondaryPhoneNumber?: string;
   email?: string;
   heroSlogan: string;
-  aboutStory: string; // Used for hero description
+  aboutStory: string;
   primaryColor: string;
   secondaryColor: string;
   logoOrPhoto?: string | null;
@@ -61,7 +60,6 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-  // Dynamic Tailwind classes based on siteData colors
   const primaryColorClass = `bg-${siteData.primaryColor}-700`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-700`;
   const primaryColorBorderClass = `border-${siteData.primaryColor}-700`;
@@ -72,9 +70,9 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
   const secondaryColorTextClass = `text-${siteData.secondaryColor}-600`;
   const secondaryColorHoverBgClass = `hover:bg-${siteData.secondaryColor}-700`;
 
-  const accentColorClass = `bg-${siteData.secondaryColor}-500`; // Using secondary for accent
+  const accentColorClass = `bg-${siteData.secondaryColor}-500`;
   const accentColorTextClass = `text-${siteData.secondaryColor}-500`;
-  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`; // Defined accentColorBorderClass
+  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`;
 
   const whatsappBgClass = 'bg-[#25D366]';
   const whatsappHoverBgClass = 'hover:bg-[#128C7E]';
@@ -98,7 +96,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
     emblaApi.on('select', onSelect);
-    onSelect(); // Set initial index
+    onSelect();
     return () => {
       emblaApi.off('select', onSelect);
     };
@@ -108,7 +106,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
-      const offset = 80; // Adjust for sticky header
+      const offset = 80;
       window.scrollTo({
         top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
         behavior: 'smooth',
@@ -117,7 +115,6 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
     }
   };
 
-  // Placeholder for skills as siteData doesn't support structured skills
   const skills = [
     {
       icon: <Tool className="h-6 w-6" />,
@@ -151,14 +148,13 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
     },
   ];
 
-  // Placeholder for portfolio items
   const portfolioItems = siteData.productsAndServices.length > 0
     ? siteData.productsAndServices.map(p => ({
         image: p.image || 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
         title: p.title,
         description: p.description,
-        category: "Rénovation", // Placeholder category
-        tags: ["Rénovation", "Aménagement"], // Placeholder tags
+        category: "Rénovation",
+        tags: ["Rénovation", "Aménagement"],
       }))
     : [
         { image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', title: "Rénovation Complète d'Appartement", description: "Transformation d'un appartement ancien en espace moderne et fonctionnel", category: "renovation", tags: ["Rénovation", "Aménagement", "3 mois"] },
@@ -166,7 +162,6 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
         { image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1558&q=80', title: "Finitions Cuisine Sur Mesure", description: "Réalisation d'une cuisine entièrement personnalisée avec finitions haut de gamme", category: "finition", tags: ["Cuisine", "Sur mesure", "1 mois"] },
       ];
 
-  // Placeholder for testimonials
   const testimonials = [
     { quote: "J'ai confié la rénovation complète de mon appartement à cet artisan et je suis absolument ravi du résultat. Le travail a été réalisé dans les délais, avec un professionnalisme remarquable. Je recommande vivement !", author: "Thomas Martin", location: "Propriétaire à Dakar", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
     { quote: "Une intervention rapide et efficace pour réparer une fuite d'eau qui menaçait de causer des dégâts importants. L'artisan a su identifier le problème rapidement et proposer une solution durable. Prix très correct pour la qualité du travail.", author: "Sophie Diallo", location: "Particulier à Pikine", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
