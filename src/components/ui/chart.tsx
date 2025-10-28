@@ -23,34 +23,53 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
-function ChartContainer({
-  config,
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer> & {
+interface ChartContainerComponentProps extends React.HTMLAttributes<HTMLDivElement> {
   config: ChartConfig;
-}) {
-  return (
-    <ChartContext.Provider value={{ config, children }}>
-      <div
-        data-chart={true}
-        className={cn("flex aspect-video items-center justify-center text-foreground", className)}
-        {...props}
-      >
-        <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
-      </div>
-    </ChartContext.Provider>
-  );
+  children: React.ReactElement; // Changed to React.ReactElement
+  // Props for RechartsPrimitive.ResponsiveContainer
+  aspect?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['aspect'];
+  width?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['width'];
+  height?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['height'];
+  minWidth?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['minWidth'];
+  minHeight?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['minHeight'];
+  maxHeight?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['maxHeight'];
+  debounce?: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['debounce'];
 }
 
-type ChartTooltipProps = {
+const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerComponentProps>(
+  ({ config, className, children, aspect, width, height, minWidth, minHeight, maxHeight, debounce, ...props }, ref) => (
+    <ChartContext.Provider value={{ config, children }}>
+      <div
+        ref={ref}
+        data-chart={true}
+        className={cn("flex aspect-video items-center justify-center text-foreground", className)}
+        {...props} // These are now only HTMLDivElement props
+      >
+        <RechartsPrimitive.ResponsiveContainer
+          aspect={aspect}
+          width={width}
+          height={height}
+          minWidth={minWidth}
+          minHeight={minHeight}
+          maxHeight={maxHeight}
+          debounce={debounce}
+        >
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
+      </div>
+    </ChartContext.Provider>
+  )
+);
+ChartContainer.displayName = "ChartContainer";
+
+
+type ChartTooltipProps = React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
   hideLabel?: boolean;
   hideIndicator?: boolean;
   indicator?: "dot" | "line";
   labelFormatter?: (value: string | number, name: string | number) => string; // Allow number for label/name
   valueFormatter?: (value: number, name: string | number) => string;
-} & React.ComponentProps<typeof RechartsPrimitive.Tooltip>;
+};
 
 function ChartTooltip({
   active,
@@ -61,7 +80,9 @@ function ChartTooltip({
   hideLabel = false,
   hideIndicator = false,
   indicator = "dot",
-  className, // className is already part of React.ComponentProps<typeof RechartsPrimitive.Tooltip>
+  className, // Destructure className directly from RechartsPrimitive.Tooltip props
+  style, // Destructure style directly
+  ...props // Capture any other props passed by RechartsPrimitive.Tooltip
 }: ChartTooltipProps) {
   const { config } = React.useContext(ChartContext)!;
 
@@ -75,8 +96,10 @@ function ChartTooltip({
     <div
       className={cn(
         "grid min-w-[130px] items-center rounded-lg border border-border bg-background px-2.5 py-2 text-xs shadow-md",
-        className
+        className // Use the destructured className
       )}
+      style={style} // Apply the style
+      {...props} // Spread any other relevant HTMLDivElement props if needed, but usually not for content
     >
       {!hideLabel && label ? (
         <div className="border-b border-muted pb-2 mb-2">
@@ -130,61 +153,66 @@ function ChartTooltip({
   );
 }
 
-type ChartLegendProps = {
+type ChartLegendProps = React.ComponentPropsWithoutRef<typeof RechartsPrimitive.Legend> & {
   content?: (props: any) => React.ReactNode;
   className?: string;
-} & React.ComponentProps<typeof RechartsPrimitive.Legend>;
+};
 
-function ChartLegend({ content, className, ...props }: ChartLegendProps) {
-  const { config } = React.useContext(ChartContext)!;
+const ChartLegend = React.forwardRef<HTMLLIElement, ChartLegendProps>(
+  ({ className, content, ...props }, ref) => {
+    const { config } = React.useContext(ChartContext)!;
 
-  if (!content) {
+    if (!content) {
+      return (
+        <RechartsPrimitive.Legend
+          ref={ref as React.Ref<any>} // Pass ref directly to RechartsPrimitive.Legend
+          content={({ payload }: { payload?: any[] }) => (
+            <ul className={cn("flex flex-wrap justify-center gap-4", className)}>
+              {payload?.map((item: any) => {
+                const key = `${item.value}`
+                const itemConfig = config[key]
+
+                return (
+                  <li
+                    key={key}
+                    className={cn(
+                      "flex items-center gap-1.5",
+                      item.inactive && "opacity-50"
+                    )}
+                  >
+                    {itemConfig?.icon ? (
+                      <itemConfig.icon
+                        className={cn(
+                          "h-3 w-3",
+                          itemConfig?.color || item.color
+                        )}
+                      />
+                    ) : (
+                      <div
+                        className={cn(
+                          "h-2 w-2 shrink-0 rounded-full",
+                          itemConfig?.color || item.color
+                        )}
+                      />
+                    )}
+                    {itemConfig?.label || item.value}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          {...props}
+        />
+      );
+    }
+
     return (
-      <RechartsPrimitive.Legend
-        content={({ payload }: { payload?: any[] }) => (
-          <ul className={cn("flex flex-wrap justify-center gap-4", className)}>
-            {payload?.map((item: any) => {
-              const key = `${item.value}`
-              const itemConfig = config[key]
-
-              return (
-                <li
-                  key={key}
-                  className={cn(
-                    "flex items-center gap-1.5",
-                    item.inactive && "opacity-50"
-                  )}
-                >
-                  {itemConfig?.icon ? (
-                    <itemConfig.icon
-                      className={cn(
-                        "h-3 w-3",
-                        itemConfig?.color || item.color
-                      )}
-                    />
-                  ) : (
-                    <div
-                      className={cn(
-                        "h-2 w-2 shrink-0 rounded-full",
-                        itemConfig?.color || item.color
-                      )}
-                    />
-                  )}
-                  {itemConfig?.label || item.value}
-                </li>
-              )
-            })}
-          </ul>
-        )}
-        {...props}
-      />
+      <RechartsPrimitive.Legend content={content} className={className} {...props} />
     );
   }
+);
+ChartLegend.displayName = "ChartLegend";
 
-  return (
-    <RechartsPrimitive.Legend content={content} className={className} {...props} />
-  );
-}
 
 const ChartPrimitive = {
   Container: ChartContainer,
