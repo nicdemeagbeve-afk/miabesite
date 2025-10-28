@@ -30,15 +30,16 @@ const wizardFormSchema = z.object({
   logo: z.any().optional(), // For file input
   skills: z.array(z.object({
     value: z.string().min(1, "La compétence ne peut pas être vide."),
-  })).max(25, "Vous ne pouvez ajouter que 25 compétences maximum.").default([{ value: "" }]),
+  })).max(25, "Vous ne pouvez ajouter que 25 compétences maximum.").optional().transform(val => val ?? [{ value: "" }]),
   slogan: z.string().max(100, "Le slogan ne peut pas dépasser 100 caractères.").optional(),
   brandingDescription: z.string().max(500, "La description ne peut pas dépasser 500 caractères.").optional(),
   autobiography: z.string().max(1000, "L'autobiographie ne peut pas dépasser 1000 caractères.").optional(),
   brandingImages: z.array(z.object({
     file: z.any().optional(), // File object, validation for actual file type/size would be here
-  })).max(5, "Vous ne pouvez ajouter que 5 images de branding maximum.").default([{ file: undefined }]),
+  })).max(5, "Vous ne pouvez ajouter que 5 images de branding maximum.").optional().transform(val => val ?? [{ file: undefined }]),
 });
 
+// Infer the type for the entire wizard form data from the schema
 type WizardFormData = z.infer<typeof wizardFormSchema>;
 
 const steps = [
@@ -79,11 +80,11 @@ export function SiteCreationWizard() {
     businessDomain: "",
     profilePicture: undefined,
     logo: undefined,
-    skills: [{ value: "" }],
+    skills: [{ value: "" }], // This is the transformed default
     slogan: undefined,
     brandingDescription: undefined,
     autobiography: undefined,
-    brandingImages: [{ file: undefined }],
+    brandingImages: [{ file: undefined }], // This is the transformed default
   };
 
   const methods = useForm<WizardFormData>({
