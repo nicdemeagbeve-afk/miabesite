@@ -9,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
-import { IdentityContactStep } from "./steps/IdentityContactStep"; // Import the new step
+import { IdentityContactStep } from "./steps/IdentityContactStep";
+import { SkillsServicesStep } from "./steps/SkillsServicesStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -17,7 +18,14 @@ const wizardFormSchema = z.object({
   profilePicture: z.any().optional(), // File object
   location: z.string().min(3, { message: "La localisation est requise." }),
   whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro de téléphone valide (ex: +225 07 00 00 00 00)." }),
-  socialMediaLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')), // Optional URL or empty string
+  socialMediaLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+
+  activityTitle: z.string().min(3, { message: "Le titre principal de l'activité est requis." }),
+  expertiseDomains: z.array(z.object({
+    value: z.string().min(1, "Le domaine d'expertise ne peut pas être vide."),
+  })).max(5, "Vous ne pouvez ajouter que 5 domaines d'expertise maximum.").optional().transform(val => val ?? [{ value: "" }]),
+  shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(500, { message: "La description courte ne peut pas dépasser 500 caractères." }),
+  portfolioLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -33,6 +41,11 @@ const steps: {
     component: IdentityContactStep,
     schema: wizardFormSchema.pick({ publicName: true, profilePicture: true, location: true, whatsappNumber: true, socialMediaLink: true }),
   },
+  {
+    id: "skillsServices",
+    component: SkillsServicesStep,
+    schema: wizardFormSchema.pick({ activityTitle: true, expertiseDomains: true, shortDescription: true, portfolioLink: true }),
+  },
   // New steps will be added here.
 ];
 
@@ -46,6 +59,10 @@ export function SiteCreationWizard() {
     location: "",
     whatsappNumber: "",
     socialMediaLink: "",
+    activityTitle: "",
+    expertiseDomains: [{ value: "" }],
+    shortDescription: "",
+    portfolioLink: "",
   };
 
   const methods = useForm<WizardFormData>({
