@@ -9,120 +9,107 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
-import { IdentityContactStep } from "./steps/IdentityContactStep";
-import { SkillsServicesStep } from "./steps/SkillsServicesStep";
-import { ProductsStep } from "./steps/ProductsStep";
-import { TermsConditionsStep } from "./steps/TermsConditionsStep";
-import { SubdomainStep } from "./steps/SubdomainStep";
+
+// Import new step components
+import { EssentialDesignStep } from "./steps/EssentialDesignStep";
+import { ContentStep } from "./steps/ContentStep";
+import { ConfigurationNetworkStep } from "./steps/ConfigurationNetworkStep";
 
 // Define the base schema as a ZodObject
 const baseWizardFormSchema = z.object({
-  publicName: z.string().min(3, { message: "Le nom public est requis et doit contenir au moins 3 caractères." }),
-  profilePicture: z.any().optional(), // File object
-  location: z.string().min(3, { message: "La localisation est requise." }),
-  whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro de téléphone valide (ex: +225 07 00 00 00 00)." }),
-  socialMediaLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  // Étape 1: Infos Essentielles & Design
+  publicName: z.string().min(3, { message: "Le nom public est requis et doit contenir au moins 3 caractères." }).max(50, { message: "Le nom public ne peut pas dépasser 50 caractères." }),
+  whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro WhatsApp valide (ex: +225 07 00 00 00 00)." }),
+  secondaryPhoneNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro de téléphone valide." }).optional().or(z.literal('')),
+  email: z.string().email({ message: "Veuillez entrer une adresse email valide." }).optional().or(z.literal('')),
+  primaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur principale." }),
+  secondaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur secondaire." }),
+  logoOrPhoto: z.any().optional(), // File object
 
-  activityTitle: z.string().min(3, { message: "Le titre principal de l'activité est requis." }).max(30, { message: "Le titre principal ne peut pas dépasser 30 caractères." }),
-  mainDomain: z.string().min(1, { message: "Veuillez sélectionner un domaine principal." }),
-  expertiseDomains: z.array(z.string()).max(3, "Vous ne pouvez sélectionner que 3 mots-clés maximum.").optional(), // Removed transform here
-  shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(1000, { message: "La description courte ne peut pas dépasser 1000 caractères." }),
-  portfolioLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
-  portfolioImages: z.array(z.any()).max(3, "Vous ne pouvez télécharger que 3 images maximum.").optional(), // Removed transform here
-
-  productCategory: z.string().min(1, { message: "Veuillez sélectionner une catégorie de produit." }),
-  products: z.array(z.object({
-    name: z.string().optional(),
-    image: z.any().optional(),
+  // Étape 2: Contenu (Les Pages Clés)
+  heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(60, { message: "Le slogan ne peut pas dépasser 60 caractères." }),
+  aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(300, { message: "Votre histoire/mission ne peut pas dépasser 300 caractères." }),
+  productsAndServices: z.array(z.object({
+    title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
     price: z.preprocess(
       (val) => (val === '' ? undefined : val),
       z.number().min(0, "Le prix ne peut pas être négatif.").optional()
     ),
-    currency: z.string().optional(),
-    description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional(),
-  })).optional(), // Removed transform here
+    currency: z.string().min(1, "La devise est requise."),
+    description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(200, "La description ne peut pas dépasser 200 caractères."),
+    image: z.any().optional(), // File object
+    actionButton: z.string().min(1, "L'action du bouton est requise."),
+  })).min(1, { message: "Veuillez ajouter au moins un produit ou service." }).max(3, "Vous ne pouvez ajouter que 3 produits/services maximum."),
+  portfolioProofLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  portfolioProofDescription: z.string().max(200, { message: "La description ne peut pas dépasser 200 caractères." }).optional().or(z.literal('')),
 
-  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
-  deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
-  typicalLeadTime: z.string().min(3, { message: "Veuillez indiquer un délai typique." }),
-
+  // Étape 3: Configuration et Réseaux
   subdomain: z.string()
     .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
     .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
     .transform(s => s.toLowerCase()) // Ensure lowercase
     .refine(s => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }),
+  contactButtonAction: z.string().min(1, { message: "Veuillez sélectionner une action pour le bouton de contact." }),
+  facebookLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  instagramLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  linkedinLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
+  deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
+  depositRequired: z.boolean(),
 });
 
-// Apply superRefine to the base schema to create the final wizardFormSchema
-const wizardFormSchema = baseWizardFormSchema.superRefine((data, ctx) => {
-  // Conditional validation for products based on productCategory
-  if (data.productCategory !== "autres") {
-    const activeProducts = data.products?.filter(p => p.name || p.image || p.price !== undefined || p.currency || p.description) || [];
-    if (activeProducts.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Veuillez ajouter au moins un produit ou sélectionner 'Autres' comme catégorie.",
-        path: ["products"],
-      });
-    }
-    if (activeProducts.length > 3) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Vous ne pouvez ajouter que 3 produits maximum.",
-        path: ["products"],
-      });
-    }
-    activeProducts.forEach((product, index) => {
-      if (!product.name || product.name.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Le nom du produit est requis si d'autres informations sont fournies.",
-          path: ["products", index, "name"],
-        });
-      }
-      if (!product.currency || product.currency.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "La devise est requise si d'autres informations sont fournies.",
-          path: ["products", index, "currency"],
-        });
-      }
-    });
-  }
-});
+// The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
+const wizardFormSchema = baseWizardFormSchema;
 
 // Infer the type for the entire wizard form data from the schema
 type WizardFormData = z.infer<typeof wizardFormSchema>;
 
 const steps: {
   id: string;
+  title: string;
   component: React.ComponentType<any>;
   schema: z.ZodSchema<any>;
 }[] = [
   {
-    id: "identityContact",
-    component: IdentityContactStep,
-    schema: baseWizardFormSchema.pick({ publicName: true, profilePicture: true, location: true, whatsappNumber: true, socialMediaLink: true }),
+    id: "essentialDesign",
+    title: "Infos Essentielles & Design",
+    component: EssentialDesignStep,
+    schema: baseWizardFormSchema.pick({
+      publicName: true,
+      whatsappNumber: true,
+      secondaryPhoneNumber: true,
+      email: true,
+      primaryColor: true,
+      secondaryColor: true,
+      logoOrPhoto: true,
+    }),
   },
   {
-    id: "skillsServices",
-    component: SkillsServicesStep,
-    schema: baseWizardFormSchema.pick({ activityTitle: true, mainDomain: true, expertiseDomains: true, shortDescription: true, portfolioLink: true, portfolioImages: true }),
+    id: "content",
+    title: "Contenu (Pages Clés)",
+    component: ContentStep,
+    schema: baseWizardFormSchema.pick({
+      heroSlogan: true,
+      aboutStory: true,
+      productsAndServices: true,
+      portfolioProofLink: true,
+      portfolioProofDescription: true,
+    }),
   },
   {
-    id: "products",
-    component: ProductsStep,
-    schema: baseWizardFormSchema.pick({ productCategory: true, products: true }),
-  },
-  {
-    id: "termsConditions",
-    component: TermsConditionsStep,
-    schema: baseWizardFormSchema.pick({ paymentMethods: true, deliveryOption: true, typicalLeadTime: true }),
-  },
-  {
-    id: "subdomain",
-    component: SubdomainStep,
-    schema: baseWizardFormSchema.pick({ subdomain: true }),
+    id: "configurationNetwork",
+    title: "Configuration et Réseaux",
+    component: ConfigurationNetworkStep,
+    schema: baseWizardFormSchema.pick({
+      subdomain: true,
+      contactButtonAction: true,
+      facebookLink: true,
+      instagramLink: true,
+      linkedinLink: true,
+      paymentMethods: true,
+      deliveryOption: true,
+      depositRequired: true,
+    }),
   },
 ];
 
@@ -132,22 +119,27 @@ export function SiteCreationWizard() {
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
     publicName: "",
-    profilePicture: undefined,
-    location: "",
     whatsappNumber: "",
-    socialMediaLink: "",
-    activityTitle: "",
-    mainDomain: "",
-    expertiseDomains: [], // Default to empty array
-    shortDescription: "",
-    portfolioLink: "",
-    portfolioImages: [],
-    productCategory: "",
-    products: [], // Default to empty array
+    secondaryPhoneNumber: "",
+    email: "",
+    primaryColor: "blue", // Default color
+    secondaryColor: "red", // Default color
+    logoOrPhoto: undefined,
+
+    heroSlogan: "",
+    aboutStory: "",
+    productsAndServices: [], // Initialize with an empty array, ContentStep will add one if needed
+    portfolioProofLink: "",
+    portfolioProofDescription: "",
+
+    subdomain: "",
+    contactButtonAction: "whatsapp", // Default to WhatsApp
+    facebookLink: "",
+    instagramLink: "",
+    linkedinLink: "",
     paymentMethods: [],
     deliveryOption: "",
-    typicalLeadTime: "",
-    subdomain: "",
+    depositRequired: false,
   };
 
   const methods = useForm<WizardFormData>({
