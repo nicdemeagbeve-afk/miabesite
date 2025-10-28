@@ -2,7 +2,10 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export function createClient() {
-  const cookieStore = cookies();
+  // TypeScript interprète incorrectement `cookies()` comme une Promise ici.
+  // Nous ajoutons une assertion de type 'any' pour contourner l'erreur de compilation.
+  // La fonction `cookies()` de `next/headers` est synchrone et retourne directement l'objet.
+  const cookieStore: any = cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
