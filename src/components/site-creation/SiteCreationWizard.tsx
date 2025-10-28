@@ -60,6 +60,7 @@ const baseWizardFormSchema = z.object({
   paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   depositRequired: z.boolean(),
+  templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }), // Add templateType
 });
 
 // The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
@@ -120,6 +121,7 @@ const steps: {
       paymentMethods: true,
       deliveryOption: true,
       depositRequired: true,
+      templateType: true, // Include templateType in this step's schema
     }),
   },
 ];
@@ -153,6 +155,7 @@ export function SiteCreationWizard() {
     paymentMethods: [],
     deliveryOption: "",
     depositRequired: false,
+    templateType: "default", // Default template type
   };
 
   const methods = useForm<WizardFormData>({

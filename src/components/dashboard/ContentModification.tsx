@@ -18,14 +18,34 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
+import { useRouter } from "next/navigation";
 
-export function ContentModification() {
-  // Placeholder states for advanced design options
-  const [selectedTemplate, setSelectedTemplate] = React.useState("default");
-  const [primaryColor, setPrimaryColor] = React.useState("blue");
-  const [secondaryColor, setSecondaryColor] = React.useState("red");
-  const [fontFamily, setFontFamily] = React.useState("sans");
-  const [showTestimonials, setShowTestimonials] = React.useState(true);
+interface ContentModificationProps {
+  subdomain: string;
+  initialTemplateType: string;
+  initialPrimaryColor: string;
+  initialSecondaryColor: string;
+  initialShowTestimonials: boolean;
+}
+
+export function ContentModification({
+  subdomain,
+  initialTemplateType,
+  initialPrimaryColor,
+  initialSecondaryColor,
+  initialShowTestimonials,
+}: ContentModificationProps) {
+  const supabase = createClient();
+  const router = useRouter();
+
+  const [selectedTemplate, setSelectedTemplate] = React.useState(initialTemplateType);
+  const [primaryColor, setPrimaryColor] = React.useState(initialPrimaryColor);
+  const [secondaryColor, setSecondaryColor] = React.useState(initialSecondaryColor);
+  const [fontFamily, setFontFamily] = React.useState("sans"); // This is a placeholder, not yet connected to backend
+  const [showTestimonials, setShowTestimonials] = React.useState(initialShowTestimonials); // This is a placeholder, not yet connected to backend
+  const [isUpdating, setIsUpdating] = React.useState(false);
 
   const predefinedColors = [
     { value: "red", label: "Rouge" },
@@ -47,9 +67,37 @@ export function ContentModification() {
   const templateOptions = [
     { value: "default", label: "Template par défaut" },
     { value: "ecommerce", label: "E-commerce" },
-    { value: "service", label: "Services" },
-    { value: "portfolio", label: "Portfolio" },
+    // { value: "service", label: "Services" }, // Not yet implemented
+    // { value: "portfolio", label: "Portfolio" }, // Not yet implemented
   ];
+
+  const handleApplyDesignChanges = async () => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/site/${subdomain}/template`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ templateType: selectedTemplate }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Erreur lors de la mise à jour du template.");
+        return;
+      }
+
+      toast.success("Template mis à jour avec succès !");
+      router.refresh(); // Refresh the page to show the updated template
+    } catch (error) {
+      console.error("Failed to update template:", error);
+      toast.error("Une erreur inattendue est survenue lors de la mise à jour du template.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <Card className="w-full">
@@ -176,7 +224,9 @@ export function ContentModification() {
                   </div>
                 </div>
                 <DrawerFooter>
-                  <Button>Appliquer les Modifications</Button>
+                  <Button onClick={handleApplyDesignChanges} disabled={isUpdating}>
+                    {isUpdating ? "Application..." : "Appliquer les Modifications"}
+                  </Button>
                   <DrawerClose asChild>
                     <Button variant="outline">Annuler</Button>
                   </DrawerClose>
