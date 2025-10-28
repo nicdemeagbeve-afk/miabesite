@@ -3,7 +3,7 @@
 import React from "react";
 import { OverviewAndQuickActions } from "@/components/dashboard/OverviewAndQuickActions";
 
-export default function DashboardPage() {
+export default function DashboardOverviewPage() {
   return (
     <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Tableau de Bord</h1>
