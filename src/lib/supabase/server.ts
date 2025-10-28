@@ -7,7 +7,7 @@ export function createClient() {
   // La fonction `cookies()` de `next/headers` est synchrone et retourne directement l'objet.
   const cookieStore: any = cookies();
 
-  return createServerClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -36,4 +36,6 @@ export function createClient() {
       },
     }
   );
+  console.log("Supabase client connected (server-side)!");
+  return supabase;
 }
