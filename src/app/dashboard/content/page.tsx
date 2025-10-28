@@ -3,7 +3,7 @@
 import React from "react";
 import { ContentModification } from "@/components/dashboard/ContentModification";
 import { createClient } from "@/lib/supabase/client"; // Client-side Supabase client
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading state
 
@@ -18,7 +18,8 @@ interface SiteData {
   created_at: string;
 }
 
-export default function DashboardContentPage() {
+export default function DashboardContentPage({ params }: { params: { subdomain: string } }) {
+  const { subdomain } = params;
   const supabase = createClient();
   const router = useRouter();
   const [site, setSite] = React.useState<SiteData | null>(null);
@@ -37,14 +38,11 @@ export default function DashboardContentPage() {
         return;
       }
 
-      // In a real application, a user might have multiple sites.
-      // For simplicity, we'll fetch the first site associated with the user.
-      // You might want to add a site selection mechanism if multiple sites are supported.
       const { data, error } = await supabase
         .from('sites')
         .select('*')
         .eq('user_id', user.id)
-        .limit(1)
+        .eq('subdomain', subdomain) // Fetch specific site by subdomain
         .single();
 
       if (error) {
@@ -54,15 +52,20 @@ export default function DashboardContentPage() {
       } else if (data) {
         setSite(data as SiteData);
       } else {
-        setError("Aucun site trouvé pour cet utilisateur.");
-        toast.info("Aucun site trouvé. Veuillez créer un site d'abord.");
-        router.push('/create-site'); // Redirect to create site if none exists
+        setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
+        toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
+        router.push('/dashboard/overview'); // Redirect to a generic overview or site list
       }
       setLoading(false);
     }
 
-    fetchSiteData();
-  }, [supabase, router]);
+    if (subdomain) { // Only fetch if subdomain is available
+      fetchSiteData();
+    } else {
+      setLoading(false);
+      setError("Veuillez sélectionner un site.");
+    }
+  }, [supabase, router, subdomain]);
 
   if (loading) {
     return (
@@ -88,8 +91,8 @@ export default function DashboardContentPage() {
   if (!site) {
     return (
       <div className="container mx-auto text-center text-muted-foreground">
-        <h1 className="text-3xl font-bold mb-8">Aucun site trouvé</h1>
-        <p>Veuillez créer un site pour commencer.</p>
+        <h1 className="text-3xl font-bold mb-8">Aucun site sélectionné</h1>
+        <p>Veuillez sélectionner un site depuis la barre latérale.</p>
       </div>
     );
   }
