@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
+import { createClient } from "@/lib/supabase/client"; // Import Supabase client
+import { useRouter } from "next/navigation"; // Import useRouter
 
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
@@ -125,6 +127,8 @@ const steps: {
 
 export function SiteCreationWizard() {
   const [currentStep, setCurrentStep] = React.useState(0);
+  const supabase = createClient();
+  const router = useRouter();
 
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
@@ -190,11 +194,85 @@ export function SiteCreationWizard() {
   };
 
   const onSubmit: SubmitHandler<WizardFormData> = async (data) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Site creation data:", data);
-    toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
-    // In a real app, you would redirect the user or show a success page
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      toast.error("Vous devez être connecté pour créer un site.");
+      router.push("/login");
+      return;
+    }
+
+    // Handle file uploads (logo and product images)
+    let logoUrl: string | null = null;
+    const productImages: { [key: number]: string | null } = {};
+
+    try {
+      // Upload logo/photo if present
+      if (data.logoOrPhoto instanceof File) {
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('site-assets')
+          .upload(`${user.id}/${data.subdomain}/logo/${data.logoOrPhoto.name}`, data.logoOrPhoto, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) throw uploadError;
+        logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+      }
+
+      // Upload product images if present
+      for (const [index, product] of data.productsAndServices.entries()) {
+        if (product.image instanceof File) {
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('site-assets')
+            .upload(`${user.id}/${data.subdomain}/products/${index}-${product.image.name}`, product.image, {
+              cacheControl: '3600',
+              upsert: false,
+            });
+
+          if (uploadError) throw uploadError;
+          productImages[index] = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+        }
+      }
+
+      // Prepare site_data for Supabase, replacing File objects with URLs
+      const siteDataToSave = {
+        ...data,
+        logoOrPhoto: logoUrl,
+        productsAndServices: data.productsAndServices.map((product, index) => ({
+          ...product,
+          image: productImages[index] || product.image, // Use uploaded URL or original if not uploaded
+        })),
+      };
+
+      // Insert site data into Supabase
+      const { error: insertError } = await supabase
+        .from('sites')
+        .insert({
+          user_id: user.id,
+          subdomain: data.subdomain,
+          site_data: siteDataToSave,
+          status: 'published', // Default status
+          template_type: 'default', // Default template, can be chosen later
+        });
+
+      if (insertError) {
+        // Check for unique constraint error on subdomain
+        if (insertError.code === '23505') { // PostgreSQL unique violation error code
+          toast.error(`Le sous-domaine "${data.subdomain}" est déjà pris. Veuillez en choisir un autre.`);
+        } else {
+          toast.error(`Erreur lors de la création du site: ${insertError.message}`);
+        }
+        return;
+      }
+
+      toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
+      router.push(`/dashboard/${data.subdomain}/overview`); // Redirect to the new site's dashboard
+      router.refresh(); // Refresh to update data
+    } catch (error: any) {
+      console.error("Site creation error:", error);
+      toast.error(`Une erreur est survenue: ${error.message || "Impossible de créer le site."}`);
+    }
   };
 
   const CurrentStepComponent = steps.length > 0 ? steps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;

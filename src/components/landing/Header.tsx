@@ -26,10 +26,10 @@ export function Header() {
             Services
           </Link>
           <Button asChild variant="ghost" className="text-sm font-medium hidden sm:inline-flex">
-            <Link href="#login">Connexion</Link>
+            <Link href="/login">Connexion</Link>
           </Button>
           <Button asChild className="text-sm font-medium">
-            <Link href="#signup">Inscription</Link>
+            <Link href="/signup">Inscription</Link>
           </Button>
         </nav>
       </div>

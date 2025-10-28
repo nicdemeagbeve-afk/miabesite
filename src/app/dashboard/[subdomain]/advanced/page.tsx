@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { OverviewAndQuickActions } from "@/components/dashboard/OverviewAndQuickActions";
-import { DashboardStats } from "@/components/dashboard/DashboardStats";
+import { AdvancedManagementAndHelp } from "@/components/dashboard/AdvancedManagementAndHelp";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -18,13 +17,11 @@ interface SiteData {
   created_at: string;
 }
 
-// Explicitly define PageProps for this dynamic route
 interface PageProps {
   params: { subdomain: string };
-  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function DashboardOverviewPage({ params }: PageProps) {
+export default function DashboardAdvancedPage({ params }: PageProps) {
   const { subdomain } = params;
   const supabase = createClient();
   const router = useRouter();
@@ -44,11 +41,17 @@ export default function DashboardOverviewPage({ params }: PageProps) {
         return;
       }
 
+      if (!subdomain) {
+        setError("Sous-domaine non trouvé dans l'URL.");
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('sites')
         .select('*')
         .eq('user_id', user.id)
-        .eq('subdomain', subdomain) // Fetch specific site by subdomain
+        .eq('subdomain', subdomain)
         .single();
 
       if (error) {
@@ -60,24 +63,18 @@ export default function DashboardOverviewPage({ params }: PageProps) {
       } else {
         setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
         toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
-        // Optionally redirect to a list of sites or create site page
-        router.push('/dashboard/overview'); // Redirect to a generic overview or site list
+        router.push('/dashboard/sites');
       }
       setLoading(false);
     }
 
-    if (subdomain) { // Only fetch if subdomain is available
-      fetchSiteData();
-    } else {
-      setLoading(false); // If no subdomain, stop loading and show message
-      setError("Veuillez sélectionner un site.");
-    }
+    fetchSiteData();
   }, [supabase, router, subdomain]);
 
   if (loading) {
     return (
       <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Tableau de Bord</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Gestion Avancée et Aide</h1>
         <div className="max-w-3xl mx-auto lg:mx-0 space-y-8">
           <Skeleton className="h-[200px] w-full" />
           <Skeleton className="h-[200px] w-full" />
@@ -98,18 +95,17 @@ export default function DashboardOverviewPage({ params }: PageProps) {
   if (!site) {
     return (
       <div className="container mx-auto text-center text-muted-foreground">
-        <h1 className="text-3xl font-bold mb-8">Aucun site sélectionné</h1>
-        <p>Veuillez sélectionner un site depuis la barre latérale.</p>
+        <h1 className="text-3xl font-bold mb-8">Aucun site trouvé</h1>
+        <p>Impossible de charger les données du site.</p>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Tableau de Bord</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Gestion Avancée et Aide</h1>
       <div className="max-w-3xl mx-auto lg:mx-0 space-y-8">
-        <OverviewAndQuickActions siteData={site} />
-        <DashboardStats siteData={site} />
+        <AdvancedManagementAndHelp />
       </div>
     </div>
   );
