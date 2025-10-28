@@ -47,6 +47,7 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
+  showTestimonials?: boolean; // Added showTestimonials
 }
 
 interface ProfessionalPortfolioTemplateProps {
@@ -190,7 +191,9 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Accueil</a>
               <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Compétences</a>
               <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Réalisations</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Témoignages</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Contact</a>
             </div>
             <button className={cn("md:hidden text-2xl", primaryColorTextClass)} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -205,7 +208,9 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>
               <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>
               <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Réalisations</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
             </nav>
           </div>
@@ -321,47 +326,49 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
       </section>
 
       {/* Testimonials Section */}
-      <section id="temoignages" className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
-              Ils m'ont fait confiance
-              <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", secondaryColorClass)}></span>
-            </h2>
-            <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Retours d'expérience de clients satisfaits</p>
-          </div>
-          <div className="relative">
-            <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex -ml-8">
-                {testimonials.map((testimonial: any, index: number) => (
-                  <div key={index} className="flex-none w-full pl-8">
-                    <div className="bg-white rounded-xl p-12 shadow-lg text-center relative">
-                      <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
-                      <p className="text-xl italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
-                      <div className="flex flex-col items-center justify-center gap-4">
-                        <Image src={testimonial.avatar} alt="Client" width={70} height={70} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} />
-                        <div>
-                          <h4 className={cn("text-xl font-semibold mb-1", primaryColorTextClass)}>{testimonial.author}</h4>
-                          <p className="text-gray-600">{testimonial.location}</p>
+      {siteData.showTestimonials !== false && ( // Conditionally render
+        <section id="temoignages" className="py-16 bg-gray-100">
+          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            <div className="text-center mb-12">
+              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+                Ils m'ont fait confiance
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", secondaryColorClass)}></span>
+              </h2>
+              <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Retours d'expérience de clients satisfaits</p>
+            </div>
+            <div className="relative">
+              <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex -ml-8">
+                  {testimonials.map((testimonial: any, index: number) => (
+                    <div key={index} className="flex-none w-full pl-8">
+                      <div className="bg-white rounded-xl p-12 shadow-lg text-center relative">
+                        <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
+                        <p className="text-xl italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
+                        <div className="flex flex-col items-center justify-center gap-4">
+                          <Image src={testimonial.avatar} alt="Client" width={70} height={70} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} />
+                          <div>
+                            <h4 className={cn("text-xl font-semibold mb-1", primaryColorTextClass)}>{testimonial.author}</h4>
+                            <p className="text-gray-600">{testimonial.location}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-center gap-3 mt-8">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    className={cn("h-3 w-3 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && cn("bg-red-500 scale-125", secondaryColorClass))}
+                    onClick={() => emblaApi && emblaApi.scrollTo(index)}
+                  />
                 ))}
               </div>
             </div>
-            <div className="flex justify-center gap-3 mt-8">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  className={cn("h-3 w-3 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && cn("bg-red-500 scale-125", secondaryColorClass))}
-                  onClick={() => emblaApi && emblaApi.scrollTo(index)}
-                />
-              ))}
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-600) 0%, var(--${siteData.primaryColor}-800) 100%)` }}>

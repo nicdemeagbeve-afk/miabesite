@@ -23,12 +23,17 @@ interface SiteData {
     currency: string;
     description: string;
     actionButton: string;
+    image?: string | null; // Added image to productsAndServices
   }>;
   subdomain: string;
   facebookLink?: string;
   instagramLink?: string;
   linkedinLink?: string;
-  // Add other fields as needed from your wizard form
+  paymentMethods?: string[];
+  portfolioProofLink?: string;
+  portfolioProofDescription?: string;
+  logoOrPhoto?: string | null; // Added logoOrPhoto
+  showTestimonials?: boolean; // Added showTestimonials
 }
 
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {

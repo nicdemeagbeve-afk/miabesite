@@ -13,6 +13,7 @@ interface SiteData {
   primaryColor: string;
   secondaryColor: string;
   subdomain: string;
+  showTestimonials?: boolean; // Added showTestimonials for consistency
 }
 
 interface DefaultTemplateProps {

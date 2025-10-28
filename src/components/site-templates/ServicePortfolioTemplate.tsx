@@ -49,6 +49,7 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
+  showTestimonials?: boolean; // Added showTestimonials
 }
 
 interface ServicePortfolioTemplateProps {
@@ -149,7 +150,9 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Portfolio</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
             </div>
             <button className="md:hidden text-gray-700 text-2xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -165,7 +168,9 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>
               <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Portfolio</a>
-              <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
             </nav>
           </div>
@@ -273,31 +278,33 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
       </section>
 
       {/* Testimonials Section */}
-      <section id="temoignages" className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
-              Témoignages Clients
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial: any, index: number) => (
-              <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
-                <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span>
-                <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
-                <div className="flex items-center gap-4">
-                  <Image src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${45 + index}.jpg`} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
-                  <div>
-                    <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.location}</p>
+      {siteData.showTestimonials !== false && ( // Conditionally render
+        <section id="temoignages" className="py-16 bg-gray-100">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <div className="text-center mb-12">
+              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+                Témoignages Clients
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial: any, index: number) => (
+                <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
+                  <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span>
+                  <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
+                  <div className="flex items-center gap-4">
+                    <Image src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${45 + index}.jpg`} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
+                    <div>
+                      <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
+                      <p className="text-sm text-gray-600">{testimonial.location}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Contact Section */}
       <section id="contact" className="py-16 bg-white">

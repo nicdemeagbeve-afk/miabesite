@@ -59,6 +59,7 @@ interface SiteData {
   paymentMethods?: string[];
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
+  showTestimonials?: boolean; // Added showTestimonials
 }
 
 interface ArtisanEcommerceTemplateProps {
@@ -125,6 +126,12 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
   const services = siteData.productsAndServices.filter(item => item.actionButton !== 'buy');
 
+  const testimonials = [
+    { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
+    { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
+    { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
+  ];
+
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
       {/* Header */}
@@ -177,6 +184,9 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
               <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Avis Clients</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>
             </div>
             <div className="hidden md:flex items-center gap-6">
@@ -207,6 +217,9 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>
               <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>
               <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Avis Clients</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
               <div className="flex gap-6 mt-4">
                 <a href="#" className={cn("relative text-gray-700 text-xl hover:text-red-500 transition-colors")}>
@@ -393,37 +406,35 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       )}
 
       {/* Testimonials Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", secondaryColorTextClass)}>
-              Avis Clients
-              <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", primaryColorClass)}></span>
-            </h2>
-            <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Ce que disent nos clients satisfaits</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Placeholder testimonials */}
-            {[
-              { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
-              { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
-              { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
-            ].map((testimonial: any, index: number) => (
-              <div key={index} className="bg-gray-100 rounded-xl p-8 shadow-lg relative">
-                <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
-                <p className="text-lg italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
-                <div className="flex items-center gap-4">
-                  <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
-                  <div>
-                    <h4 className={cn("text-xl font-semibold mb-1", secondaryColorTextClass)}>{testimonial.author}</h4>
-                    <p className="text-gray-600 text-sm">{testimonial.location}</p>
+      {siteData.showTestimonials !== false && ( // Conditionally render
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <div className="text-center mb-12">
+              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", secondaryColorTextClass)}>
+                Avis Clients
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", primaryColorClass)}></span>
+              </h2>
+              <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Ce que disent nos clients satisfaits</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Placeholder testimonials */}
+              {testimonials.map((testimonial: any, index: number) => (
+                <div key={index} className="bg-gray-100 rounded-xl p-8 shadow-lg relative">
+                  <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
+                  <p className="text-lg italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
+                  <div className="flex items-center gap-4">
+                    <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
+                    <div>
+                      <h4 className={cn("text-xl font-semibold mb-1", secondaryColorTextClass)}>{testimonial.author}</h4>
+                      <p className="text-gray-600 text-sm">{testimonial.location}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Newsletter Section */}
       <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-700) 0%, var(--${siteData.primaryColor}-600) 100%)` }}>

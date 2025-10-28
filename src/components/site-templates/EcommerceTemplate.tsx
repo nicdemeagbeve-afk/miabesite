@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X } from 'lucide-react'; // Added Menu and X
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner'; // Import toast for notifications
 
 interface SiteData {
   publicName: string;
@@ -27,6 +28,7 @@ interface SiteData {
   subdomain: string;
   facebookLink?: string;
   instagramLink?: string;
+  showTestimonials?: boolean; // Added showTestimonials
 }
 
 interface EcommerceTemplateProps {
@@ -75,11 +77,16 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
 
   const handleAddToCart = (productTitle: string) => {
     setCartCount(prev => prev + 1);
-    // In a real app, you'd add to a global cart state
-    console.log(`Added "${productTitle}" to cart.`);
+    toast.success(`"${productTitle}" a été ajouté à votre panier !`);
   };
 
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
+
+  const testimonials = [
+    { quote: "J'ai acheté plusieurs articles et la qualité est toujours au rendez-vous. Livraison rapide et service client impeccable !", author: "Fatou Diallo", location: "Dakar" },
+    { quote: "Ma boutique préférée pour les produits artisanaux. Chaque pièce est unique et faite avec passion. Je recommande vivement !", author: "Moussa Traoré", location: "Abidjan" },
+    { quote: "Des créations magnifiques et un excellent rapport qualité-prix. J'adore mes nouveaux bijoux !", author: "Aïcha Koné", location: "Lomé" },
+  ];
 
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
@@ -99,6 +106,9 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             <div className="hidden md:flex items-center gap-6">
               <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Produits</a>
               <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>
               <div className="relative">
                 <ShoppingCart className={cn("h-6 w-6", primaryColorTextClass)} />
@@ -120,6 +130,9 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
             <nav className="flex flex-col items-center gap-4">
               <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>
               <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>
+              {siteData.showTestimonials !== false && ( // Conditionally render
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+              )}
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
               <div className="relative mt-4">
                 <ShoppingCart className={cn("h-6 w-6", primaryColorTextClass)} />
@@ -197,6 +210,29 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
           </p>
         </div>
       </section>
+
+      {siteData.showTestimonials !== false && ( // Conditionally render
+        <section id="testimonials" className="py-16 bg-gray-100">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
+                  <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span>
+                  <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
+                  <div className="flex items-center gap-4">
+                    <Image src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${45 + index}.jpg`} alt="Client" width={50} height={50} className="rounded-full object-cover border-2 border-gray-200" />
+                    <div>
+                      <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
+                      <p className="text-sm text-gray-600">{testimonial.location}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Contact Section */}
       <section id="contact" className="py-16 bg-gray-100">

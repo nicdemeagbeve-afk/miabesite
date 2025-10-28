@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Pencil, Palette, LayoutTemplate, Type, EyeOff } from "lucide-react";
 import {
   Drawer,
@@ -44,7 +45,7 @@ export function ContentModification({
   const [primaryColor, setPrimaryColor] = React.useState(initialPrimaryColor);
   const [secondaryColor, setSecondaryColor] = React.useState(initialSecondaryColor);
   const [fontFamily, setFontFamily] = React.useState("sans"); // This is a placeholder, not yet connected to backend
-  const [showTestimonials, setShowTestimonials] = React.useState(initialShowTestimonials); // This is a placeholder, not yet connected to backend
+  const [showTestimonials, setShowTestimonials] = React.useState(initialShowTestimonials);
   const [isUpdating, setIsUpdating] = React.useState(false);
 
   const predefinedColors = [
@@ -69,13 +70,14 @@ export function ContentModification({
     { value: "ecommerce", label: "E-commerce" },
     { value: "service-portfolio", label: "Service & Portfolio" },
     { value: "professional-portfolio", label: "Portfolio Professionnel" },
-    { value: "artisan-ecommerce", label: "E-commerce Artisanal" }, // Add the new template option
+    { value: "artisan-ecommerce", label: "E-commerce Artisanal" },
   ];
 
   const handleApplyDesignChanges = async () => {
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/site/${subdomain}/template`, {
+      // Update template type
+      const templateResponse = await fetch(`/api/site/${subdomain}/template`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -83,18 +85,42 @@ export function ContentModification({
         body: JSON.stringify({ templateType: selectedTemplate }),
       });
 
-      const result = await response.json();
+      const templateResult = await templateResponse.json();
 
-      if (!response.ok) {
-        toast.error(result.error || "Erreur lors de la mise à jour du template.");
+      if (!templateResponse.ok) {
+        toast.error(templateResult.error || "Erreur lors de la mise à jour du template.");
+        setIsUpdating(false);
         return;
       }
-
       toast.success("Template mis à jour avec succès !");
-      router.refresh(); // Refresh the page to show the updated template
+
+      // Update other design settings (colors, showTestimonials)
+      const designResponse = await fetch(`/api/site/${subdomain}/design`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor,
+          showTestimonials: showTestimonials,
+          // fontFamily: fontFamily, // Placeholder, not implemented in backend yet
+        }),
+      });
+
+      const designResult = await designResponse.json();
+
+      if (!designResponse.ok) {
+        toast.error(designResult.error || "Erreur lors de la mise à jour des couleurs/sections.");
+        setIsUpdating(false);
+        return;
+      }
+      toast.success("Couleurs et sections mises à jour avec succès !");
+
+      router.refresh(); // Refresh the page to show all updated changes
     } catch (error) {
-      console.error("Failed to update template:", error);
-      toast.error("Une erreur inattendue est survenue lors de la mise à jour du template.");
+      console.error("Failed to update design:", error);
+      toast.error("Une erreur inattendue est survenue lors de la mise à jour du design.");
     } finally {
       setIsUpdating(false);
     }
@@ -117,6 +143,9 @@ export function ContentModification({
               <Pencil className="mr-2 h-5 w-5" /> Modifier le Contenu (Wizard)
             </Link>
           </Button>
+          <p className="text-sm text-muted-foreground mt-2">
+            Note: Ce bouton vous permet de créer un nouveau site ou de re-parcourir l'assistant. Pour modifier un site existant avec ses données pré-remplies, cette fonctionnalité est en cours de développement.
+          </p>
         </div>
 
         {/* Mode Avancé */}
@@ -207,6 +236,9 @@ export function ContentModification({
                         ))}
                       </SelectContent>
                     </Select>
+                    <p className="text-sm text-muted-foreground">
+                      (Fonctionnalité en cours de développement)
+                    </p>
                   </div>
 
                   {/* Masquer/Afficher Sections */}
