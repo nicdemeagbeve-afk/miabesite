@@ -67,8 +67,9 @@ export function ContentModification({
   const templateOptions = [
     { value: "default", label: "Template par défaut" },
     { value: "ecommerce", label: "E-commerce" },
-    // { value: "service", label: "Services" }, // Not yet implemented
-    // { value: "portfolio", label: "Portfolio" }, // Not yet implemented
+    { value: "service-portfolio", label: "Service & Portfolio" },
+    { value: "professional-portfolio", label: "Portfolio Professionnel" },
+    { value: "artisan-ecommerce", label: "E-commerce Artisanal" }, // Add the new template option
   ];
 
   const handleApplyDesignChanges = async () => {

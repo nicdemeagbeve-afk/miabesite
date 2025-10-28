@@ -2,7 +2,10 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate';
-import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate'; // Import the new template
+import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate';
+import { ServicePortfolioTemplate } from '@/components/site-templates/ServicePortfolioTemplate';
+import { ProfessionalPortfolioTemplate } from '@/components/site-templates/ProfessionalPortfolioTemplate';
+import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate'; // Import the new template
 
 // Define a basic type for the site data, matching what's stored in Supabase
 interface SiteData {
@@ -51,6 +54,12 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   switch (templateType) {
     case 'ecommerce':
       return <EcommerceTemplate siteData={siteData} />;
+    case 'service-portfolio':
+      return <ServicePortfolioTemplate siteData={siteData} />;
+    case 'professional-portfolio':
+      return <ProfessionalPortfolioTemplate siteData={siteData} />;
+    case 'artisan-ecommerce': // New case for the artisan-ecommerce template
+      return <ArtisanEcommerceTemplate siteData={siteData} />;
     case 'default':
     default: // Fallback to DefaultTemplate if type is unknown or not set
       return <DefaultTemplate siteData={siteData} />;
