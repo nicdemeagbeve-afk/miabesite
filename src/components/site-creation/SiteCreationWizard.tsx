@@ -11,7 +11,8 @@ import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { IdentityContactStep } from "./steps/IdentityContactStep";
 import { SkillsServicesStep } from "./steps/SkillsServicesStep";
-import { ProductsStep } from "./steps/ProductsStep"; // Import the new step
+import { ProductsStep } from "./steps/ProductsStep";
+import { TermsConditionsStep } from "./steps/TermsConditionsStep"; // Import the new step
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -38,7 +39,11 @@ const wizardFormSchema = z.object({
     ),
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional(),
-  })).max(3, "Vous ne pouvez ajouter que 3 produits maximum.").optional().transform(val => val ?? [{ name: "", image: undefined, price: "", currency: "XOF", description: "" }]),
+  })).max(3, "Vous ne pouvez ajouter que 3 produits maximum.").optional().transform(val => val ?? [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }]),
+
+  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
+  deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
+  typicalLeadTime: z.string().min(3, { message: "Veuillez indiquer un délai typique." }),
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -64,6 +69,11 @@ const steps: {
     component: ProductsStep,
     schema: wizardFormSchema.pick({ productCategory: true, products: true }),
   },
+  {
+    id: "termsConditions",
+    component: TermsConditionsStep,
+    schema: wizardFormSchema.pick({ paymentMethods: true, deliveryOption: true, typicalLeadTime: true }),
+  },
   // New steps will be added here.
 ];
 
@@ -83,6 +93,9 @@ export function SiteCreationWizard() {
     portfolioLink: "",
     productCategory: "",
     products: [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }],
+    paymentMethods: [],
+    deliveryOption: "",
+    typicalLeadTime: "",
   };
 
   const methods = useForm<WizardFormData>({
