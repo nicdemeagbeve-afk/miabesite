@@ -88,7 +88,7 @@ export function SiteCreationWizard() {
   };
 
   const methods = useForm<WizardFormData>({
-    resolver: zodResolver(wizardFormSchema),
+    resolver: zodResolver(wizardFormSchema as z.ZodSchema<WizardFormData>), // Explicitly cast the schema here
     defaultValues: defaultValues, // Use the explicitly typed defaultValues
     mode: "onChange", // Validate on change to enable/disable next button
   });
