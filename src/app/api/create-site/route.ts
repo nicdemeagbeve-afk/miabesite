@@ -44,6 +44,7 @@ const siteCreationSchema = z.object({
   paymentMethods: z.array(z.string()).min(1),
   deliveryOption: z.string().min(1),
   depositRequired: z.boolean(),
+  templateType: z.string().min(1), // Add templateType to the schema
 });
 
 export async function POST(request: Request) {
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
         subdomain: validatedData.subdomain,
         site_data: validatedData, // Store the entire validated object
         status: 'published', // Default to published for now
-        template_type: 'default', // Default template type
+        template_type: validatedData.templateType, // Use the templateType from validatedData
       })
       .select()
       .single();

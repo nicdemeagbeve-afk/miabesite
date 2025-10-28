@@ -1,11 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import React from 'react';
-import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate'; // Import the DefaultTemplate
+import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate';
+import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate'; // Import the new template
 
 // Define a basic type for the site data, matching what's stored in Supabase
-// This interface is now also defined in DefaultTemplate.tsx, but kept here for clarity
-// of what is fetched from the DB.
 interface SiteData {
   publicName: string;
   whatsappNumber: string;
@@ -26,6 +25,7 @@ interface SiteData {
   facebookLink?: string;
   instagramLink?: string;
   linkedinLink?: string;
+  // Add other fields as needed from your wizard form
 }
 
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {
@@ -47,8 +47,12 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   const siteData: SiteData = site.site_data as SiteData;
   const templateType: string = site.template_type || 'default'; // Get template_type, default to 'default'
 
-  // For now, we'll always render the DefaultTemplate.
-  // In the future, you can add a switch statement or a map to render different templates
-  // based on the `templateType` variable.
-  return <DefaultTemplate siteData={siteData} />;
+  // Dynamically render the correct template based on templateType
+  switch (templateType) {
+    case 'ecommerce':
+      return <EcommerceTemplate siteData={siteData} />;
+    case 'default':
+    default: // Fallback to DefaultTemplate if type is unknown or not set
+      return <DefaultTemplate siteData={siteData} />;
+  }
 }
