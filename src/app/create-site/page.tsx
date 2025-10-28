@@ -7,12 +7,49 @@ import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import { createClient } from "@/lib/supabase/client"; // Import Supabase client
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { z } from "zod"; // Import z for WizardFormData inference
 
-interface SiteData {
+// Define the schema for the wizard form data (copied from SiteCreationWizard for type inference)
+const wizardFormSchema = z.object({
+  publicName: z.string(),
+  whatsappNumber: z.string(),
+  secondaryPhoneNumber: z.string().optional().or(z.literal('')),
+  email: z.string().optional().or(z.literal('')),
+  primaryColor: z.string(),
+  secondaryColor: z.string(),
+  logoOrPhoto: z.any().optional(),
+  heroSlogan: z.string(),
+  aboutStory: z.string(),
+  portfolioProofLink: z.string().optional().or(z.literal('')),
+  portfolioProofDescription: z.string().optional().or(z.literal('')),
+  productsAndServices: z.array(z.object({
+    title: z.string(),
+    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().optional()),
+    currency: z.string(),
+    description: z.string(),
+    image: z.any().optional(),
+    actionButton: z.string(),
+  })),
+  subdomain: z.string(), // This is also in WizardFormData
+  contactButtonAction: z.string(),
+  facebookLink: z.string().optional().or(z.literal('')),
+  instagramLink: z.string().optional().or(z.literal('')),
+  linkedinLink: z.string().optional().or(z.literal('')),
+  paymentMethods: z.array(z.string()),
+  deliveryOption: z.string(),
+  depositRequired: z.boolean(),
+  businessLocation: z.string(),
+  showContactForm: z.boolean(),
+});
+
+type WizardFormData = z.infer<typeof wizardFormSchema>;
+
+// Interface for the data fetched directly from the 'sites' table
+interface FetchedSiteData {
   id: string;
   user_id: string;
   subdomain: string;
-  site_data: any; // This will contain the full wizard form data
+  site_data: WizardFormData; // This is the key change
   status: string;
   template_type: string;
   created_at: string;
@@ -23,7 +60,8 @@ export default function CreateSitePage() {
   const subdomain = searchParams.get('subdomain');
   const supabase = createClient();
 
-  const [initialSiteData, setInitialSiteData] = React.useState<SiteData | undefined>(undefined);
+  // The state for initialSiteData should match what SiteCreationWizard expects
+  const [initialSiteData, setInitialSiteData] = React.useState<(WizardFormData & { id?: string }) | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -57,7 +95,10 @@ export default function CreateSitePage() {
         toast.error("Erreur lors du chargement des données du site.");
       } else if (data) {
         // Merge site_data with top-level site properties for wizard
-        setInitialSiteData({ ...data.site_data, id: data.id, subdomain: data.subdomain });
+        // Ensure data is cast to FetchedSiteData for correct type access
+        const fetchedData = data as FetchedSiteData;
+        // Corrected: Only add 'id' as 'subdomain' is already part of fetchedData.site_data (WizardFormData)
+        setInitialSiteData({ ...fetchedData.site_data, id: fetchedData.id });
       } else {
         setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
         toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");

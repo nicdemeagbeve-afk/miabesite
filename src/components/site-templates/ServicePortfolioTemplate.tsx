@@ -74,7 +74,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
   const accentColorClass = `bg-${siteData.secondaryColor}-500`;
   const accentColorTextClass = `text-${siteData.secondaryColor}-500`;
-  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`; // Defined accentColorBorderClass
+  const accentColorBorderClass = `border-${siteData.secondaryColor}-500`;
 
   const whatsappBgClass = 'bg-[#25D366]';
   const whatsappHoverBgClass = 'hover:bg-[#128C7E]';
@@ -89,7 +89,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('change', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
@@ -105,12 +105,12 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
     }
   };
 
-  const portfolioItems = siteData.portfolioProofLink
-    ? [{
-        image: siteData.portfolioProofLink.match(/\.(jpeg|jpg|gif|png|svg)$/) ? siteData.portfolioProofLink : 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', // Fallback placeholder
-        title: "Projet Réalisé",
-        description: siteData.portfolioProofDescription || "Découvrez notre dernière réalisation.",
-      }]
+  const portfolioItems = siteData.productsAndServices.length > 0
+    ? siteData.productsAndServices.map(p => ({
+        image: p.image || 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', // Fallback placeholder
+        title: p.title,
+        description: p.description,
+      }))
     : [
         { image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', title: "Rénovation Salle de Bain", description: "Transformation complète avec douche à l'italienne." },
         { image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', title: "Cuisine Équipée", description: "Aménagement complet avec îlot central." },
@@ -184,7 +184,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
           <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 ease-in-out transform", 'bg-[#25D366]', 'hover:bg-[#128C7E]')}>
+          <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", 'bg-[#25D366]', 'hover:bg-[#128C7E]')}>
             <MessageSquare className="h-6 w-6" /> Contactez-moi sur WhatsApp
           </a>
         </div>
@@ -451,177 +451,59 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
                 Contact
               </h3>
-              <div className="space-y-<dyad-problem-report summary="2 problems">
-<problem file="src/app/create-site/page.tsx" line="89" column="27" code="2322">Type 'SiteData | undefined' is not assignable to type '({ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; } &amp; { ...; }) | undefined'.
-  Type 'SiteData' is not assignable to type '{ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; } &amp; { ...; }'.
-    Type 'SiteData' is missing the following properties from type '{ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; }': businessLocation, contactButtonAction, showContactForm, paymentMethods, and 9 more.</problem>
-<problem file=".next/types/app/dashboard/layout.ts" line="34" column="31" code="2344">Type '{ children: ReactNode; params: { subdomain?: string | string[] | undefined; }; }' does not satisfy the constraint 'LayoutProps'.
-  Types of property 'params' are incompatible.
-    Type '{ subdomain?: string | string[] | undefined; }' is missing the following properties from type 'Promise&lt;any&gt;': then, catch, finally, [Symbol.toStringTag]</problem>
-</dyad-problem-report><think>**Debugging TypeScript Errors**
+              <div className="space-y-3 text-gray-300">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
+                </div>
+              </div>
+            </div>
 
-I'm currently focused on resolving the TypeScript errors flagged in `src/app/create-site/page.tsx`. Specifically, there's a type mismatch issue with `initialSiteData` when passed to `SiteCreationWizard`. I'm going to investigate the expected type of `initialSiteData` in the wizard's context and ensure it aligns with the data being provided, likely by exploring possible type annotations.
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+                Modes de paiement
+              </h3>
+              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
+              <div className="flex flex-wrap gap-3 mt-4">
+                {paymentMethods.map((method: string, index: number) => (
+                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
 
+          <div className="text-center pt-8 border-t border-white/10 opacity-70">
+            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
+          </div>
+        </div>
+      </footer>
 
-**Refining Data Structures**
-
-I'm now diving deeper into the `SiteData` and `WizardFormData` type discrepancies. The core problem lies in the structure of `initialSiteData` passed to the `SiteCreationWizard`. I've realized that the `SiteData` interface in `CreateSitePage.tsx` needs to precisely mirror the Supabase data structure, including the `site_data` field as a nested object. My next step is to accurately map the data fetched from Supabase to a structure that seamlessly aligns with `WizardFormData`, ensuring that the form's internal types are satisfied. This necessitates adjusting the data extraction and merging process to preserve the expected nested structure.
-
-
-**Analyzing Data Mapping**
-
-My focus has shifted to the precise data transformation from Supabase to the `WizardFormData` structure. I've realized that the `SiteData` interface needs to accurately mirror the database row's structure, including the nested `site_data` object, which contains all the detailed form values.  I'm exploring how to map the incoming Supabase data, particularly the `site_data` field, into the required format for the `SiteCreationWizard` without losing its nested structure. The current approach of spreading `data.site_data` is almost right, but needs to fully accommodate the required type of the state variable.
-
-
-**Mapping Data Types**
-
-I'm now zeroing in on precisely matching the data fetched from Supabase, particularly the structure of the `site_data` field, with the `WizardFormData` type expected by the wizard component. The goal is to accurately transform the incoming data, including the nested `site_data` object, to satisfy the `SiteCreationWizard`'s requirements.  I will adjust the `SiteData` interface to accurately mirror the Supabase data, ensuring that the `site_data` field is correctly typed as `WizardFormData`. This will involve a straightforward re-structuring of the `SiteData` type, combined with explicitly typing the `initialSiteData` state.
-
-
-**Implementing Type Safety**
-
-I've updated the `SiteData` interface to accurately mirror the Supabase data structure, specifically typing the `site_data` field as `WizardFormData`. This directly addresses the type mismatch error when passing `initialSiteData` to the `SiteCreationWizard` component.  Additionally, I ensured the `initialSiteData` state variable is explicitly typed as `WizardFormData & { id?: string }`.  With these modifications, I expect the TypeScript errors to be resolved, allowing for a clean rebuild and removing the persistent type issues.
-
-
-</think>You're right, the first error is a type mismatch when passing `initialSiteData` to the `SiteCreationWizard`. The `SiteCreationWizard` expects a more detailed type (`WizardFormData`) for `initialSiteData`, while the `SiteData` interface in `CreateSitePage.tsx` was a more generic representation of the database row.
-
-To fix this, I'll update the `SiteData` interface in `src/app/create-site/page.tsx` to explicitly define `site_data` as `WizardFormData`. This ensures that when we spread `data.site_data` into `initialSiteData`, it correctly matches the expected type for the wizard.
-
-The second error in `.next/types` is a generated file issue that should resolve once the source code error is fixed and a full rebuild is performed.
-
-Here's the code change:
-
-<dyad-write path="src/app/create-site/page.tsx" description="Updating SiteData interface to correctly type site_data as WizardFormData, resolving type mismatch with SiteCreationWizard.">
-"use client";
-
-import React from "react";
-import { SiteCreationWizard } from "@/components/site-creation/SiteCreationWizard";
-import { Toaster } from "@/components/ui/sonner"; // Import Toaster for notifications
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
-import { createClient } from "@/lib/supabase/client"; // Import Supabase client
-import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { z } from "zod"; // Import z for WizardFormData inference
-
-// Define the schema for the wizard form data (copied from SiteCreationWizard for type inference)
-const wizardFormSchema = z.object({
-  publicName: z.string(),
-  whatsappNumber: z.string(),
-  secondaryPhoneNumber: z.string().optional().or(z.literal('')),
-  email: z.string().optional().or(z.literal('')),
-  primaryColor: z.string(),
-  secondaryColor: z.string(),
-  logoOrPhoto: z.any().optional(),
-  heroSlogan: z.string(),
-  aboutStory: z.string(),
-  portfolioProofLink: z.string().optional().or(z.literal('')),
-  portfolioProofDescription: z.string().optional().or(z.literal('')),
-  productsAndServices: z.array(z.object({
-    title: z.string(),
-    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().optional()),
-    currency: z.string(),
-    description: z.string(),
-    image: z.any().optional(),
-    actionButton: z.string(),
-  })),
-  subdomain: z.string(),
-  contactButtonAction: z.string(),
-  facebookLink: z.string().optional().or(z.literal('')),
-  instagramLink: z.string().optional().or(z.literal('')),
-  linkedinLink: z.string().optional().or(z.literal('')),
-  paymentMethods: z.array(z.string()),
-  deliveryOption: z.string(),
-  depositRequired: z.boolean(),
-  businessLocation: z.string(),
-  showContactForm: z.boolean(),
-});
-
-type WizardFormData = z.infer<typeof wizardFormSchema>;
-
-// Interface for the data fetched directly from the 'sites' table
-interface FetchedSiteData {
-  id: string;
-  user_id: string;
-  subdomain: string;
-  site_data: WizardFormData; // This is the key change
-  status: string;
-  template_type: string;
-  created_at: string;
-}
-
-export default function CreateSitePage() {
-  const searchParams = useSearchParams();
-  const subdomain = searchParams.get('subdomain');
-  const supabase = createClient();
-
-  // The state for initialSiteData should match what SiteCreationWizard expects
-  const [initialSiteData, setInitialSiteData] = React.useState<(WizardFormData & { id?: string }) | undefined>(undefined);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    async function fetchSiteData() {
-      if (!subdomain) {
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        // User not logged in, wizard will handle redirection
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('sites')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('subdomain', subdomain)
-        .single();
-
-      if (error) {
-        console.error("Error fetching site data for wizard:", error);
-        setError("Erreur lors du chargement des données du site pour modification.");
-        toast.error("Erreur lors du chargement des données du site.");
-      } else if (data) {
-        // Merge site_data with top-level site properties for wizard
-        // Ensure data is cast to FetchedSiteData for correct type access
-        const fetchedData = data as FetchedSiteData;
-        setInitialSiteData({ ...fetchedData.site_data, id: fetchedData.id, subdomain: fetchedData.subdomain });
-      } else {
-        setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
-        toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
-      }
-      setLoading(false);
-    }
-
-    fetchSiteData();
-  }, [subdomain, supabase]);
-
-  if (loading && subdomain) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-muted py-12">
-        <Skeleton className="w-full max-w-2xl h-[600px] p-6" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-muted py-12 text-red-500">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <SiteCreationWizard initialSiteData={initialSiteData} />
-      <Toaster />
-    </>
+      {/* Back to Top Button */}
+      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
+        <ChevronUp className="h-6 w-6" />
+      </a>
+    </div>
   );
 }
