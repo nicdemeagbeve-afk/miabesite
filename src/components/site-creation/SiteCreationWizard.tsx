@@ -13,7 +13,7 @@ import { IdentityContactStep } from "./steps/IdentityContactStep";
 import { SkillsServicesStep } from "./steps/SkillsServicesStep";
 import { ProductsStep } from "./steps/ProductsStep";
 import { TermsConditionsStep } from "./steps/TermsConditionsStep";
-import { SubdomainStep } from "./steps/SubdomainStep"; // Import the new step
+import { SubdomainStep } from "./steps/SubdomainStep";
 
 // Define the schema for the entire wizard form
 const wizardFormSchema = z.object({
@@ -23,12 +23,12 @@ const wizardFormSchema = z.object({
   whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro de téléphone valide (ex: +225 07 00 00 00 00)." }),
   socialMediaLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
 
-  activityTitle: z.string().min(3, { message: "Le titre principal de l'activité est requis." }),
-  expertiseDomains: z.array(z.object({
-    value: z.string().min(1, "Le domaine d'expertise ne peut pas être vide."),
-  })).max(5, "Vous ne pouvez ajouter que 5 domaines d'expertise maximum.").optional().transform(val => val ?? [{ value: "" }]),
-  shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(500, { message: "La description courte ne peut pas dépasser 500 caractères." }),
+  activityTitle: z.string().min(3, { message: "Le titre principal de l'activité est requis." }).max(30, { message: "Le titre principal ne peut pas dépasser 30 caractères." }),
+  mainDomain: z.string().min(1, { message: "Veuillez sélectionner un domaine principal." }),
+  expertiseDomains: z.array(z.string()).max(3, "Vous ne pouvez sélectionner que 3 mots-clés maximum.").optional().transform(val => val ?? []),
+  shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(1000, { message: "La description courte ne peut pas dépasser 1000 caractères." }),
   portfolioLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
+  portfolioImages: z.array(z.any()).max(3, "Vous ne pouvez télécharger que 3 images maximum.").optional().transform(val => val ?? []),
 
   productCategory: z.string().min(1, { message: "Veuillez sélectionner une catégorie de produit." }),
   products: z.array(z.object({
@@ -69,7 +69,7 @@ const steps: {
   {
     id: "skillsServices",
     component: SkillsServicesStep,
-    schema: wizardFormSchema.pick({ activityTitle: true, expertiseDomains: true, shortDescription: true, portfolioLink: true }),
+    schema: wizardFormSchema.pick({ activityTitle: true, mainDomain: true, expertiseDomains: true, shortDescription: true, portfolioLink: true, portfolioImages: true }),
   },
   {
     id: "products",
@@ -99,9 +99,11 @@ export function SiteCreationWizard() {
     whatsappNumber: "",
     socialMediaLink: "",
     activityTitle: "",
-    expertiseDomains: [{ value: "" }],
+    mainDomain: "",
+    expertiseDomains: [],
     shortDescription: "",
     portfolioLink: "",
+    portfolioImages: [],
     productCategory: "",
     products: [{ name: "", image: undefined, price: undefined, currency: "XOF", description: "" }],
     paymentMethods: [],
@@ -123,9 +125,9 @@ export function SiteCreationWizard() {
   } = methods;
 
   const handleNext = async () => {
-    if (currentStep >= steps.length - 1) return; // Prevent going past the last step if no steps are defined
+    if (currentStep >= steps.length - 1) return;
 
-    const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>; // Explicitly cast to ZodObject
+    const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;
     const result = await trigger(Object.keys(currentStepSchema.shape) as (keyof WizardFormData)[]);
 
     if (result) {
