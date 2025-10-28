@@ -3,7 +3,7 @@
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL -- Correction: virgule supprimée ici
   -- Ajoutez d'autres champs de profil si nécessaire, par exemple:
   -- username TEXT UNIQUE,
   -- avatar_url TEXT
