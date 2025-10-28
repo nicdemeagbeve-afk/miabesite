@@ -15,8 +15,8 @@ import { ProductsStep } from "./steps/ProductsStep";
 import { TermsConditionsStep } from "./steps/TermsConditionsStep";
 import { SubdomainStep } from "./steps/SubdomainStep";
 
-// Define the schema for the entire wizard form
-const wizardFormSchema = z.object({
+// Define the base schema as a ZodObject
+const baseWizardFormSchema = z.object({
   publicName: z.string().min(3, { message: "Le nom public est requis et doit contenir au moins 3 caractères." }),
   profilePicture: z.any().optional(), // File object
   location: z.string().min(3, { message: "La localisation est requise." }),
@@ -25,26 +25,49 @@ const wizardFormSchema = z.object({
 
   activityTitle: z.string().min(3, { message: "Le titre principal de l'activité est requis." }).max(30, { message: "Le titre principal ne peut pas dépasser 30 caractères." }),
   mainDomain: z.string().min(1, { message: "Veuillez sélectionner un domaine principal." }),
-  expertiseDomains: z.array(z.string()).max(3, "Vous ne pouvez sélectionner que 3 mots-clés maximum.").optional().transform(val => val ?? []),
+  expertiseDomains: z.array(z.string()).max(3, "Vous ne pouvez sélectionner que 3 mots-clés maximum.").optional(), // Removed transform here
   shortDescription: z.string().min(50, { message: "La description courte doit contenir au moins 50 caractères." }).max(1000, { message: "La description courte ne peut pas dépasser 1000 caractères." }),
   portfolioLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
-  portfolioImages: z.array(z.any()).max(3, "Vous ne pouvez télécharger que 3 images maximum.").optional().transform(val => val ?? []),
+  portfolioImages: z.array(z.any()).max(3, "Vous ne pouvez télécharger que 3 images maximum.").optional(), // Removed transform here
 
   productCategory: z.string().min(1, { message: "Veuillez sélectionner une catégorie de produit." }),
   products: z.array(z.object({
-    name: z.string().optional(), // Make name optional here, will be refined below
-    image: z.any().optional(), // File object
+    name: z.string().optional(),
+    image: z.any().optional(),
     price: z.preprocess(
       (val) => (val === '' ? undefined : val),
       z.number().min(0, "Le prix ne peut pas être négatif.").optional()
     ),
-    currency: z.string().optional(), // Make currency optional here, will be refined below
+    currency: z.string().optional(),
     description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional(),
-  })).superRefine((products, ctx) => {
-    const activeProducts = products.filter(p => p.name || p.image || p.price !== undefined || p.currency || p.description);
+  })).optional(), // Removed transform here
+
+  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
+  deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
+  typicalLeadTime: z.string().min(3, { message: "Veuillez indiquer un délai typique." }),
+
+  subdomain: z.string()
+    .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
+    .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
+    .transform(s => s.toLowerCase()) // Ensure lowercase
+    .refine(s => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }),
+});
+
+// Apply superRefine to the base schema to create the final wizardFormSchema
+const wizardFormSchema = baseWizardFormSchema.superRefine((data, ctx) => {
+  // Conditional validation for products based on productCategory
+  if (data.productCategory !== "autres") {
+    const activeProducts = data.products?.filter(p => p.name || p.image || p.price !== undefined || p.currency || p.description) || [];
+    if (activeProducts.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Veuillez ajouter au moins un produit ou sélectionner 'Autres' comme catégorie.",
+        path: ["products"],
+      });
+    }
     if (activeProducts.length > 3) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom, // Corrected ZodIssueCode
+        code: z.ZodIssueCode.custom,
         message: "Vous ne pouvez ajouter que 3 produits maximum.",
         path: ["products"],
       });
@@ -65,17 +88,7 @@ const wizardFormSchema = z.object({
         });
       }
     });
-  }).optional().transform(val => val ?? []), // Default to empty array
-
-  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
-  deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
-  typicalLeadTime: z.string().min(3, { message: "Veuillez indiquer un délai typique." }),
-
-  subdomain: z.string()
-    .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
-    .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
-    .transform(s => s.toLowerCase()) // Ensure lowercase
-    .refine(s => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }),
+  }
 });
 
 // Infer the type for the entire wizard form data from the schema
@@ -89,27 +102,27 @@ const steps: {
   {
     id: "identityContact",
     component: IdentityContactStep,
-    schema: wizardFormSchema.pick({ publicName: true, profilePicture: true, location: true, whatsappNumber: true, socialMediaLink: true }),
+    schema: baseWizardFormSchema.pick({ publicName: true, profilePicture: true, location: true, whatsappNumber: true, socialMediaLink: true }),
   },
   {
     id: "skillsServices",
     component: SkillsServicesStep,
-    schema: wizardFormSchema.pick({ activityTitle: true, mainDomain: true, expertiseDomains: true, shortDescription: true, portfolioLink: true, portfolioImages: true }),
+    schema: baseWizardFormSchema.pick({ activityTitle: true, mainDomain: true, expertiseDomains: true, shortDescription: true, portfolioLink: true, portfolioImages: true }),
   },
   {
     id: "products",
     component: ProductsStep,
-    schema: wizardFormSchema.pick({ productCategory: true, products: true }),
+    schema: baseWizardFormSchema.pick({ productCategory: true, products: true }),
   },
   {
     id: "termsConditions",
     component: TermsConditionsStep,
-    schema: wizardFormSchema.pick({ paymentMethods: true, deliveryOption: true, typicalLeadTime: true }),
+    schema: baseWizardFormSchema.pick({ paymentMethods: true, deliveryOption: true, typicalLeadTime: true }),
   },
   {
     id: "subdomain",
     component: SubdomainStep,
-    schema: wizardFormSchema.pick({ subdomain: true }),
+    schema: baseWizardFormSchema.pick({ subdomain: true }),
   },
 ];
 
