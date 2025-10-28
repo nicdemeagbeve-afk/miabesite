@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
@@ -30,6 +32,9 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,10 +43,20 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Handle login logic here
-    console.log(values);
-    toast.success("Connexion réussie ! (Logique non implémentée)");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { email, password } = values;
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Connexion réussie ! Redirection vers le tableau de bord...");
+      router.push("/dashboard/overview");
+      router.refresh(); // Refresh to update session
+    }
   }
 
   return (
@@ -82,8 +97,8 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Se connecter
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Connexion en cours..." : "Se connecter"}
               </Button>
             </form>
           </Form>

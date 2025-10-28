@@ -23,32 +23,41 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Les mots de passe ne correspondent pas.",
+  path: ["confirmPassword"],
 });
 
-export default function ForgotPasswordPage() {
+export default function UpdatePasswordPage() {
+  const router = useRouter();
   const supabase = createClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { email } = values;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/auth/update-password`, // Redirect to a page where user can update password
+    const { password } = values;
+    const { error } = await supabase.auth.updateUser({
+      password: password,
     });
 
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé.");
+      toast.success("Votre mot de passe a été mis à jour avec succès !");
+      router.push("/dashboard/overview");
+      router.refresh();
     }
   }
 
@@ -56,9 +65,9 @@ export default function ForgotPasswordPage() {
     <div className="flex items-center justify-center min-h-screen bg-muted">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Mot de passe oublié</CardTitle>
+          <CardTitle className="text-2xl">Mettre à jour le mot de passe</CardTitle>
           <CardDescription>
-            Entrez votre email pour réinitialiser votre mot de passe.
+            Entrez votre nouveau mot de passe.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -66,19 +75,32 @@ export default function ForgotPasswordPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Nouveau mot de passe</FormLabel>
                     <FormControl>
-                      <Input placeholder="votre@email.com" {...field} />
+                      <Input type="password" placeholder="********" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="********" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Envoi en cours..." : "Réinitialiser le mot de passe"}
+                {form.formState.isSubmitting ? "Mise à jour..." : "Mettre à jour"}
               </Button>
             </form>
           </Form>
