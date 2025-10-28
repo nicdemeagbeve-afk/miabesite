@@ -61,6 +61,8 @@ const baseWizardFormSchema = z.object({
   paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   depositRequired: z.boolean(),
+  businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
+  showContactForm: z.boolean(),
 });
 
 // The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
@@ -68,6 +70,10 @@ const wizardFormSchema = baseWizardFormSchema;
 
 // Infer the type for the entire wizard form data from the schema
 type WizardFormData = z.infer<typeof wizardFormSchema>;
+
+interface SiteCreationWizardProps {
+  initialSiteData?: WizardFormData & { id?: string }; // Add id for existing sites
+}
 
 const steps: {
   id: string;
@@ -121,40 +127,44 @@ const steps: {
       paymentMethods: true,
       deliveryOption: true,
       depositRequired: true,
+      businessLocation: true,
+      showContactForm: true,
     }),
   },
 ];
 
-export function SiteCreationWizard() {
+export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps) {
   const [currentStep, setCurrentStep] = React.useState(0);
   const supabase = createClient();
   const router = useRouter();
 
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
-    publicName: "",
-    whatsappNumber: "",
-    secondaryPhoneNumber: "",
-    email: "",
-    primaryColor: "blue", // Default color
-    secondaryColor: "red", // Default color
-    logoOrPhoto: undefined,
+    publicName: initialSiteData?.publicName || "",
+    whatsappNumber: initialSiteData?.whatsappNumber || "",
+    secondaryPhoneNumber: initialSiteData?.secondaryPhoneNumber || "",
+    email: initialSiteData?.email || "",
+    primaryColor: initialSiteData?.primaryColor || "blue", // Default color
+    secondaryColor: initialSiteData?.secondaryColor || "red", // Default color
+    logoOrPhoto: initialSiteData?.logoOrPhoto || undefined, // This will be a URL if existing, not a File
 
-    heroSlogan: "",
-    aboutStory: "",
-    portfolioProofLink: "",
-    portfolioProofDescription: "",
+    heroSlogan: initialSiteData?.heroSlogan || "",
+    aboutStory: initialSiteData?.aboutStory || "",
+    portfolioProofLink: initialSiteData?.portfolioProofLink || "",
+    portfolioProofDescription: initialSiteData?.portfolioProofDescription || "",
 
-    productsAndServices: [], // Initialize with an empty array, ProductsServicesStep will add one if needed
+    productsAndServices: initialSiteData?.productsAndServices || [], // Initialize with an empty array, ProductsServicesStep will add one if needed
 
-    subdomain: "",
-    contactButtonAction: "whatsapp", // Default to WhatsApp
-    facebookLink: "",
-    instagramLink: "",
-    linkedinLink: "",
-    paymentMethods: [],
-    deliveryOption: "",
-    depositRequired: false,
+    subdomain: initialSiteData?.subdomain || "",
+    contactButtonAction: initialSiteData?.contactButtonAction || "whatsapp", // Default to WhatsApp
+    facebookLink: initialSiteData?.facebookLink || "",
+    instagramLink: initialSiteData?.instagramLink || "",
+    linkedinLink: initialSiteData?.linkedinLink || "",
+    paymentMethods: initialSiteData?.paymentMethods || [],
+    deliveryOption: initialSiteData?.deliveryOption || "",
+    depositRequired: initialSiteData?.depositRequired || false,
+    businessLocation: initialSiteData?.businessLocation || "",
+    showContactForm: initialSiteData?.showContactForm !== undefined ? initialSiteData.showContactForm : true, // Default to true
   };
 
   const methods = useForm<WizardFormData>({
@@ -207,7 +217,7 @@ export function SiteCreationWizard() {
     const productImages: { [key: number]: string | null } = {};
 
     try {
-      // Upload logo/photo if present
+      // Upload logo/photo if present and it's a new File (not an existing URL)
       if (data.logoOrPhoto instanceof File) {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('site-assets')
@@ -218,9 +228,12 @@ export function SiteCreationWizard() {
 
         if (uploadError) throw uploadError;
         logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+      } else if (typeof data.logoOrPhoto === 'string') {
+        // If it's already a string, it's an existing URL, so keep it
+        logoUrl = data.logoOrPhoto;
       }
 
-      // Upload product images if present
+      // Upload product images if present and they are new Files
       for (const [index, product] of data.productsAndServices.entries()) {
         if (product.image instanceof File) {
           const { data: uploadData, error: uploadError } = await supabase.storage
@@ -232,6 +245,9 @@ export function SiteCreationWizard() {
 
           if (uploadError) throw uploadError;
           productImages[index] = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+        } else if (typeof product.image === 'string') {
+          // If it's already a string, it's an existing URL, so keep it
+          productImages[index] = product.image;
         }
       }
 
@@ -241,37 +257,57 @@ export function SiteCreationWizard() {
         logoOrPhoto: logoUrl,
         productsAndServices: data.productsAndServices.map((product: typeof data.productsAndServices[number], index: number) => ({ // Explicitly type 'product' and 'index'
           ...product,
-          image: productImages[index] || product.image, // Use uploaded URL or original if not uploaded
+          image: productImages[index] !== undefined ? productImages[index] : product.image, // Use uploaded URL or original if not uploaded
         })),
       };
 
-      // Insert site data into Supabase
-      const { error: insertError } = await supabase
-        .from('sites')
-        .insert({
-          user_id: user.id,
-          subdomain: data.subdomain,
-          site_data: siteDataToSave,
-          status: 'published', // Default status
-          template_type: 'default', // Default template, can be chosen later
-        });
+      if (initialSiteData?.id) {
+        // Update existing site
+        const { error: updateError } = await supabase
+          .from('sites')
+          .update({
+            subdomain: data.subdomain,
+            site_data: siteDataToSave,
+            // status: 'published', // Keep existing status or update if needed
+            // template_type: 'default', // Keep existing template or update if needed
+          })
+          .eq('id', initialSiteData.id)
+          .eq('user_id', user.id);
 
-      if (insertError) {
-        // Check for unique constraint error on subdomain
-        if (insertError.code === '23505') { // PostgreSQL unique violation error code
-          toast.error(`Le sous-domaine "${data.subdomain}" est déjà pris. Veuillez en choisir un autre.`);
-        } else {
-          toast.error(`Erreur lors de la création du site: ${insertError.message}`);
+        if (updateError) {
+          toast.error(`Erreur lors de la mise à jour du site: ${updateError.message}`);
+          return;
         }
-        return;
+        toast.success("Votre site a été mis à jour avec succès ! Vous serez redirigé sous peu.");
+      } else {
+        // Insert new site
+        const { error: insertError } = await supabase
+          .from('sites')
+          .insert({
+            user_id: user.id,
+            subdomain: data.subdomain,
+            site_data: siteDataToSave,
+            status: 'published', // Default status
+            template_type: 'default', // Default template, can be chosen later
+          });
+
+        if (insertError) {
+          // Check for unique constraint error on subdomain
+          if (insertError.code === '23505') { // PostgreSQL unique violation error code
+            toast.error(`Le sous-domaine "${data.subdomain}" est déjà pris. Veuillez en choisir un autre.`);
+          } else {
+            toast.error(`Erreur lors de la création du site: ${insertError.message}`);
+          }
+          return;
+        }
+        toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
       }
 
-      toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
       router.push(`/dashboard/${data.subdomain}/overview`); // Redirect to the new site's dashboard
       router.refresh(); // Refresh to update data
     } catch (error: any) {
-      console.error("Site creation error:", error);
-      toast.error(`Une erreur est survenue: ${error.message || "Impossible de créer le site."}`);
+      console.error("Site creation/update error:", error);
+      toast.error(`Une erreur est survenue: ${error.message || "Impossible de créer/mettre à jour le site."}`);
     }
   };
 

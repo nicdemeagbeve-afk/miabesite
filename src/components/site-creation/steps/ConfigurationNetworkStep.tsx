@@ -73,6 +73,23 @@ export function ConfigurationNetworkStep() {
         )}
       />
 
+      <FormField
+        control={control}
+        name="businessLocation"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "businessLocation"> }) => (
+          <FormItem>
+            <FormLabel>Localisation de l'Entreprise</FormLabel>
+            <FormControl>
+              <Input placeholder="Ex: Dakar, Sénégal" {...field} />
+            </FormControl>
+            <FormMessage />
+            <p className="text-sm text-muted-foreground">
+              L'adresse principale ou la zone de service de votre entreprise.
+            </p>
+          </FormItem>
+        )}
+      />
+
       <Separator className="my-8" />
 
       <h4 className="text-xl font-semibold text-center">Gestion des Commandes</h4>
@@ -100,6 +117,27 @@ export function ConfigurationNetworkStep() {
             <p className="text-sm text-muted-foreground">
               Où souhaitez-vous que vos clients soient dirigés pour vous contacter ou commander ?
             </p>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="showContactForm"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "showContactForm"> }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>Afficher un formulaire de contact ?</FormLabel>
+              <p className="text-sm text-muted-foreground">
+                Cochez pour inclure un formulaire de contact sur votre site.
+              </p>
+            </div>
           </FormItem>
         )}
       />

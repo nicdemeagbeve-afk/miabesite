@@ -34,6 +34,8 @@ interface SiteData {
   portfolioProofDescription?: string;
   logoOrPhoto?: string | null; // Added logoOrPhoto
   showTestimonials?: boolean; // Added showTestimonials
+  businessLocation?: string; // Added businessLocation
+  showContactForm?: boolean; // Added showContactForm
 }
 
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {

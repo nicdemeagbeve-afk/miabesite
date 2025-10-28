@@ -50,6 +50,8 @@ interface SiteData {
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
   showTestimonials?: boolean; // Added showTestimonials
+  businessLocation?: string; // Added businessLocation
+  showContactForm?: boolean; // Added showContactForm
 }
 
 interface ServicePortfolioTemplateProps {
@@ -105,7 +107,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
 
   const portfolioItems = siteData.portfolioProofLink
     ? [{
-        image: siteData.portfolioProofLink.match(/\.(jpeg|jpg|gif|png|svg)$/) ? siteData.portfolioProofLink : 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
+        image: siteData.portfolioProofLink.match(/\.(jpeg|jpg|gif|png|svg)$/) ? siteData.portfolioProofLink : 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', // Fallback placeholder
         title: "Projet Réalisé",
         description: siteData.portfolioProofDescription || "Découvrez notre dernière réalisation.",
       }]
@@ -194,14 +196,14 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               À propos de nous
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 text-lg leading-relaxed space-y-4">
               <p>{siteData.aboutStory}</p>
               <p>Nous nous engageons à fournir un travail de qualité avec une attention particulière aux détails. Notre objectif est de satisfaire pleinement nos clients en répondant à leurs besoins spécifiques et en respectant les délais convenus. Chaque projet est pour nous l'occasion de créer un espace de vie amélioré et fonctionnel.</p>
-              <p>Basé à {siteData.publicName}, nous nous déplaçons dans toute la région pour réaliser vos projets.</p>
+              <p>Basé à {siteData.businessLocation || "Dakar, Sénégal"}, nous nous déplaçons dans toute la région pour réaliser vos projets.</p>
             </div>
             <div className="md:w-1/2 rounded-lg overflow-hidden shadow-lg">
               <Image src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Artisan au travail" width={700} height={400} className="w-full h-auto object-cover" />
@@ -216,7 +218,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Nos Services
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -258,7 +260,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Nos Réalisations
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -284,7 +286,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             <div className="text-center mb-12">
               <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
                 Témoignages Clients
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -312,7 +314,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
           <div className="text-center mb-12">
             <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
               Contactez-nous
-              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-lg", primaryColorClass)}></span>
+              <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -350,7 +352,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Adresse</h3>
-                  <p className="text-gray-600">Dakar, Sénégal</p>
+                  <p className="text-gray-600">{siteData.businessLocation || "Dakar, Sénégal"}</p>
                   <p className="text-gray-600">Intervention dans toute la région</p>
                 </div>
               </div>
@@ -365,38 +367,40 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                 </div>
               </div>
             </div>
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md">
-              <form className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
-                  <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
-                  <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                  <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                </div>
-                <div>
-                  <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
-                  <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Sélectionnez un service</option>
-                    {siteData.productsAndServices.map((product: any, idx: number) => (
-                      <option key={idx} value={product.title}>{product.title}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
-                  <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                </div>
-                <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}>
-                  Envoyer le message
-                </button>
-              </form>
-            </div>
+            {siteData.showContactForm && (
+              <div className="bg-gray-100 p-8 rounded-lg shadow-md">
+                <form className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
+                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
+                    <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                      <option value="">Sélectionnez un service</option>
+                      {siteData.productsAndServices.map((product: any, idx: number) => (
+                        <option key={idx} value={product.title}>{product.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
+                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                  </div>
+                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}>
+                    Envoyer le message
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -447,59 +451,177 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
               <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
                 Contact
               </h3>
-              <div className="space-y-3 text-gray-300">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.email || `contact@${siteData.subdomain}.com`}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <p>Dakar, Sénégal</p>
-                </div>
-              </div>
-            </div>
+              <div className="space-y-<dyad-problem-report summary="2 problems">
+<problem file="src/app/create-site/page.tsx" line="89" column="27" code="2322">Type 'SiteData | undefined' is not assignable to type '({ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; } &amp; { ...; }) | undefined'.
+  Type 'SiteData' is not assignable to type '{ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; } &amp; { ...; }'.
+    Type 'SiteData' is missing the following properties from type '{ subdomain: string; businessLocation: string; contactButtonAction: string; showContactForm: boolean; paymentMethods: string[]; deliveryOption: string; depositRequired: boolean; publicName: string; ... 13 more ...; portfolioProofDescription?: string | undefined; }': businessLocation, contactButtonAction, showContactForm, paymentMethods, and 9 more.</problem>
+<problem file=".next/types/app/dashboard/layout.ts" line="34" column="31" code="2344">Type '{ children: ReactNode; params: { subdomain?: string | string[] | undefined; }; }' does not satisfy the constraint 'LayoutProps'.
+  Types of property 'params' are incompatible.
+    Type '{ subdomain?: string | string[] | undefined; }' is missing the following properties from type 'Promise&lt;any&gt;': then, catch, finally, [Symbol.toStringTag]</problem>
+</dyad-problem-report><think>**Debugging TypeScript Errors**
 
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Modes de paiement
-              </h3>
-              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
-              <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-lg text-sm font-semibold">
-                    {method}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+I'm currently focused on resolving the TypeScript errors flagged in `src/app/create-site/page.tsx`. Specifically, there's a type mismatch issue with `initialSiteData` when passed to `SiteCreationWizard`. I'm going to investigate the expected type of `initialSiteData` in the wizard's context and ensure it aligns with the data being provided, likely by exploring possible type annotations.
 
-          <div className="text-center pt-8 border-t border-white/10 opacity-70">
-            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
 
-      {/* Back to Top Button */}
-      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
-        <ChevronUp className="h-6 w-6" />
-      </a>
-    </div>
+**Refining Data Structures**
+
+I'm now diving deeper into the `SiteData` and `WizardFormData` type discrepancies. The core problem lies in the structure of `initialSiteData` passed to the `SiteCreationWizard`. I've realized that the `SiteData` interface in `CreateSitePage.tsx` needs to precisely mirror the Supabase data structure, including the `site_data` field as a nested object. My next step is to accurately map the data fetched from Supabase to a structure that seamlessly aligns with `WizardFormData`, ensuring that the form's internal types are satisfied. This necessitates adjusting the data extraction and merging process to preserve the expected nested structure.
+
+
+**Analyzing Data Mapping**
+
+My focus has shifted to the precise data transformation from Supabase to the `WizardFormData` structure. I've realized that the `SiteData` interface needs to accurately mirror the database row's structure, including the nested `site_data` object, which contains all the detailed form values.  I'm exploring how to map the incoming Supabase data, particularly the `site_data` field, into the required format for the `SiteCreationWizard` without losing its nested structure. The current approach of spreading `data.site_data` is almost right, but needs to fully accommodate the required type of the state variable.
+
+
+**Mapping Data Types**
+
+I'm now zeroing in on precisely matching the data fetched from Supabase, particularly the structure of the `site_data` field, with the `WizardFormData` type expected by the wizard component. The goal is to accurately transform the incoming data, including the nested `site_data` object, to satisfy the `SiteCreationWizard`'s requirements.  I will adjust the `SiteData` interface to accurately mirror the Supabase data, ensuring that the `site_data` field is correctly typed as `WizardFormData`. This will involve a straightforward re-structuring of the `SiteData` type, combined with explicitly typing the `initialSiteData` state.
+
+
+**Implementing Type Safety**
+
+I've updated the `SiteData` interface to accurately mirror the Supabase data structure, specifically typing the `site_data` field as `WizardFormData`. This directly addresses the type mismatch error when passing `initialSiteData` to the `SiteCreationWizard` component.  Additionally, I ensured the `initialSiteData` state variable is explicitly typed as `WizardFormData & { id?: string }`.  With these modifications, I expect the TypeScript errors to be resolved, allowing for a clean rebuild and removing the persistent type issues.
+
+
+</think>You're right, the first error is a type mismatch when passing `initialSiteData` to the `SiteCreationWizard`. The `SiteCreationWizard` expects a more detailed type (`WizardFormData`) for `initialSiteData`, while the `SiteData` interface in `CreateSitePage.tsx` was a more generic representation of the database row.
+
+To fix this, I'll update the `SiteData` interface in `src/app/create-site/page.tsx` to explicitly define `site_data` as `WizardFormData`. This ensures that when we spread `data.site_data` into `initialSiteData`, it correctly matches the expected type for the wizard.
+
+The second error in `.next/types` is a generated file issue that should resolve once the source code error is fixed and a full rebuild is performed.
+
+Here's the code change:
+
+<dyad-write path="src/app/create-site/page.tsx" description="Updating SiteData interface to correctly type site_data as WizardFormData, resolving type mismatch with SiteCreationWizard.">
+"use client";
+
+import React from "react";
+import { SiteCreationWizard } from "@/components/site-creation/SiteCreationWizard";
+import { Toaster } from "@/components/ui/sonner"; // Import Toaster for notifications
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { createClient } from "@/lib/supabase/client"; // Import Supabase client
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { z } from "zod"; // Import z for WizardFormData inference
+
+// Define the schema for the wizard form data (copied from SiteCreationWizard for type inference)
+const wizardFormSchema = z.object({
+  publicName: z.string(),
+  whatsappNumber: z.string(),
+  secondaryPhoneNumber: z.string().optional().or(z.literal('')),
+  email: z.string().optional().or(z.literal('')),
+  primaryColor: z.string(),
+  secondaryColor: z.string(),
+  logoOrPhoto: z.any().optional(),
+  heroSlogan: z.string(),
+  aboutStory: z.string(),
+  portfolioProofLink: z.string().optional().or(z.literal('')),
+  portfolioProofDescription: z.string().optional().or(z.literal('')),
+  productsAndServices: z.array(z.object({
+    title: z.string(),
+    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().optional()),
+    currency: z.string(),
+    description: z.string(),
+    image: z.any().optional(),
+    actionButton: z.string(),
+  })),
+  subdomain: z.string(),
+  contactButtonAction: z.string(),
+  facebookLink: z.string().optional().or(z.literal('')),
+  instagramLink: z.string().optional().or(z.literal('')),
+  linkedinLink: z.string().optional().or(z.literal('')),
+  paymentMethods: z.array(z.string()),
+  deliveryOption: z.string(),
+  depositRequired: z.boolean(),
+  businessLocation: z.string(),
+  showContactForm: z.boolean(),
+});
+
+type WizardFormData = z.infer<typeof wizardFormSchema>;
+
+// Interface for the data fetched directly from the 'sites' table
+interface FetchedSiteData {
+  id: string;
+  user_id: string;
+  subdomain: string;
+  site_data: WizardFormData; // This is the key change
+  status: string;
+  template_type: string;
+  created_at: string;
+}
+
+export default function CreateSitePage() {
+  const searchParams = useSearchParams();
+  const subdomain = searchParams.get('subdomain');
+  const supabase = createClient();
+
+  // The state for initialSiteData should match what SiteCreationWizard expects
+  const [initialSiteData, setInitialSiteData] = React.useState<(WizardFormData & { id?: string }) | undefined>(undefined);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    async function fetchSiteData() {
+      if (!subdomain) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        // User not logged in, wizard will handle redirection
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sites')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('subdomain', subdomain)
+        .single();
+
+      if (error) {
+        console.error("Error fetching site data for wizard:", error);
+        setError("Erreur lors du chargement des données du site pour modification.");
+        toast.error("Erreur lors du chargement des données du site.");
+      } else if (data) {
+        // Merge site_data with top-level site properties for wizard
+        // Ensure data is cast to FetchedSiteData for correct type access
+        const fetchedData = data as FetchedSiteData;
+        setInitialSiteData({ ...fetchedData.site_data, id: fetchedData.id, subdomain: fetchedData.subdomain });
+      } else {
+        setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
+        toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
+      }
+      setLoading(false);
+    }
+
+    fetchSiteData();
+  }, [subdomain, supabase]);
+
+  if (loading && subdomain) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-muted py-12">
+        <Skeleton className="w-full max-w-2xl h-[600px] p-6" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-muted py-12 text-red-500">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <SiteCreationWizard initialSiteData={initialSiteData} />
+      <Toaster />
+    </>
   );
 }

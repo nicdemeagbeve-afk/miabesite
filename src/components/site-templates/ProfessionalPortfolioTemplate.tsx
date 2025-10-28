@@ -48,6 +48,8 @@ interface SiteData {
   portfolioProofLink?: string;
   portfolioProofDescription?: string;
   showTestimonials?: boolean; // Added showTestimonials
+  businessLocation?: string; // Added businessLocation
+  showContactForm?: boolean; // Added showContactForm
 }
 
 interface ProfessionalPortfolioTemplateProps {
@@ -150,7 +152,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
 
   const portfolioItems = siteData.productsAndServices.length > 0
     ? siteData.productsAndServices.map(p => ({
-        image: p.image || 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
+        image: p.image || 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80', // Fallback placeholder
         title: p.title,
         description: p.description,
         category: "Rénovation",
@@ -447,7 +449,7 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
                   <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <p>Dakar, Sénégal</p>
+                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
                 </div>
               </div>
             </div>

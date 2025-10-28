@@ -139,7 +139,7 @@ export function ContentModification({
             Mettez à jour rapidement les informations clés de votre site via l'assistant.
           </p>
           <Button asChild size="lg" className="w-full">
-            <Link href="/create-site">
+            <Link href={`/create-site?subdomain=${subdomain}`}> {/* Pass subdomain for editing */}
               <Pencil className="mr-2 h-5 w-5" /> Modifier le Contenu (Wizard)
             </Link>
           </Button>

@@ -19,11 +19,11 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({ siteData }: DashboardStatsProps) {
-  // Placeholder data - in a real app, these would come from an API
-  // For now, they are still placeholders, but now they are tied to a specific site.
-  const totalSales = "125 000 F CFA";
-  const totalVisits = 1245;
-  const totalContacts = 42;
+  // Placeholder data - these should be fetched from an API for the specific site
+  // For now, they are initialized to zero/empty and ready for dynamic data.
+  const totalSales = "0 F CFA"; // Placeholder, fetch from backend
+  const totalVisits = 0; // Placeholder, fetch from backend
+  const totalContacts = 0; // Placeholder, fetch from backend
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
