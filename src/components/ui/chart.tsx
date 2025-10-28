@@ -63,7 +63,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerComponentP
 ChartContainer.displayName = "ChartContainer";
 
 
-type ChartTooltipProps = React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
+type ChartTooltipProps = Omit<React.ComponentProps<typeof RechartsPrimitive.Tooltip>, 'content'> & {
   hideLabel?: boolean;
   hideIndicator?: boolean;
   indicator?: "dot" | "line";
@@ -80,9 +80,10 @@ function ChartTooltip({
   hideLabel = false,
   hideIndicator = false,
   indicator = "dot",
-  className, // Destructure className directly from RechartsPrimitive.Tooltip props
-  style, // Destructure style directly
-  ...props // Capture any other props passed by RechartsPrimitive.Tooltip
+  wrapperClassName, // Recharts passes this for the wrapper div
+  wrapperStyle,   // Recharts passes this for the wrapper div
+  // Do NOT destructure 'className' or 'style' directly here, as they are not passed by Recharts to content
+  ...props // Capture any other Recharts-specific props (e.g., formatter, separator)
 }: ChartTooltipProps) {
   const { config } = React.useContext(ChartContext)!;
 
@@ -96,10 +97,10 @@ function ChartTooltip({
     <div
       className={cn(
         "grid min-w-[130px] items-center rounded-lg border border-border bg-background px-2.5 py-2 text-xs shadow-md",
-        className // Use the destructured className
+        wrapperClassName // Use wrapperClassName
       )}
-      style={style} // Apply the style
-      {...props} // Spread any other relevant HTMLDivElement props if needed, but usually not for content
+      style={wrapperStyle} // Apply wrapperStyle
+      // Do NOT spread ...props here, as they are Recharts-specific and not for a div
     >
       {!hideLabel && label ? (
         <div className="border-b border-muted pb-2 mb-2">
