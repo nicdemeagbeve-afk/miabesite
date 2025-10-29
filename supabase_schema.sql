@@ -11,9 +11,9 @@ DROP POLICY IF EXISTS "Enable delete for users based on user_id" ON public.sites
 DROP TABLE IF EXISTS public.sites CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 
--- Supprimer les buckets de stockage existants si ils existent
-SELECT supabase_storage.drop_bucket('profile-pictures');
-SELECT supabase_storage.drop_bucket('site-assets');
+-- Supprimer les buckets de stockage existants en utilisant DELETE FROM storage.buckets
+DELETE FROM storage.buckets WHERE id = 'profile-pictures';
+DELETE FROM storage.buckets WHERE id = 'site-assets';
 
 -- Créer la table 'profiles' pour les métadonnées utilisateur
 CREATE TABLE public.profiles (
@@ -44,7 +44,7 @@ CREATE TABLE public.sites (
   user_id uuid REFERENCES auth.users ON DELETE CASCADE NOT NULL,
   subdomain text UNIQUE NOT NULL, -- Identifiant unique pour l'URL du site
   site_data jsonb NOT NULL, -- Toutes les données du wizard
-  status text DEFAULT 'draft' NOT NULL, -- 'draft', 'published', etc.
+  status text DEFAULT 'published' NOT NULL, -- 'draft', 'published', etc.
   template_type text DEFAULT 'default' NOT NULL, -- 'default', 'ecommerce', 'service-portfolio', etc.
   created_at timestamp with time zone DEFAULT now()
 );
