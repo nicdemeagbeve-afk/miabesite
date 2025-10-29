@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageCircle, Edit } from "lucide-react"; // Added Edit icon
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon } from "lucide-react"; // Added MailIcon
 import { UserProfileButton } from "./UserProfileButton"; // Import UserProfileButton
 
 interface DashboardSidebarProps {
@@ -27,6 +27,12 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       href: `/dashboard/${subdomain}/overview`,
       icon: <LayoutDashboard className="h-5 w-5" />,
       label: "Vue d'Ensemble",
+      requiresSubdomain: true,
+    },
+    {
+      href: `/dashboard/${subdomain}/messages`, // New link for messages
+      icon: <MailIcon className="h-5 w-5" />,
+      label: "Messages",
       requiresSubdomain: true,
     },
     {
@@ -103,7 +109,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
           className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground text-green-600 hover:text-green-700"
           onClick={onLinkClick}
         >
-          <MessageCircle className="h-5 w-5" />
+          <MessageSquare className="h-5 w-5" />
           Support WhatsApp
         </a>
       </nav>
