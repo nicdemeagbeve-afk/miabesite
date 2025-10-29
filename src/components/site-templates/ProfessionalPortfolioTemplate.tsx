@@ -20,6 +20,7 @@ import {
   Star,
   User,
   CheckCircle,
+  Briefcase, // Added import
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -469,9 +470,12 @@ export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfoli
       </footer>
 
       {/* Back to Top Button */}
-      <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}>
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+      >
         <ChevronUp className="h-6 w-6" />
-      </a>
+      </button>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User } from 'lucide-react'; // ADD User icon
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type
@@ -242,7 +242,6 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
         </section>
       )}
 
-      {/* About Section */}
       {sectionsVisibility.showAbout && (
         <section id="about" className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl text-center">
@@ -254,7 +253,6 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
         </section>
       )}
 
-      {/* Skills Section (New for Ecommerce Template) */}
       {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && (
         <section id="skills" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -309,7 +307,6 @@ export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
         </section>
       )}
 
-      {/* Contact Section */}
       {sectionsVisibility.showContact && (
         <section id="contact" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
