@@ -30,6 +30,10 @@ import {
   Wrench,
   StarHalf,
   Check,
+  Hammer, // Added import
+  PaintRoller, // Added import
+  Briefcase, // Added import
+  CheckCircle, // Added import
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -105,8 +109,8 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
     ? siteData.paymentMethods
     : ["Mobile Money", "Wave", "Carte Bancaire", "Virement", "Cash"];
 
-  const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
-  const services = siteData.productsAndServices.filter(item => item.actionButton !== 'buy');
+  const products = siteData.productsAndServices.filter((item: typeof siteData.productsAndServices[number]) => item.actionButton === 'buy');
+  const services = siteData.productsAndServices.filter((item: typeof siteData.productsAndServices[number]) => item.actionButton !== 'buy');
 
   const testimonialsToDisplay = siteData.testimonials && siteData.testimonials.length > 0
     ? siteData.testimonials
@@ -242,7 +246,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                       {cartCount}
                     </span>
                   )}
-                )}
+                </a>
               </div>
             </nav>
           </div>
@@ -322,7 +326,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, secondaryColorTextClass, secondaryColorHoverBgClass, "hover:text-white")}>Accessoires</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product: any, index: number) => (
+              {products.map((product: typeof siteData.productsAndServices[number], index: number) => (
                 <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 relative group">
                   {index === 0 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold text-white z-10", primaryColorClass)}>Nouveau</span>}
                   {index === 1 && <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold text-white z-10", primaryColorClass)}>Bestseller</span>}
@@ -382,7 +386,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Des prestations adaptées à vos besoins spécifiques</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service: any, index: number) => (
+              {services.map((service: typeof siteData.productsAndServices[number], index: number) => (
                 <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}>
                   <div className={cn("h-20 w-20 rounded-full flex items-center justify-center text-white text-3xl mx-auto mb-6", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}>
                     {index === 0 && <PencilRuler className="h-10 w-10" />}
@@ -419,7 +423,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Compétences</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {skillsToDisplay.map((skill, index) => {
+              {skillsToDisplay.map((skill: typeof siteData.skills[number], index: number) => {
                 const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
@@ -446,7 +450,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Placeholder testimonials */}
-              {testimonialsToDisplay.map((testimonial: any, index: number) => (
+              {testimonialsToDisplay.map((testimonial: typeof siteData.testimonials[number], index: number) => (
                 <div key={index} className="bg-gray-100 rounded-xl p-8 shadow-lg relative">
                   <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
                   <p className="text-lg italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>

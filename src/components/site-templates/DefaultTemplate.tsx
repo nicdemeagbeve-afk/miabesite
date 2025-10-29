@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, MapPin, Star, Wrench } from 'lucide-react'; // Added MapPin, Star, Wrench icons
+import { MessageSquare, MapPin, Star, Wrench, Phone, Mail } from 'lucide-react'; // Added Phone, Mail icons
 import { cn } from '@/lib/utils';
 import Image from 'next/image'; // Import Image component
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type

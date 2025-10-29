@@ -100,39 +100,10 @@ export function ContentStep() {
       <p className="text-center text-muted-foreground">
         Ces champs sont des options rapides. Pour une gestion complète des témoignages et compétences, utilisez l'éditeur avancé.
       </p>
-      <FormField
-        control={control}
-        name="portfolioProofLink"
-        render={({ field }: { field: ControllerRenderProps<FieldValues, "portfolioProofLink"> }) => (
-          <FormItem>
-            <FormLabel>Lien vers vos Réalisations (Optionnel)</FormLabel>
-            <FormControl>
-              <Input placeholder="Ex: https://drive.google.com/mon-portfolio" {...field} />
-            </FormControl>
-            <FormMessage />
-            <p className="text-sm text-muted-foreground">
-              Lien vers un portfolio, Google Drive, ou des photos de vos projets.
-            </p>
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="portfolioProofDescription"
-        render={({ field }: { field: ControllerRenderProps<FieldValues, "portfolioProofDescription"> }) => (
-          <FormItem>
-            <FormLabel>Description Courte d'un Projet (Optionnel)</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="Décrivez brièvement un projet phare ou un témoignage (max 200 caractères)."
-                className="resize-y min-h-[60px]"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Removed portfolioProofLink and portfolioProofDescription fields */}
+      <p className="text-sm text-muted-foreground">
+        Pour ajouter des liens vers vos réalisations ou des descriptions de projets, veuillez utiliser l'éditeur avancé.
+      </p>
     </div>
   );
 }

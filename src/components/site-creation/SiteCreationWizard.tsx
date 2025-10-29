@@ -133,8 +133,6 @@ const steps: {
     schema: wizardFormSchema.pick({
       heroSlogan: true,
       aboutStory: true,
-      portfolioProofLink: true, // Kept for now, but might be removed if replaced by new sections
-      portfolioProofDescription: true, // Kept for now
       heroBackgroundImage: true, // Added hero background image
     }),
   },
@@ -192,6 +190,15 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
   const [currentStep, setCurrentStep] = React.useState(0);
   const supabase = createClient();
   const router = useRouter();
+  const [user, setUser] = React.useState<any>(null); // Define user state
+
+  React.useEffect(() => {
+    async function getUser() {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      setUser(currentUser);
+    }
+    getUser();
+  }, [supabase]);
 
   // Define defaultValues based on the WizardFormData type
   const defaultValues: WizardFormData = {
@@ -206,8 +213,6 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
 
     heroSlogan: initialSiteData?.heroSlogan || "",
     aboutStory: initialSiteData?.aboutStory || "",
-    portfolioProofLink: initialSiteData?.portfolioProofLink || "",
-    portfolioProofDescription: initialSiteData?.portfolioProofDescription || "",
     heroBackgroundImage: initialSiteData?.heroBackgroundImage || undefined,
 
     productsAndServices: initialSiteData?.productsAndServices || [], // Initialize with an empty array, ProductsServicesStep will add one if needed
@@ -282,8 +287,13 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
   const handleFileUpload = async (file: File, path: string, siteIdentifier: string): Promise<string | null> => {
     if (!file) return null;
 
+    if (!user) { // Ensure user is defined before attempting upload
+      toast.error("Utilisateur non authentifié pour le téléchargement de fichiers.");
+      return null;
+    }
+
     const sanitizedFileName = sanitizeFileNameForStorage(file.name);
-    const filePath = `${user?.id}/${siteIdentifier}/${path}/${Date.now()}-${sanitizedFileName}`;
+    const filePath = `${user.id}/${siteIdentifier}/${path}/${Date.now()}-${sanitizedFileName}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('site-assets')
@@ -302,9 +312,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
   };
 
   const onSubmit: SubmitHandler<WizardFormData> = async (data: WizardFormData) => { // Explicitly type 'data'
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    if (userError || !user) {
+    if (!user) {
       toast.error("Vous devez être connecté pour créer un site.");
       router.push("/login");
       return;
@@ -417,7 +425,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
           showSkills: true,
           showContact: true,
         },
-        subdomain: siteIdentifier!, // Ensure the generated identifier is saved within site_data
+        // Removed subdomain from siteDataToSave as it's a top-level column
       };
 
       if (initialSiteData?.id) {
@@ -425,7 +433,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
         const { error: updateError } = await supabase
           .from('sites')
           .update({
-            subdomain: siteIdentifier, // Update with the (potentially same) identifier
+            subdomain: siteIdentifier, // This is correct, updating the top-level column
             site_data: siteDataToSave,
             template_type: data.templateType, // Update template type
           })
@@ -488,8 +496,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
                 isValid={isCurrentStepValid} // Pass the current step's validity
               />
             </form>
-          </Form>
-        </CardContent>
+          </CardContent>
       </Card>
     </div>
   );
