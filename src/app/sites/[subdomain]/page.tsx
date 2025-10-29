@@ -8,15 +8,13 @@ import { ProfessionalPortfolioTemplate } from '@/components/site-templates/Profe
 import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the new comprehensive schema type
 
-// Define a basic type for the site data, matching what's stored in Supabase
-interface FetchedSiteData {
-  id: string;
-  user_id: string;
-  subdomain: string;
-  site_data: SiteEditorFormData; // Use the new comprehensive type here
-  status: string;
-  template_type: string;
-  created_at: string;
+// Define the PageProps interface explicitly for this dynamic route
+interface PageProps {
+  params: {
+    subdomain: string;
+  };
+  // searchParams is optional for this component, but good practice to include if it might be used
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {
