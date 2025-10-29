@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteEditorForm } from "@/components/dashboard/SiteEditorForm";
-import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new schema type
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new comprehensive type
 
 interface SiteDataFromDB {
   id: string;

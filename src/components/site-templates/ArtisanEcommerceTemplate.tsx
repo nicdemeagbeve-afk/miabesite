@@ -305,6 +305,15 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
       {sectionsVisibility.showHero && (
         <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center", secondaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), var(--${siteData.secondaryColor}-700)` }}>
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            {siteData.logoOrPhoto && (
+              <Image
+                src={siteData.logoOrPhoto}
+                alt={`${siteData.publicName} Logo`}
+                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 80 : 150}
+                className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
+              />
+            )}
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -355,7 +364,6 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
         </div>
       </section>
 
-      {/* Products Section */}
       {sectionsVisibility.showProductsServices && products.length > 0 && (
         <section id="produits" className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -422,7 +430,6 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
         </section>
       )}
 
-      {/* Services Section */}
       {sectionsVisibility.showProductsServices && services.length > 0 && (
         <section id="services" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">

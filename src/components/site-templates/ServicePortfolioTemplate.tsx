@@ -22,6 +22,7 @@ import {
   PaintRoller,
   CheckCircle,
   User,
+  Briefcase, // Added Briefcase import
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -163,6 +164,15 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
     ? siteData.paymentMethods
     : ["Mobile Money", "Cash", "Virement", "Wave"];
 
+  // Helper to get Lucide icon component by name
+  const getLucideIcon = (iconName: string) => {
+    const icons: { [key: string]: React.ElementType } = {
+      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle,
+      // Add other Lucide icons as needed
+    };
+    return icons[iconName] || Wrench; // Default to Wrench if not found
+  };
+
   return (
     <div className="font-sans antialiased text-gray-800 bg-gray-50">
       {/* Header */}
@@ -220,6 +230,15 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       {sectionsVisibility.showHero && (
         <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--${siteData.primaryColor}-600)` }}>
           <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+            {siteData.logoOrPhoto && (
+              <Image
+                src={siteData.logoOrPhoto}
+                alt={`${siteData.publicName} Logo`}
+                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 80 : 150}
+                className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
+              />
+            )}
             <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
             <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass)}>
@@ -326,20 +345,10 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
             <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Compétences</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {siteData.skills.map((skill, index) => {
-                const IconComponent = skill.icon ? (
-                  // Dynamically render Lucide icon based on string name
-                  // This requires a mapping or a dynamic import, for simplicity,
-                  // we'll use a placeholder or a limited set for now.
-                  // In a real app, you'd have a map like { "Wrench": Wrench, ... }
-                  // For this example, let's just use a generic icon or a few hardcoded ones.
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                ) : (
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                );
-
+                const IconComponent = skill.icon ? getLucideIcon(skill.icon) : Wrench;
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-                    <div className="flex items-center justify-center mb-4">{IconComponent}</div>
+                    <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-8 w-8", primaryColorTextClass)} /></div>
                     <h3 className="text-xl font-semibold text-gray-800">{skill.title}</h3>
                     <p className="text-muted-foreground text-sm">{skill.description}</p>
                   </div>

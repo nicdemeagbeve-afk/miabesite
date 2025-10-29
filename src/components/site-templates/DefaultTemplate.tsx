@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check } from 'lucide-react'; // Added Check icon
+import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check } from 'lucide-react'; // Added User icon
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -102,9 +102,9 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
             <Image
               src={siteData.logoOrPhoto}
               alt={`${siteData.publicName} Logo`}
-              width={100}
-              height={100}
-              className="rounded-full object-cover mb-4"
+              width={siteData.heroBackgroundImage ? 100 : 200} // Smaller if background image, larger if not
+              height={siteData.heroBackgroundImage ? 100 : 200}
+              className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
             />
           )}
           <h1 className="text-4xl md:text-5xl font-bold mb-4">

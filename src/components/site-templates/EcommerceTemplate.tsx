@@ -197,6 +197,15 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       {sectionsVisibility.showHero && (
         <section id="hero" className={cn("relative py-24 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--${siteData.primaryColor}-600)` }}>
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            {siteData.logoOrPhoto && (
+              <Image
+                src={siteData.logoOrPhoto}
+                alt={`${siteData.publicName} Logo`}
+                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 80 : 150}
+                className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
+              />
+            )}
             <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
             <Link

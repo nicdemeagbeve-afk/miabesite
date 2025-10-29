@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import { createClient } from "@/lib/supabase/client"; // Import Supabase client
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new comprehensive schema type
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new comprehensive type
+import { useRouter } from "next/navigation"; // Ensure useRouter is imported
 
 // Interface for the data fetched directly from the 'sites' table
 interface FetchedSiteData {
@@ -25,6 +26,7 @@ export default function CreateSitePage() {
   const subdomain = searchParams.get('subdomain');
   const templateTypeFromUrl = searchParams.get('templateType'); // Get templateType from URL
   const supabase = createClient();
+  const router = useRouter(); // Initialize useRouter
 
   // The state for initialSiteData should match what SiteCreationWizard expects
   const [initialSiteData, setInitialSiteData] = React.useState<(SiteEditorFormData & { id?: string }) | undefined>(undefined);
@@ -40,9 +42,10 @@ export default function CreateSitePage() {
             ...prev,
             templateType: templateTypeFromUrl,
             // Set default values for new fields if not provided by initialSiteData
-            heroBackgroundImage: undefined,
-            testimonials: [],
-            skills: [],
+            productsAndServices: [], // Ensure it's an array
+            testimonials: [], // Ensure it's an array
+            skills: [], // Ensure it's an array
+            paymentMethods: [], // Ensure it's an array
             sectionsVisibility: {
               showHero: true,
               showAbout: true,
@@ -84,12 +87,13 @@ export default function CreateSitePage() {
       } else {
         setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
         toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
+        router.push('/dashboard/sites');
       }
       setLoading(false);
     }
 
     fetchSiteData();
-  }, [subdomain, templateTypeFromUrl, supabase]); // Add templateTypeFromUrl to dependencies
+  }, [subdomain, templateTypeFromUrl, supabase, router]); // Added router to dependencies
 
   if (loading && subdomain) {
     return (

@@ -259,6 +259,15 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       {sectionsVisibility.showHero && (
         <section id="accueil" className={cn("relative py-32 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), var(--${siteData.primaryColor}-700)` }}>
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            {siteData.logoOrPhoto && (
+              <Image
+                src={siteData.logoOrPhoto}
+                alt={`${siteData.publicName} Logo`}
+                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 80 : 150}
+                className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
+              />
+            )}
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
             <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
