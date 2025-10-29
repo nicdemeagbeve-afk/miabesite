@@ -94,7 +94,7 @@ const steps: {
       primaryColor: true,
       secondaryColor: true,
       logoOrPhoto: true,
-      templateType: true, // Include templateType in this step's schema
+      // templateType: true, // REMOVED: templateType is now selected before the wizard
     }),
   },
   {
@@ -205,6 +205,14 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     trigger,
     formState: { isSubmitting, errors }, // Get errors from formState
   } = methods;
+
+  // Set the templateType value in the form if it comes from initialSiteData
+  React.useEffect(() => {
+    if (initialSiteData?.templateType) {
+      methods.setValue('templateType', initialSiteData.templateType);
+    }
+  }, [initialSiteData?.templateType, methods]);
+
 
   // Determine if the current step is valid based on its schema and current errors
   const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;

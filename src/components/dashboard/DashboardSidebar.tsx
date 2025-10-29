@@ -103,7 +103,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       </nav>
       <div className="mt-auto pt-4 border-t border-border">
         <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/create-site" onClick={onLinkClick}>
+          <Link href="/create-site/select-template" onClick={onLinkClick}>
             <PlusCircle className="mr-2 h-5 w-5" /> Créer un site
           </Link>
         </Button>

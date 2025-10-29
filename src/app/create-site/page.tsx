@@ -59,6 +59,7 @@ interface FetchedSiteData {
 export default function CreateSitePage() {
   const searchParams = useSearchParams();
   const subdomain = searchParams.get('subdomain');
+  const templateTypeFromUrl = searchParams.get('templateType'); // Get templateType from URL
   const supabase = createClient();
 
   // The state for initialSiteData should match what SiteCreationWizard expects
@@ -69,6 +70,13 @@ export default function CreateSitePage() {
   React.useEffect(() => {
     async function fetchSiteData() {
       if (!subdomain) {
+        // If no subdomain, but templateType is provided, initialize with templateType
+        if (templateTypeFromUrl) {
+          setInitialSiteData(prev => ({
+            ...prev,
+            templateType: templateTypeFromUrl,
+          } as WizardFormData & { id?: string }));
+        }
         setLoading(false);
         return;
       }
@@ -95,10 +103,7 @@ export default function CreateSitePage() {
         setError("Erreur lors du chargement des données du site pour modification.");
         toast.error("Erreur lors du chargement des données du site.");
       } else if (data) {
-        // Merge site_data with top-level site properties for wizard
-        // Ensure data is cast to FetchedSiteData for correct type access
         const fetchedData = data as FetchedSiteData;
-        // Corrected: Only add 'id' as 'subdomain' is already part of fetchedData.site_data (WizardFormData)
         setInitialSiteData({ ...fetchedData.site_data, id: fetchedData.id });
       } else {
         setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
@@ -108,7 +113,7 @@ export default function CreateSitePage() {
     }
 
     fetchSiteData();
-  }, [subdomain, supabase]);
+  }, [subdomain, templateTypeFromUrl, supabase]); // Add templateTypeFromUrl to dependencies
 
   if (loading && subdomain) {
     return (

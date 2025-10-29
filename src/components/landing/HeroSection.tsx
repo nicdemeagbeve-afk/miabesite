@@ -17,7 +17,7 @@ export function HeroSection() {
             Ton business en ligne démarre aujourd’hui — pour seulement <span className="font-semibold">1000 F CFA</span> !
           </p>
           <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/create-site">Créer mon site maintenant</Link>
+            <Link href="/create-site/select-template">Créer mon site maintenant</Link>
           </Button>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 text-lg">
             <div className="flex items-center gap-2">

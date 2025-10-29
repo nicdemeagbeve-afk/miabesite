@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allow any hostname for now, or specify your Supabase URL
+      },
+    ],
+  },
 };
 
 export default nextConfig;
