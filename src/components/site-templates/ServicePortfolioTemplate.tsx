@@ -23,6 +23,8 @@ import {
   CheckCircle,
   User,
   Briefcase, // Added Briefcase import
+  PencilRuler, // Added PencilRuler
+  StarHalf, // Added StarHalf
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -167,8 +169,8 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
   // Helper to get Lucide icon component by name
   const getLucideIcon = (iconName: string) => {
     const icons: { [key: string]: React.ElementType } = {
-      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle,
-      // Add other Lucide icons as needed
+      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle, PencilRuler, Palette,
+      MessageSquare, Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin, ChevronUp, X, Menu, User, StarHalf
     };
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
@@ -228,7 +230,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="accueil" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--${siteData.primaryColor}-600)` }}> {/* Adjusted padding for mobile */}
+        <section id="accueil" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteData.heroBackgroundImage}')` : undefined }}> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-3xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image

@@ -58,6 +58,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = React.useState(true);
   const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
 
+  const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482"; // Use env var or default
+
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: emptyDefaultValues, // Use emptyDefaultValues here
@@ -405,7 +407,7 @@ export default function ProfilePage() {
             <Separator />
             <h3 className="text-xl font-semibold mb-4">Support</h3>
             <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
-              <a href="https://wa.me/+22870832482" target="_blank" rel="noopener noreferrer">
+              <a href={`https://wa.me/${supportWhatsAppNumber}`} target="_blank" rel="noopener noreferrer">
                 <MessageSquare className="mr-2 h-5 w-5" /> Support WhatsApp
               </a>
             </Button>

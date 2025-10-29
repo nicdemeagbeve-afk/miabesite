@@ -21,6 +21,8 @@ import {
   User,
   CheckCircle,
   Briefcase,
+  PencilRuler, // Added PencilRuler
+  StarHalf, // Added StarHalf
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -200,8 +202,8 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
   // Helper to get Lucide icon component by name
   const getLucideIcon = (iconName: string) => {
     const icons: { [key: string]: React.ElementType } = {
-      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle,
-      // Add other Lucide icons as needed
+      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle, PencilRuler, StarHalf,
+      MessageSquare, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, ChevronUp, X, Menu, User
     };
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
@@ -257,7 +259,7 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), var(--${siteData.primaryColor}-700)` }}> {/* Adjusted padding for mobile */}
+        <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : undefined }}> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image

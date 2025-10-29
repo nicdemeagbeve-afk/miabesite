@@ -8,25 +8,65 @@ import { Input } from "@/components/ui/input";
 import { Globe, Download, HelpCircle, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
-export function AdvancedManagementAndHelp() {
-  const [customDomain, setCustomDomain] = React.useState("");
+interface AdvancedManagementAndHelpProps {
+  subdomain: string; // Add subdomain prop
+}
 
-  const handleLinkDomain = () => {
+export function AdvancedManagementAndHelp({ subdomain }: AdvancedManagementAndHelpProps) {
+  const [customDomain, setCustomDomain] = React.useState("");
+  const [isLinkingDomain, setIsLinkingDomain] = React.useState(false);
+  const [isDownloadingCode, setIsDownloadingCode] = React.useState(false);
+
+  const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482"; // Use env var or default
+
+  const handleLinkDomain = async () => {
     if (customDomain.trim() === "") {
       toast.error("Veuillez entrer un nom de domaine.");
       return;
     }
-    // Simulate domain linking process
-    toast.info(`Tentative de liaison du domaine : ${customDomain}. Cela peut prendre quelques minutes.`);
-    console.log("Liaison du domaine:", customDomain);
-    // In a real app, this would trigger an API call
+    setIsLinkingDomain(true);
+    try {
+      const response = await fetch(`/api/dashboard/domain-linking`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ subdomain, customDomain }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.error || "Erreur lors de la liaison du domaine.");
+      }
+    } catch (error) {
+      console.error("Error linking domain:", error);
+      toast.error("Une erreur inattendue est survenue lors de la liaison du domaine.");
+    } finally {
+      setIsLinkingDomain(false);
+    }
   };
 
-  const handleDownloadCode = () => {
-    // Simulate code download
-    toast.success("Le téléchargement du code source va commencer.");
-    console.log("Téléchargement du code source...");
-    // In a real app, this would initiate a file download
+  const handleDownloadCode = async () => {
+    setIsDownloadingCode(true);
+    try {
+      const response = await fetch(`/api/dashboard/download-code?subdomain=${subdomain}`, {
+        method: 'GET',
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message);
+        // In a real scenario, the API would return a file, and you'd handle the download here.
+        // For simulation, we just show a toast.
+      } else {
+        toast.error(result.error || "Erreur lors du téléchargement du code.");
+      }
+    } catch (error) {
+      console.error("Error downloading code:", error);
+      toast.error("Une erreur inattendue est survenue lors du téléchargement du code.");
+    } finally {
+      setIsDownloadingCode(false);
+    }
   };
 
   return (
@@ -47,9 +87,10 @@ export function AdvancedManagementAndHelp() {
               value={customDomain}
               onChange={(e) => setCustomDomain(e.target.value)}
               className="flex-1"
+              disabled={isLinkingDomain}
             />
-            <Button onClick={handleLinkDomain} className="w-full sm:w-auto">
-              <Globe className="mr-2 h-5 w-5" /> Lier le domaine
+            <Button onClick={handleLinkDomain} className="w-full sm:w-auto" disabled={isLinkingDomain}>
+              <Globe className="mr-2 h-5 w-5" /> {isLinkingDomain ? "Liaison..." : "Lier le domaine"}
             </Button>
           </div>
         </div>
@@ -60,8 +101,8 @@ export function AdvancedManagementAndHelp() {
           <p className="text-muted-foreground mb-4">
             Téléchargez le code source complet de votre site.
           </p>
-          <Button onClick={handleDownloadCode} variant="outline" size="lg" className="w-full">
-            <Download className="mr-2 h-5 w-5" /> Télécharger le code (ZIP)
+          <Button onClick={handleDownloadCode} variant="outline" size="lg" className="w-full" disabled={isDownloadingCode}>
+            <Download className="mr-2 h-5 w-5" /> {isDownloadingCode ? "Téléchargement..." : "Télécharger le code (ZIP)"}
           </Button>
         </div>
 
@@ -78,7 +119,7 @@ export function AdvancedManagementAndHelp() {
               </Link>
             </Button>
             <Button asChild className="flex-1 bg-green-500 hover:bg-green-600 text-white">
-              <Link href="https://wa.me/votre_numero_whatsapp" target="_blank" rel="noopener noreferrer">
+              <Link href={`https://wa.me/${supportWhatsAppNumber}`} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" /> Support WhatsApp
               </Link>
             </Button>

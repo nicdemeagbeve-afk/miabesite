@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User, Check } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User, Check, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle } from 'lucide-react'; // Added all potentially used icons
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -129,7 +129,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
   // Helper to get Lucide icon component by name (simplified for DefaultTemplate)
   const getLucideIcon = (iconName: string) => {
     const icons: { [key: string]: React.ElementType } = {
-      Wrench, Star, Check, User, Phone, Mail, MessageSquare
+      Wrench, Star, Check, User, Phone, Mail, MessageSquare, ShoppingCart, Store, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle
     };
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
@@ -203,7 +203,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="hero" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--${siteData.primaryColor}-600)` }}> {/* Adjusted padding for mobile */}
+        <section id="hero" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')` : undefined }}> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image

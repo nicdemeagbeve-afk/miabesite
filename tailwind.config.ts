@@ -97,5 +97,14 @@ export default {
       pattern: /(bg|text|border|hover:bg)-(red|blue|green|yellow|black|purple|orange|gray)-(50|100|200|300|400|500|600|700|800|900)/,
       variants: ['hover'],
     },
+    {
+      pattern: /bg-(red|blue|green|yellow|black|purple|orange|gray)-(600|700|800|900)/,
+    },
+    {
+      pattern: /text-(red|blue|green|yellow|black|purple|orange|gray)-(600|700|800|900)/,
+    },
+    {
+      pattern: /border-(red|blue|green|yellow|black|purple|orange|gray)-(600|700|800|900)/,
+    },
   ],
 } satisfies Config;

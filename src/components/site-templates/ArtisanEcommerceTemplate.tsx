@@ -10,9 +10,6 @@ import {
   Phone,
   Mail,
   MapPin,
-  Facebook,
-  Instagram,
-  Linkedin,
   ChevronUp,
   Store,
   Search,
@@ -34,6 +31,9 @@ import {
   PaintRoller,
   Briefcase,
   CheckCircle,
+  Facebook,
+  Instagram,
+  Linkedin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -180,7 +180,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
   const getLucideIcon = (iconName: string) => {
     const icons: { [key: string]: React.ElementType } = {
       Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle, PencilRuler, Palette,
-      // Add other Lucide icons as needed
+      MessageSquare, Phone, Mail, MapPin, User, Check, Store, Search, ShoppingCart, Truck, ShieldCheck, Lock, Headset, Heart, Eye, StarHalf, Facebook, Instagram, Linkedin
     };
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
@@ -303,7 +303,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="accueil" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", secondaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), var(--${siteData.secondaryColor}-700)` }}> {/* Adjusted padding for mobile */}
+        <section id="accueil" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", secondaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : undefined }}> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image
@@ -479,7 +479,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted grid and gap for mobile */}
               {skillsToDisplay.map((skill: typeof siteData.skills[number], index: number) => {
-                const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
+                const IconComponent = skill.icon ? getLucideIcon(skill.icon) : Wrench;
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3"> {/* Adjusted padding for mobile */}
                     <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-6 w-6", primaryColorTextClass)} /></div> {/* Adjusted size for mobile */}

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check } from 'lucide-react'; // Added User icon
+import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle } from 'lucide-react'; // Added all potentially used icons
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -80,10 +80,10 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
   const testimonialsToDisplay = siteData.testimonials || [];
   const skillsToDisplay = siteData.skills || [];
 
-  // Helper to get Lucide icon component by name (simplified for DefaultTemplate)
+  // Helper to get Lucide icon component by name
   const getLucideIcon = (iconName: string) => {
     const icons: { [key: string]: React.ElementType } = {
-      Wrench, Star, Check, User, Phone, Mail, MapPin, MessageSquare
+      MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle
     };
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
@@ -91,11 +91,11 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 text-center">
       {sectionsVisibility.showHero && (
-        <section className="py-12 md:py-24 lg:py-32 w-full bg-cover bg-center text-white flex flex-col items-center justify-center px-4"
+        <section className={cn("py-12 md:py-24 lg:py-32 w-full bg-cover bg-center text-white flex flex-col items-center justify-center px-4", `bg-${siteData.primaryColor}-600`)}
           style={{
             backgroundImage: siteData.heroBackgroundImage
               ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')`
-              : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--${siteData.primaryColor}-600)`
+              : undefined // Let Tailwind class handle background color if no image
           }}
         >
           {siteData.logoOrPhoto && (
