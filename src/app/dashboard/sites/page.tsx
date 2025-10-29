@@ -85,7 +85,7 @@ export default function DashboardSitesPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-center lg:text-left">Mes Sites</h1>
         <Button asChild>
-          <Link href="/create-site">
+          <Link href="/create-site/select-template">
             <PlusCircle className="mr-2 h-5 w-5" /> Créer un nouveau site
           </Link>
         </Button>
@@ -96,7 +96,7 @@ export default function DashboardSitesPage() {
           <p className="text-xl mb-4">Vous n'avez pas encore créé de site.</p>
           <p className="mb-6">Commencez dès maintenant à mettre votre business en ligne !</p>
           <Button asChild size="lg">
-            <Link href="/create-site">
+            <Link href="/create-site/select-template">
               <PlusCircle className="mr-2 h-5 w-5" /> Créer mon premier site
             </Link>
           </Button>
@@ -113,7 +113,7 @@ export default function DashboardSitesPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Sous-domaine: <span className="font-medium text-foreground">{site.subdomain}.miabesite.site</span>
+                  Lien: <span className="font-medium text-foreground">/sites/{site.subdomain}</span>
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Statut: <span className="font-medium text-green-600">{site.status === 'published' ? 'En ligne' : 'Brouillon'}</span>

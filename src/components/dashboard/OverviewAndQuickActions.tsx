@@ -24,9 +24,8 @@ interface OverviewAndQuickActionsProps {
 
 export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsProps) {
   const siteStatus = siteData.status;
-  // Construct dynamic URL using environment variable
-  const siteBaseDomain = process.env.NEXT_PUBLIC_SITE_BASE_DOMAIN || "miabesite.site";
-  const siteUrl = `https://${siteData.subdomain}.${siteBaseDomain}`;
+  // Construct dynamic URL using the new path-based routing
+  const siteUrl = `${window.location.origin}/sites/${siteData.subdomain}`;
   const recentViews = 37; // Placeholder for recent views
 
   const handleCopyLink = () => {

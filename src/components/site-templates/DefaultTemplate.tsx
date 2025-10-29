@@ -63,7 +63,7 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
         </p>
       )}
       <p className="mt-2 text-sm text-gray-500">
-        Sous-domaine: {siteData.subdomain}.miabesite.site
+        Lien de votre site: {window.location.origin}/sites/{siteData.subdomain}
       </p>
     </div>
   );

@@ -51,27 +51,7 @@ export function ConfigurationNetworkStep() {
         Paramétrez les interactions et la visibilité de votre site.
       </p>
 
-      <FormField
-        control={control}
-        name="subdomain"
-        render={({ field }: { field: ControllerRenderProps<FieldValues, "subdomain"> }) => (
-          <FormItem>
-            <FormLabel>Ton adresse web (Sous-domaine)</FormLabel>
-            <div className="flex items-center">
-              <FormControl>
-                <Input placeholder="monentreprise" {...field} className="rounded-r-none" />
-              </FormControl>
-              <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 bg-muted text-muted-foreground text-sm h-10">
-                .miabesite.site
-              </span>
-            </div>
-            <FormMessage />
-            <p className="text-sm text-muted-foreground">
-              Crée une adresse unique pour ton site.
-            </p>
-          </FormItem>
-        )}
-      />
+      {/* Le champ sous-domaine est supprimé ici */}
 
       <FormField
         control={control}

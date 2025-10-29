@@ -18,6 +18,21 @@ import { ContentStep } from "./steps/ContentStep";
 import { ProductsServicesStep } from "./steps/ProductsServicesStep"; // New step import
 import { ConfigurationNetworkStep } from "./steps/ConfigurationNetworkStep";
 
+// Utility function to generate a URL-friendly slug
+const generateSlug = (text: string): string => {
+  return text
+    .toString()
+    .normalize("NFD") // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars
+    .replace(/--+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
+};
+
 // Define the base schema as a ZodObject
 const baseWizardFormSchema = z.object({
   // Étape 1: Infos Essentielles & Design
@@ -38,7 +53,7 @@ const baseWizardFormSchema = z.object({
   // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    price: z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional(), // Changed to z.coerce.number()
+    price: z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional(),
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(200, "La description ne peut pas dépasser 200 caractères."),
     image: z.any().optional(), // File object
@@ -46,11 +61,9 @@ const baseWizardFormSchema = z.object({
   })).min(1, { message: "Veuillez ajouter au moins un produit ou service." }).max(3, "Vous ne pouvez ajouter que 3 produits/services maximum."),
 
   // Étape 3 (maintenant Étape 4): Configuration et Réseaux
-  subdomain: z.string()
-    .min(3, { message: "Le sous-domaine doit contenir au moins 3 caractères." })
-    .regex(/^[a-z0-9-]+$/, { message: "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des tirets." })
-    .transform((s: string) => s.toLowerCase()) // Explicitly type 's'
-    .refine((s: string) => !s.startsWith('-') && !s.endsWith('-'), { message: "Le sous-domaine ne peut pas commencer ou se terminer par un tiret." }), // Explicitly type 's'
+  // Le sous-domaine n'est plus une entrée utilisateur directe, mais il est toujours dans le schéma pour la validation interne
+  // Il sera généré automatiquement
+  subdomain: z.string().optional(), // Rendu optionnel car il n'est plus saisi par l'utilisateur
   contactButtonAction: z.string().min(1, { message: "Veuillez sélectionner une action pour le bouton de contact." }),
   facebookLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
   instagramLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
@@ -91,7 +104,6 @@ const steps: {
       primaryColor: true,
       secondaryColor: true,
       logoOrPhoto: true,
-      // templateType: true, // REMOVED: templateType is now selected before the wizard
     }),
   },
   {
@@ -118,7 +130,6 @@ const steps: {
     title: "Configuration et Réseaux",
     component: ConfigurationNetworkStep,
     schema: baseWizardFormSchema.pick({
-      subdomain: true,
       contactButtonAction: true,
       facebookLink: true,
       instagramLink: true,
@@ -178,7 +189,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
 
     productsAndServices: initialSiteData?.productsAndServices || [], // Initialize with an empty array, ProductsServicesStep will add one if needed
 
-    subdomain: initialSiteData?.subdomain || "",
+    subdomain: initialSiteData?.subdomain || undefined, // Subdomain is now optional and auto-generated
     contactButtonAction: initialSiteData?.contactButtonAction || "whatsapp", // Default to WhatsApp
     facebookLink: initialSiteData?.facebookLink || "",
     instagramLink: initialSiteData?.instagramLink || "",
@@ -244,6 +255,38 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
       return;
     }
 
+    let siteSubdomain = initialSiteData?.subdomain; // Use existing subdomain if editing
+
+    // If creating a new site, generate a unique subdomain
+    if (!initialSiteData?.id) {
+      let baseSlug = generateSlug(data.publicName);
+      let uniqueSlug = baseSlug;
+      let counter = 0;
+      let isUnique = false;
+
+      while (!isUnique) {
+        const { data: existingSite, error: checkError } = await supabase
+          .from('sites')
+          .select('id')
+          .eq('subdomain', uniqueSlug)
+          .single();
+
+        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means "no rows found" which is good
+          console.error("Error checking subdomain uniqueness:", checkError);
+          toast.error("Erreur lors de la vérification de l'unicité de l'identifiant.");
+          return;
+        }
+
+        if (existingSite) {
+          counter++;
+          uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 8)}`; // Append random string
+        } else {
+          isUnique = true;
+        }
+      }
+      siteSubdomain = uniqueSlug;
+    }
+
     // Handle file uploads (logo and product images)
     let logoUrl: string | null = null;
     const productImages: { [key: number]: string | null } = {};
@@ -254,7 +297,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
         const sanitizedLogoFileName = sanitizeFileName(data.logoOrPhoto.name);
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('site-assets')
-          .upload(`${user.id}/${data.subdomain}/logo/${sanitizedLogoFileName}`, data.logoOrPhoto, {
+          .upload(`${user.id}/${siteSubdomain}/logo/${sanitizedLogoFileName}`, data.logoOrPhoto, {
             cacheControl: '3600',
             upsert: false,
           });
@@ -272,7 +315,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
           const sanitizedProductFileName = sanitizeFileName(product.image.name);
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('site-assets')
-            .upload(`${user.id}/${data.subdomain}/products/${index}-${sanitizedProductFileName}`, product.image, {
+            .upload(`${user.id}/${siteSubdomain}/products/${index}-${sanitizedProductFileName}`, product.image, {
               cacheControl: '3600',
               upsert: false,
             });
@@ -300,7 +343,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
         const { error: updateError } = await supabase
           .from('sites')
           .update({
-            subdomain: data.subdomain,
+            subdomain: siteSubdomain, // Update with the (potentially same) subdomain
             site_data: siteDataToSave,
             template_type: data.templateType, // Update template type
           })
@@ -318,16 +361,16 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
           .from('sites')
           .insert({
             user_id: user.id,
-            subdomain: data.subdomain,
+            subdomain: siteSubdomain, // Use the generated unique subdomain
             site_data: siteDataToSave,
             status: 'published', // Default status
             template_type: data.templateType, // Use the templateType from form data
           });
 
         if (insertError) {
-          // Check for unique constraint error on subdomain
+          // Check for unique constraint error on subdomain (should be handled by generation loop, but as a fallback)
           if (insertError.code === '23505') { // PostgreSQL unique violation error code
-            toast.error(`Le sous-domaine "${data.subdomain}" est déjà pris. Veuillez en choisir un autre.`);
+            toast.error(`L'identifiant "${siteSubdomain}" est déjà pris. Veuillez réessayer.`);
           } else {
             toast.error(`Erreur lors de la création du site: ${insertError.message}`);
           }
@@ -336,7 +379,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
         toast.success("Votre site est en cours de création ! Vous serez redirigé sous peu.");
       }
 
-      router.push(`/dashboard/${data.subdomain}/overview`); // Redirect to the new site's dashboard
+      router.push(`/sites/${siteSubdomain}`); // Redirect to the new site's public page
       router.refresh(); // Refresh to update data
     } catch (error: any) {
       console.error("Site creation/update error:", error);
