@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { MapPin } from "lucide-react"; // Import MapPin icon
+import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
 
 const predefinedColors = [
   { value: "red", label: "Rouge" },
@@ -63,13 +64,12 @@ export function EssentialDesignStep() {
         control={control}
         name="whatsappNumber"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "whatsappNumber"> }) => (
-          <FormItem>
-            <FormLabel>Numéro WhatsApp (Obligatoire)</FormLabel>
-            <FormControl>
-              <Input type="tel" placeholder="Ex: +225 07 00 00 00 00" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <PhoneInputWithCountryCode
+            name={field.name}
+            label="Numéro WhatsApp (Obligatoire)"
+            placeholder="Ex: 07 00 00 00 00"
+            required
+          />
         )}
       />
 
@@ -77,13 +77,11 @@ export function EssentialDesignStep() {
         control={control}
         name="secondaryPhoneNumber"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "secondaryPhoneNumber"> }) => (
-          <FormItem>
-            <FormLabel>Numéro de Téléphone Secondaire (Optionnel)</FormLabel>
-            <FormControl>
-              <Input type="tel" placeholder="Ex: +225 01 00 00 00 00" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <PhoneInputWithCountryCode
+            name={field.name}
+            label="Numéro de Téléphone Secondaire (Optionnel)"
+            placeholder="Ex: 01 00 00 00 00"
+          />
         )}
       />
 

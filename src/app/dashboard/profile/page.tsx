@@ -16,6 +16,7 @@ import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, DollarSign, CheckCi
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
+import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis.").optional().or(z.literal('')),
@@ -285,7 +286,7 @@ export default function ProfilePage() {
                   <FormField
                     control={form.control}
                     name="profilePicture"
-                    render={({ field }: { field: ControllerRenderProps<FieldValues, "profilePicture"> }) => (
+                    render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, "profilePicture"> }) => (
                       <FormItem>
                         <FormLabel className="cursor-pointer flex items-center gap-2 text-primary hover:underline">
                           <Upload className="h-4 w-4" /> Changer la photo
@@ -336,30 +337,22 @@ export default function ProfilePage() {
                   control={form.control}
                   name="whatsappNumber"
                   render={({ field }: { field: ControllerRenderProps<FieldValues, "whatsappNumber"> }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1">
-                        <Phone className="h-4 w-4 text-muted-foreground" /> Numéro WhatsApp
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="tel" placeholder="+225 07 00 00 00 00" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                    <PhoneInputWithCountryCode
+                      name={field.name}
+                      label="Numéro WhatsApp"
+                      placeholder="Ex: 07 00 00 00 00"
+                    />
                   )}
                 />
                 <FormField
                   control={form.control}
                   name="secondaryPhoneNumber"
                   render={({ field }: { field: ControllerRenderProps<FieldValues, "secondaryPhoneNumber"> }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1">
-                        <Phone className="h-4 w-4 text-muted-foreground" /> Numéro Secondaire (Optionnel)
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="tel" placeholder="+225 01 00 00 00 00" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                    <PhoneInputWithCountryCode
+                      name={field.name}
+                      label="Numéro Secondaire (Optionnel)"
+                      placeholder="Ex: 01 00 00 00 00"
+                    />
                   )}
                 />
 
@@ -423,11 +416,6 @@ export default function ProfilePage() {
                       <p className="text-muted-foreground text-sm">{plan.price}</p>
                     </div>
                   </div>
-                  <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                    {plan.features.map((feature, fIndex) => (
-                      <li key={fIndex}>{feature}</li>
-                    ))}
-                  </ul>
                   <Button variant="outline" size="sm">
                     Choisir ce plan
                   </Button>
