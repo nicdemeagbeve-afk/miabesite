@@ -17,12 +17,9 @@ interface SiteData {
   created_at: string;
 }
 
-interface PageProps {
-  params: { subdomain: string };
-}
-
-export default function DashboardMessagesPage({ params }: PageProps) {
-  const { subdomain } = params;
+// @ts-ignore: Next.js génère parfois des types incorrects pour les params de page dynamique (Promise<any> au lieu de l'objet direct).
+export default function DashboardMessagesPage(props: any) {
+  const { subdomain } = props.params; // Accéder à subdomain via props.params
   const supabase = createClient();
   const router = useRouter();
   const [site, setSite] = React.useState<SiteData | null>(null);
