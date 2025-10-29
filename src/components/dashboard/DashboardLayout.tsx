@@ -7,6 +7,7 @@ import { Menu } from "lucide-react"; // Import Menu icon for mobile toggle
 import { Button } from "@/components/ui/button"; // Import Button for mobile toggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
 import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile hook
+import { SupabaseStatusIndicator } from "@/components/SupabaseStatusIndicator"; // Import the new component
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,14 @@ export function DashboardLayout({ children, subdomain }: DashboardLayoutProps) {
         </div>
       )}
       <div className="flex flex-col flex-1">
+        <header className="flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
+          <div className="flex items-center gap-4">
+            {/* You can add a dashboard title or logo here */}
+          </div>
+          <div className="flex items-center gap-2">
+            <SupabaseStatusIndicator /> {/* Supabase status in dashboard header */}
+          </div>
+        </header>
         <main className="flex-1 p-4 md:p-8 lg:ml-64"> {/* Adjust margin for fixed sidebar on desktop */}
           {children}
         </main>
