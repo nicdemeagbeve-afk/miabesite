@@ -10,9 +10,10 @@ import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // I
 
 interface EcommerceTemplateProps {
   siteData: SiteEditorFormData; // Use the comprehensive type
+  subdomain: string; // Add subdomain prop
 }
 
-export function EcommerceTemplate({ siteData }: EcommerceTemplateProps) {
+export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [cartCount, setCartCount] = React.useState(0);

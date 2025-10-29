@@ -84,7 +84,6 @@ const wizardFormSchema = z.object({
   paymentMethods: z.array(z.string()).max(5, "Vous ne pouvez sélectionner que 5 modes de paiement maximum."),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   depositRequired: z.boolean(),
-  businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
   showContactForm: z.boolean(),
   templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }), // Add templateType to the schema
 

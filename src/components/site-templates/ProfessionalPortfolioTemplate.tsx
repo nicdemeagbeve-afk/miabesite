@@ -28,9 +28,10 @@ import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // I
 
 interface ProfessionalPortfolioTemplateProps {
   siteData: SiteEditorFormData; // Use the comprehensive type
+  subdomain: string; // Add subdomain prop
 }
 
-export function ProfessionalPortfolioTemplate({ siteData }: ProfessionalPortfolioTemplateProps) {
+export function ProfessionalPortfolioTemplate({ siteData, subdomain }: ProfessionalPortfolioTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });

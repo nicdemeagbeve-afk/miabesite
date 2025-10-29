@@ -9,9 +9,10 @@ import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // I
 
 interface DefaultTemplateProps {
   siteData: SiteEditorFormData; // Use the comprehensive type
+  subdomain: string; // Add subdomain prop
 }
 
-export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
+export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
   const secondaryColorClass = `bg-${siteData.secondaryColor}-500`;
@@ -141,7 +142,6 @@ export function DefaultTemplate({ siteData }: DefaultTemplateProps) {
                   // we'll use a placeholder or a limited set for now.
                   // In a real app, you'd have a map like { "Wrench": Wrench, ... }
                   // For this example, let's just use a generic icon or a few hardcoded ones.
-                  // For now, I'll use Wrench as a default if the icon name isn't explicitly handled.
                   // A more robust solution would involve a component that takes a string and returns the Lucide icon.
                   <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
                 ) : (
