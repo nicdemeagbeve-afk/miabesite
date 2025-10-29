@@ -300,7 +300,6 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                         {product.price} {product.currency}
                       </div>
                     )}
-                    <p className="text-gray-600 mb-6 text-xs">{product.description}</p> {/* Adjusted text size for mobile */}
                     <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 w-full", secondaryColorClass, secondaryColorHoverBgClass)}> {/* Adjusted padding, text size, and width for mobile */}
                       {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
                     </a>
@@ -470,13 +469,14 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                     <div>
                       <label htmlFor="message" className="block text-gray-700 font-medium mb-1 text-sm">Message</label> {/* Adjusted text size for mobile */}
                       <textarea id="message" name="message" required className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.message} onChange={handleChange}></textarea> {/* Adjusted padding, min-height, and text size for mobile */}
-                  </div>
-                  <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
-                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
-                  </button>
-                </form>
-              </div>
-            )}
+                    </div>
+                    <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
+                      {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
