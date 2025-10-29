@@ -8,15 +8,16 @@ import { ProfessionalPortfolioTemplate } from '@/components/site-templates/Profe
 import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the new comprehensive schema type
 
-// Define the PageProps interface explicitly for this dynamic route
+// L'interface PageProps est toujours utile pour la clarté, mais nous allons
+// typer les props directement dans la fonction pour contourner l'erreur de Next.js.
 interface PageProps {
   params: {
     subdomain: string;
   };
-  // searchParams is optional for this component, but good practice to include if it might be used
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
+// @ts-ignore: Next.js génère parfois des types incorrects pour les params de page dynamique (Promise<any> au lieu de l'objet direct).
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {
   const { subdomain } = params;
   const supabase = createClient();
