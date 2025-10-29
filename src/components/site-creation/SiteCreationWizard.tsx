@@ -63,6 +63,7 @@ const baseWizardFormSchema = z.object({
   depositRequired: z.boolean(),
   businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
   showContactForm: z.boolean(),
+  templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }), // Add templateType to the schema
 });
 
 // The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
@@ -93,6 +94,7 @@ const steps: {
       primaryColor: true,
       secondaryColor: true,
       logoOrPhoto: true,
+      templateType: true, // Include templateType in this step's schema
     }),
   },
   {
@@ -133,6 +135,30 @@ const steps: {
   },
 ];
 
+// Utility function to sanitize file names for storage keys
+const sanitizeFileName = (fileName: string): string => {
+  if (!fileName) return '';
+  // Replace special characters (including spaces, accents) with hyphens
+  // Keep alphanumeric characters, hyphens, and dots
+  let sanitized = fileName
+    .normalize("NFD") // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+    .replace(/[^a-zA-Z0-9-.]/g, '-') // Replace non-alphanumeric (except dot and hyphen) with hyphen
+    .replace(/--+/g, '-') // Replace multiple hyphens with a single one
+    .replace(/^-+|-+$/g, '') // Trim hyphens from start/end
+    .toLowerCase();
+
+  // Ensure file extension is preserved if present
+  const parts = sanitized.split('.');
+  if (parts.length > 1) {
+    const extension = parts.pop();
+    sanitized = parts.join('-') + '.' + extension;
+  }
+
+  return sanitized;
+};
+
+
 export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps) {
   const [currentStep, setCurrentStep] = React.useState(0);
   const supabase = createClient();
@@ -165,6 +191,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     depositRequired: initialSiteData?.depositRequired || false,
     businessLocation: initialSiteData?.businessLocation || "",
     showContactForm: initialSiteData?.showContactForm !== undefined ? initialSiteData.showContactForm : true, // Default to true
+    templateType: initialSiteData?.templateType || "default", // Default template
   };
 
   const methods = useForm<WizardFormData>({
@@ -219,9 +246,10 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     try {
       // Upload logo/photo if present and it's a new File (not an existing URL)
       if (data.logoOrPhoto instanceof File) {
+        const sanitizedLogoFileName = sanitizeFileName(data.logoOrPhoto.name);
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('site-assets')
-          .upload(`${user.id}/${data.subdomain}/logo/${data.logoOrPhoto.name}`, data.logoOrPhoto, {
+          .upload(`${user.id}/${data.subdomain}/logo/${sanitizedLogoFileName}`, data.logoOrPhoto, {
             cacheControl: '3600',
             upsert: false,
           });
@@ -236,9 +264,10 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
       // Upload product images if present and they are new Files
       for (const [index, product] of data.productsAndServices.entries()) {
         if (product.image instanceof File) {
+          const sanitizedProductFileName = sanitizeFileName(product.image.name);
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('site-assets')
-            .upload(`${user.id}/${data.subdomain}/products/${index}-${product.image.name}`, product.image, {
+            .upload(`${user.id}/${data.subdomain}/products/${index}-${sanitizedProductFileName}`, product.image, {
               cacheControl: '3600',
               upsert: false,
             });
@@ -268,8 +297,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
           .update({
             subdomain: data.subdomain,
             site_data: siteDataToSave,
-            // status: 'published', // Keep existing status or update if needed
-            // template_type: 'default', // Keep existing template or update if needed
+            template_type: data.templateType, // Update template type
           })
           .eq('id', initialSiteData.id)
           .eq('user_id', user.id);
@@ -288,7 +316,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
             subdomain: data.subdomain,
             site_data: siteDataToSave,
             status: 'published', // Default status
-            template_type: 'default', // Default template, can be chosen later
+            template_type: data.templateType, // Use the templateType from form data
           });
 
         if (insertError) {

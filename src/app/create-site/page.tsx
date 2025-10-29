@@ -40,6 +40,7 @@ const wizardFormSchema = z.object({
   depositRequired: z.boolean(),
   businessLocation: z.string(),
   showContactForm: z.boolean(),
+  templateType: z.string(), // ADDED: Ensure templateType is part of the schema
 });
 
 type WizardFormData = z.infer<typeof wizardFormSchema>;
