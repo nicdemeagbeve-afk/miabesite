@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
@@ -142,9 +142,9 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> /* Adjusted size for mobile */
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" />
               ) : (
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}> {/* Adjusted size for mobile */}
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}>
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
@@ -219,7 +219,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
             <Link
               href="#products"
               onClick={(e) => handleSmoothScroll(e, '#products')}
-              className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-base bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorTextClass)} /* Adjusted padding, text size, and width for mobile */
+              className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-base bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorTextClass)}
             >
               <ShoppingCart className="h-5 w-5" /> Acheter maintenant
             </Link>
@@ -237,7 +237,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                 <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                   <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
                     {product.image ? (
-                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover" /> /* Adjusted width/height for mobile */
+                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <Store className="h-10 w-10" /> {/* Adjusted size for mobile */}
@@ -254,7 +254,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                     )}
                     <button
                       onClick={() => handleAddToCart(product.title)}
-                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} /* Adjusted padding, text size for mobile */
+                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
                     >
                       Ajouter au panier
                     </button>
@@ -276,7 +276,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                 <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                   <div className="h-40 overflow-hidden"> {/* Adjusted height for mobile */}
                     {service.image ? (
-                      <Image src={service.image} alt={service.title} width={300} height={160} className="w-full h-full object-cover" /> /* Adjusted width/height for mobile */
+                      <Image src={service.image} alt={service.title} width={300} height={160} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
@@ -295,7 +295,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                       href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")} /* Adjusted padding, text size for mobile */
+                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")}
                     >
                       {service.actionButton === 'quote' ? 'Demander un devis' : service.actionButton === 'book' ? 'Réserver' : 'Contacter'}
                     </Link>
@@ -322,7 +322,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         <section id="skills" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted gap and grid for mobile */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted grid and gap for mobile */}
               {siteData.skills.map((skill, index) => {
                 const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
                 return (
@@ -349,7 +349,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                   <p className="text-base italic mb-4 relative z-10">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
-                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className="rounded-full object-cover border-2 border-gray-200" /> /* Adjusted size for mobile */
+                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className="rounded-full object-cover border-2 border-gray-200" />
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
                         <User className="h-5 w-5" /> {/* Adjusted size for mobile */}
@@ -413,7 +413,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                     href={`https://wa.me/${siteData.whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E] w-full sm:w-auto")} /* Adjusted padding, text size, and width for mobile */
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E] w-full sm:w-auto")}
                   >
                     <MessageSquare className="h-5 w-5" /> Discuter sur WhatsApp
                   </a>
@@ -421,7 +421,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                 {siteData.secondaryPhoneNumber && (
                   <a
                     href={`tel:${siteData.secondaryPhoneNumber}`}
-                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", secondaryColorClass, secondaryColorHoverBgClass)} /* Adjusted padding, text size, and width for mobile */
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", secondaryColorClass, secondaryColorHoverBgClass)}
                   >
                     <Phone className="h-5 w-5" /> Appeler {siteData.secondaryPhoneNumber}
                   </a>
@@ -429,7 +429,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                 {siteData.email && (
                   <a
                     href={`mailto:${siteData.email}`}
-                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorClass, primaryColorHoverBgClass)} /* Adjusted padding, text size, and width for mobile */
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorClass, primaryColorHoverBgClass)}
                   >
                     <Mail className="h-5 w-5" /> Envoyer un e-mail
                   </a>

@@ -226,7 +226,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-2"> {/* Adjusted gap for mobile */}
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> /* Adjusted size for mobile */
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" />
               ) : (
                 <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-600), var(--${siteData.secondaryColor}-500))` }}> {/* Adjusted size for mobile */}
                   {siteData.publicName.charAt(0)}
@@ -388,7 +388,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
                   {index === 1 && <span className={cn("absolute top-3 left-3 px-2 py-0.5 rounded-lg text-xs font-bold text-white z-10", primaryColorClass)}>Bestseller</span>} {/* Adjusted padding and text size for mobile */}
                   <div className="h-48 overflow-hidden relative"> {/* Adjusted height for mobile */}
                     {product.image ? (
-                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" /> /* Adjusted width/height for mobile */
+                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <Palette className="h-10 w-10" /> {/* Adjusted size for mobile */}
@@ -511,7 +511,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
                   <p className="text-base italic mb-6 relative z-10 leading-relaxed">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
-                      <Image src={testimonial.avatar} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} /> /* Adjusted size for mobile */
+                      <Image src={testimonial.avatar} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
                     ) : (
                       <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
                         <User className="h-6 w-6" /> {/* Adjusted size for mobile */}
@@ -643,7 +643,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')} /* Adjusted size and position for mobile */
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
       >
         <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
       </button>

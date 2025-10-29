@@ -214,9 +214,9 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> {/* Adjusted size for mobile */}
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" />
               ) : (
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}> {/* Adjusted size for mobile */}
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}>
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
@@ -394,9 +394,9 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
                         <p className="text-base italic mb-6 relative z-10 leading-relaxed">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                         <div className="flex flex-col items-center justify-center gap-4">
                           {testimonial.avatar ? (
-                            <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} /> {/* Adjusted size for mobile */}
+                            <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} />
                           ) : (
-                            <div className="h-14 w-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                            <div className="h-14 w-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                               <User className="h-7 w-7" /> {/* Adjusted size for mobile */}
                             </div>
                           )}
@@ -414,7 +414,7 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
                 {testimonialsToDisplay.map((_, index) => (
                   <button
                     key={index}
-                    className={cn("h-2.5 w-2.5 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && cn("bg-red-500 scale-125", secondaryColorClass))} {/* Adjusted size for mobile */}
+                    className={cn("h-2.5 w-2.5 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && secondaryColorClass + " scale-125")}
                     onClick={() => emblaApi && emblaApi.scrollTo(index)}
                   />
                 ))}
@@ -512,7 +512,7 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')} {/* Adjusted size and position for mobile */}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
       >
         <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
       </button>

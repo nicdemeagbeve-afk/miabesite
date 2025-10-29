@@ -181,9 +181,9 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-2"> {/* Adjusted gap for mobile */}
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> {/* Adjusted size for mobile */}
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" />
               ) : (
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl font-bold", primaryColorClass)}> {/* Adjusted size for mobile */}
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl font-bold", primaryColorClass)}>
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
@@ -286,7 +286,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                 <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                   <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
                     {product.image ? (
-                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" /> {/* Adjusted width/height for mobile */}
+                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
@@ -375,9 +375,9 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                   <p className="text-base italic mb-6 relative z-10">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
-                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} /> {/* Adjusted size for mobile */}
+                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <User className="h-5 w-5" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
@@ -442,16 +442,6 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                     </div>
                   </div>
                 )}
-                <div className="flex items-start gap-4">
-                  <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
-                    <Clock className="h-4 w-4" /> {/* Adjusted size for mobile */}
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-gray-800">Horaires</h3> {/* Adjusted text size for mobile */}
-                    <p className="text-sm text-gray-600">Lun - Sam: 8h00 - 18h00</p> {/* Adjusted text size for mobile */}
-                    <p className="text-sm text-gray-600">Dimanche: Sur rendez-vous</p> {/* Adjusted text size for mobile */}
-                  </div>
-                </div>
               </div>
               {siteData.showContactForm && (
                 <div className="bg-gray-100 p-6 rounded-lg shadow-md"> {/* Adjusted padding for mobile */}
@@ -480,14 +470,13 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                     <div>
                       <label htmlFor="message" className="block text-gray-700 font-medium mb-1 text-sm">Message</label> {/* Adjusted text size for mobile */}
                       <textarea id="message" name="message" required className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.message} onChange={handleChange}></textarea> {/* Adjusted padding, min-height, and text size for mobile */}
-                    </div>
-                    <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
-                      {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
+                  </div>
+                  <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -578,7 +567,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')} {/* Adjusted size and position for mobile */}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
       >
         <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
       </button>
