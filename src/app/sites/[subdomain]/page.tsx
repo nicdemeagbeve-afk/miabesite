@@ -6,36 +6,17 @@ import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate
 import { ServicePortfolioTemplate } from '@/components/site-templates/ServicePortfolioTemplate';
 import { ProfessionalPortfolioTemplate } from '@/components/site-templates/ProfessionalPortfolioTemplate';
 import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the new comprehensive schema type
 
 // Define a basic type for the site data, matching what's stored in Supabase
-interface SiteData {
-  publicName: string;
-  whatsappNumber: string;
-  secondaryPhoneNumber?: string;
-  email?: string;
-  heroSlogan: string;
-  aboutStory: string;
-  primaryColor: string;
-  secondaryColor: string;
-  productsAndServices: Array<{
-    title: string;
-    price?: number;
-    currency: string;
-    description: string;
-    actionButton: string;
-    image?: string | null; // Added image to productsAndServices
-  }>;
+interface FetchedSiteData {
+  id: string;
+  user_id: string;
   subdomain: string;
-  facebookLink?: string;
-  instagramLink?: string;
-  linkedinLink?: string;
-  paymentMethods?: string[];
-  portfolioProofLink?: string;
-  portfolioProofDescription?: string;
-  logoOrPhoto?: string | null; // Added logoOrPhoto
-  showTestimonials?: boolean; // Added showTestimonials
-  businessLocation?: string; // Added businessLocation
-  showContactForm?: boolean; // Added showContactForm
+  site_data: SiteEditorFormData; // Use the new comprehensive type here
+  status: string;
+  template_type: string;
+  created_at: string;
 }
 
 export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {
@@ -55,7 +36,7 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
     return; // Explicitly return after notFound() to satisfy TypeScript
   }
 
-  const siteData: SiteData = site.site_data as SiteData;
+  const siteData: SiteEditorFormData = site.site_data as SiteEditorFormData; // Cast to the new comprehensive type
   const templateType: string = site.template_type || 'default';
 
   // Dynamically render the correct template based on templateType
@@ -67,6 +48,7 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
     case 'professional-portfolio':
       return <ProfessionalPortfolioTemplate siteData={siteData} />;
     case 'artisan-ecommerce':
+      // Assuming ArtisanEcommerceTemplate also uses SiteEditorFormData
       return <ArtisanEcommerceTemplate siteData={siteData} />;
     case 'default':
     default:

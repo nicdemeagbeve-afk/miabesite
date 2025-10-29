@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageCircle } from "lucide-react"; // Added User and MessageCircle icons
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageCircle, Edit } from "lucide-react"; // Added Edit icon
 import { UserProfileButton } from "./UserProfileButton"; // Import UserProfileButton
 
 interface DashboardSidebarProps {
@@ -32,7 +32,13 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
     {
       href: `/dashboard/${subdomain}/content`,
       icon: <Pencil className="h-5 w-5" />,
-      label: "Modifier le Contenu",
+      label: "Modifier le Contenu (Wizard)",
+      requiresSubdomain: true,
+    },
+    {
+      href: `/dashboard/${subdomain}/edit-content`, // New link for advanced editor
+      icon: <Edit className="h-5 w-5" />,
+      label: "Éditeur Avancé",
       requiresSubdomain: true,
     },
     {
@@ -57,7 +63,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
           if (item.requiresSubdomain && !subdomain) {
             return null;
           }
-          const isActive = pathname === item.href || (item.requiresSubdomain && pathname.startsWith(`/dashboard/${subdomain}/`) && pathname.includes(item.label.toLowerCase().replace(/\s/g, '')));
+          const isActive = pathname === item.href || (item.requiresSubdomain && pathname.startsWith(`/dashboard/${subdomain}/`) && pathname.includes(item.label.toLowerCase().replace(/\s/g, '').replace('(wizard)', '')));
           return (
             <Link
               key={item.href}

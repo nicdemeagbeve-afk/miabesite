@@ -33,39 +33,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-interface SiteData {
-  publicName: string;
-  whatsappNumber: string;
-  secondaryPhoneNumber?: string;
-  email?: string;
-  heroSlogan: string;
-  aboutStory: string;
-  primaryColor: string;
-  secondaryColor: string;
-  logoOrPhoto?: string | null;
-  productsAndServices: Array<{
-    title: string;
-    price?: number;
-    currency: string;
-    description: string;
-    image?: string | null;
-    actionButton: string;
-  }>;
-  subdomain: string;
-  facebookLink?: string;
-  instagramLink?: string;
-  linkedinLink?: string;
-  paymentMethods?: string[];
-  portfolioProofLink?: string;
-  portfolioProofDescription?: string;
-  showTestimonials?: boolean;
-  businessLocation?: string; // Added businessLocation
-  showContactForm?: boolean; // Added showContactForm
-}
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type
 
 interface ArtisanEcommerceTemplateProps {
-  siteData: SiteData;
+  siteData: SiteEditorFormData; // Use the comprehensive type
 }
 
 export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateProps) {
@@ -90,6 +61,15 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   const successColorClass = 'bg-green-600';
   const successColorTextClass = 'text-green-600';
 
+  const sectionsVisibility = siteData.sectionsVisibility || {
+    showHero: true,
+    showAbout: true,
+    showProductsServices: true,
+    showTestimonials: true,
+    showSkills: true,
+    showContact: true,
+  };
+
   React.useEffect(() => {
     const handleScroll = () => {
       if (window.pageYOffset > 300) {
@@ -100,7 +80,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('change', handleScroll); // Corrected event listener cleanup
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
@@ -128,11 +108,30 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
   const services = siteData.productsAndServices.filter(item => item.actionButton !== 'buy');
 
-  const testimonials = [
-    { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: siteData.businessLocation || "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
-    { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: siteData.businessLocation || "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
-    { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: siteData.businessLocation || "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
-  ];
+  const testimonialsToDisplay = siteData.testimonials && siteData.testimonials.length > 0
+    ? siteData.testimonials
+    : [
+        { quote: "J'ai commandé une table basse sur mesure et je suis absolument ravi du résultat. L'artisan a su comprendre exactement ce que je voulais et le produit final est encore plus beau que ce que j'imaginais.", author: "Marie Diop", location: siteData.businessLocation || "Dakar", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
+        { quote: "Service de réparation rapide et efficace pour mon fauteuil ancien. Le prix était raisonnable et le travail soigné. Je recommande vivement cette boutique pour la qualité de ses services.", author: "Jean Ndiaye", location: siteData.businessLocation || "Pikine", avatar: "https://randomuser.me/api/portraits/men/54.jpg" },
+        { quote: "La personnalisation du panier que j'ai offert en cadeau était parfaite. La gravure était précise et le produit de grande qualité. Livraison rapide et emballage soigné.", author: "Fatou Sarr", location: siteData.businessLocation || "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
+      ];
+
+  const skillsToDisplay = siteData.skills && siteData.skills.length > 0
+    ? siteData.skills
+    : [
+        { icon: "PencilRuler", title: "Design Sur Mesure", description: "Création de pièces uniques selon vos envies." },
+        { icon: "Wrench", title: "Restauration", description: "Redonner vie à vos objets anciens avec soin." },
+        { icon: "Palette", title: "Finitions Artisanales", description: "Des détails qui font toute la différence." },
+      ];
+
+  // Helper to get Lucide icon component by name
+  const getLucideIcon = (iconName: string) => {
+    const icons: { [key: string]: React.ElementType } = {
+      Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle, PencilRuler, Palette,
+      // Add other Lucide icons as needed
+    };
+    return icons[iconName] || Wrench; // Default to Wrench if not found
+  };
 
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
@@ -187,13 +186,14 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
               </div>
             </div>
             <div className={cn("hidden md:flex items-center gap-8")}>
-              <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>
-              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>
-              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>
-              {siteData.showTestimonials !== false && (
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Accueil</a>}
+              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Produits</a>}
+              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Services</a>}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Compétences</a>}
+              {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Avis Clients</a>
               )}
-              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className={cn("text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-lg", primaryColorClass, "hover:text-red-500 hover:after:w-full transition-all duration-300")}>Contact</a>}
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#" className={cn("relative text-gray-700 text-xl hover:text-red-500 transition-colors")}>
@@ -220,13 +220,14 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 z-40">
             <nav className="flex flex-col items-center gap-4">
-              <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>
-              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>
-              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>
-              {siteData.showTestimonials !== false && (
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>}
+              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>}
+              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>}
+              {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
                 <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Avis Clients</a>
               )}
-              <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>}
               <div className="flex gap-6 mt-4">
                 <a href="#" className={cn("relative text-gray-700 text-xl hover:text-red-500 transition-colors")}>
                   <Search className="h-5 w-5" />
@@ -241,7 +242,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
                       {cartCount}
                     </span>
                   )}
-                </a>
+                )}
               </div>
             </nav>
           </div>
@@ -249,22 +250,24 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       </header>
 
       {/* Hero Section */}
-      <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center", secondaryColorClass)} style={{ backgroundImage: `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')` }}>
-        <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
-          <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}>
-              <ShoppingCart className="h-6 w-6" /> Voir les produits
-            </a>
-            <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
-              <Wrench className="h-6 w-6" /> Découvrir les services
-            </a>
+      {sectionsVisibility.showHero && (
+        <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center", secondaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%), var(--${siteData.secondaryColor}-700)` }}>
+          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
+            <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}>
+                <ShoppingCart className="h-6 w-6" /> Voir les produits
+              </a>
+              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+                <Wrench className="h-6 w-6" /> Découvrir les services
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Features Section */}
+      {/* Features Section (Hardcoded for now, could be dynamic) */}
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4 md:px-6 max-w-5xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -301,7 +304,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       </section>
 
       {/* Products Section */}
-      {products.length > 0 && (
+      {sectionsVisibility.showProductsServices && products.length > 0 && (
         <section id="produits" className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="text-center mb-12">
@@ -368,7 +371,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       )}
 
       {/* Services Section */}
-      {services.length > 0 && (
+      {sectionsVisibility.showProductsServices && services.length > 0 && (
         <section id="services" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="text-center mb-12">
@@ -411,7 +414,27 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         </section>
       )}
 
-      {siteData.showTestimonials !== false && (
+      {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && (
+        <section id="skills" className="py-16 bg-white">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Compétences</h2>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {skillsToDisplay.map((skill, index) => {
+                const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
+                return (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
+                    <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-8 w-8", primaryColorTextClass)} /></div>
+                    <h3 className="text-xl font-semibold text-gray-800">{skill.title}</h3>
+                    <p className="text-muted-foreground text-sm">{skill.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="text-center mb-12">
@@ -423,12 +446,18 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Placeholder testimonials */}
-              {testimonials.map((testimonial: any, index: number) => (
+              {testimonialsToDisplay.map((testimonial: any, index: number) => (
                 <div key={index} className="bg-gray-100 rounded-xl p-8 shadow-lg relative">
                   <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
                   <p className="text-lg italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
                   <div className="flex items-center gap-4">
-                    <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
+                    {testimonial.avatar ? (
+                      <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
+                    ) : (
+                      <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        <User className="h-8 w-8" />
+                      </div>
+                    )}
                     <div>
                       <h4 className={cn("text-xl font-semibold mb-1", secondaryColorTextClass)}>{testimonial.author}</h4>
                       <p className="text-gray-600 text-sm">{testimonial.location}</p>
@@ -441,7 +470,7 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
         </section>
       )}
 
-      {/* Newsletter Section */}
+      {/* Newsletter Section (Hardcoded for now) */}
       <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-700) 0%, var(--${siteData.primaryColor}-600) 100%)` }}>
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
           <h2 className="text-4xl font-bold mb-4">Restez Informé</h2>
@@ -456,99 +485,101 @@ export function ArtisanEcommerceTemplate({ siteData }: ArtisanEcommerceTemplateP
       </section>
 
       {/* Footer */}
-      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
-                {siteData.publicName}
-              </h3>
-              <p className="text-gray-300">Créations uniques et services sur mesure pour valoriser votre intérieur. Qualité artisanale et satisfaction client garanties.</p>
-              <div className="flex gap-4 mt-4">
-                {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-6 w-6" />
-                  </a>
-                )}
-                {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-6 w-6" />
-                  </a>
-                )}
-                {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-6 w-6" />
-                  </a>
-                )}
+      {sectionsVisibility.showContact && (
+        <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
+                  {siteData.publicName}
+                </h3>
+                <p className="text-gray-300">Créations uniques et services sur mesure pour valoriser votre intérieur. Qualité artisanale et satisfaction client garanties.</p>
+                <div className="flex gap-4 mt-4">
+                  {siteData.facebookLink && (
+                    <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                      <Facebook className="h-6 w-6" />
+                    </a>
+                  )}
+                  {siteData.instagramLink && (
+                    <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                      <Instagram className="h-6 w-6" />
+                    </a>
+                  )}
+                  {siteData.whatsappNumber && (
+                    <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                      <MessageSquare className="h-6 w-6" />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
-                Liens Rapides
-              </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="hover:text-blue-500 transition-colors">Accueil</a></li>
-                <li><a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="hover:text-blue-500 transition-colors">Produits</a></li>
-                <li><a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="hover:text-blue-500 transition-colors">Services</a></li>
-                <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-blue-500 transition-colors">Contact</a></li>
-              </ul>
-            </div>
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
+                  Liens Rapides
+                </h3>
+                <ul className="space-y-2 text-gray-300">
+                  {sectionsVisibility.showHero && <li><a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="hover:text-blue-500 transition-colors">Accueil</a></li>}
+                  {sectionsVisibility.showProductsServices && products.length > 0 && <li><a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className="hover:text-blue-500 transition-colors">Produits</a></li>}
+                  {sectionsVisibility.showProductsServices && services.length > 0 && <li><a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="hover:text-blue-500 transition-colors">Services</a></li>}
+                  {sectionsVisibility.showContact && <li><a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="hover:text-blue-500 transition-colors">Contact</a></li>}
+                </ul>
+              </div>
 
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
-                Contact
-              </h3>
-              <div className="space-y-3 text-gray-300">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.whatsappNumber}</p>
-                </div>
-                {siteData.email && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
+                  Contact
+                </h3>
+                <div className="space-y-3 text-gray-300">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5" />
+                      <MapPin className="h-5 w-5" />
                     </div>
-                    <p>{siteData.email}</p>
+                    <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
                   </div>
-                )}
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <MessageSquare className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.whatsappNumber}</p>
+                  </div>
+                  {siteData.email && (
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Mail className="h-5 w-5" />
+                      </div>
+                      <p>{siteData.email}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
+                  Modes de Paiement
+                </h3>
+                <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
+                <div className="flex flex-wrap gap-3 mt-4">
+                  {paymentMethods.map((method: string, index: number) => (
+                    <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                      {method}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-lg after:bg-blue-500">
-                Modes de Paiement
-              </h3>
-              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
-              <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
-                    {method}
-                  </span>
-                ))}
-              </div>
+            <div className="text-center pt-8 border-t border-white/10 opacity-70">
+              <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
             </div>
           </div>
-
-          <div className="text-center pt-8 border-t border-white/10 opacity-70">
-            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       {/* Back to Top Button */}
       <button

@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { MapPin } from "lucide-react"; // Import MapPin icon
 
 const predefinedColors = [
   { value: "red", label: "Rouge" },
@@ -176,6 +177,23 @@ export function EssentialDesignStep() {
             <FormMessage />
             <p className="text-sm text-muted-foreground">
               Téléchargez votre logo ou une photo de profil (max {maxLogoSizeMB}MB).
+            </p>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="businessLocation"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "businessLocation"> }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-1"><MapPin className="h-4 w-4 text-muted-foreground" /> Localisation de l'Entreprise</FormLabel>
+            <FormControl>
+              <Input placeholder="Ex: Dakar, Sénégal" {...field} />
+            </FormControl>
+            <FormMessage />
+            <p className="text-sm text-muted-foreground">
+              L'adresse principale ou la zone de service de votre entreprise.
             </p>
           </FormItem>
         )}

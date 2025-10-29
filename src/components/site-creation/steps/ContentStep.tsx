@@ -12,9 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Image as ImageIcon } from "lucide-react"; // Import ImageIcon
+import { toast } from "sonner";
 
 export function ContentStep() {
   const { control } = useFormContext();
+  const maxHeroImageSizeMB = 2; // Max 2MB for hero image
 
   return (
     <div className="space-y-6">
@@ -34,7 +37,7 @@ export function ContentStep() {
             </FormControl>
             <FormMessage />
             <p className="text-sm text-muted-foreground">
-              Le message principal visible sur la page d'accueil (max 60 caractères).
+              Le message principal visible sur la page d'accueil (max 100 caractères).
             </p>
           </FormItem>
         )}
@@ -48,7 +51,7 @@ export function ContentStep() {
             <FormLabel>Mon Histoire / Ma Mission (Page "À Propos")</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Racontez votre parcours, vos valeurs, votre engagement local (max 300 caractères)."
+                placeholder="Racontez votre parcours, vos valeurs, votre engagement local (max 500 caractères)."
                 className="resize-y min-h-[100px]"
                 {...field}
               />
@@ -61,11 +64,41 @@ export function ContentStep() {
         )}
       />
 
+      <FormField
+        control={control}
+        name="heroBackgroundImage"
+        render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, "heroBackgroundImage"> }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-muted-foreground" /> Image de Fond du Héro (Optionnel)</FormLabel>
+            <FormControl>
+              <Input
+                {...fieldProps}
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  const file = event.target.files && event.target.files[0];
+                  if (file && file.size > maxHeroImageSizeMB * 1024 * 1024) {
+                    toast.error(`Le fichier est trop grand. La taille maximale est de ${maxHeroImageSizeMB}MB.`);
+                    onChange(undefined); // Clear the field
+                  } else {
+                    onChange(file);
+                  }
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+            <p className="text-sm text-muted-foreground">
+              Téléchargez une image pour la bannière principale de votre site (max {maxHeroImageSizeMB}MB).
+            </p>
+          </FormItem>
+        )}
+      />
+
       <Separator className="my-8" />
 
-      <h4 className="text-xl font-semibold text-center">Preuves / Témoignages</h4>
+      <h4 className="text-xl font-semibold text-center">Preuves / Témoignages (Optionnel)</h4>
       <p className="text-center text-muted-foreground">
-        Établissez votre crédibilité.
+        Ces champs sont des options rapides. Pour une gestion complète des témoignages et compétences, utilisez l'éditeur avancé.
       </p>
       <FormField
         control={control}

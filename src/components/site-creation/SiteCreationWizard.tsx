@@ -11,6 +11,7 @@ import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
 import { createClient } from "@/lib/supabase/client"; // Import Supabase client
 import { useRouter } from "next/navigation"; // Import useRouter
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the comprehensive schema type
 
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
@@ -33,8 +34,8 @@ const generateSlug = (text: string): string => {
     .replace(/-+$/, ''); // Trim - from end of text
 };
 
-// Define the base schema as a ZodObject
-const baseWizardFormSchema = z.object({
+// Define the base schema as a ZodObject, now directly using SiteEditorFormData for consistency
+const wizardFormSchema = z.object({
   // Étape 1: Infos Essentielles & Design
   publicName: z.string().min(3, { message: "Le nom public est requis et doit contenir au moins 3 caractères." }).max(50, { message: "Le nom public ne peut pas dépasser 50 caractères." }),
   whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, { message: "Veuillez entrer un numéro WhatsApp valide (ex: +225 07 00 00 00 00)." }),
@@ -42,39 +43,60 @@ const baseWizardFormSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }).optional().or(z.literal('')),
   primaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur principale." }),
   secondaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur secondaire." }),
-  logoOrPhoto: z.any().optional(), // File object
+  logoOrPhoto: z.any().optional(), // File object or URL string
 
   // Étape 2: Contenu (Les Pages Clés)
-  heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(60, { message: "Le slogan ne peut pas dépasser 60 caractères." }),
-  aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(300, { message: "Votre histoire/mission ne peut pas dépasser 300 caractères." }),
-  portfolioProofLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
-  portfolioProofDescription: z.string().max(200, { message: "La description ne peut pas dépasser 200 caractères." }).optional().or(z.literal('')),
+  heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(100, { message: "Le slogan ne peut pas dépasser 100 caractères." }),
+  aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(500, { message: "Votre histoire/mission ne peut pas dépasser 500 caractères." }),
+  heroBackgroundImage: z.any().optional(), // File object or URL string
 
   // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    price: z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional(),
+    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().min(0, "Le prix ne peut pas être négatif.").optional()),
     currency: z.string().min(1, "La devise est requise."),
-    description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(200, "La description ne peut pas dépasser 200 caractères."),
-    image: z.any().optional(), // File object
+    description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(300, "La description ne peut pas dépasser 300 caractères."),
+    image: z.any().optional(), // File object or URL string
     actionButton: z.string().min(1, "L'action du bouton est requise."),
-  })).min(1, { message: "Veuillez ajouter au moins un produit ou service." }).max(3, "Vous ne pouvez ajouter que 3 produits/services maximum."),
+  })).max(5, "Vous ne pouvez ajouter que 5 produits/services maximum."), // Increased max to 5 for more customization
+
+  // Testimonials (New for wizard, but optional)
+  testimonials: z.array(z.object({
+    author: z.string().min(2, "Le nom de l'auteur est requis.").max(50, "Le nom ne peut pas dépasser 50 caractères."),
+    quote: z.string().min(20, "Le témoignage est requis.").max(500, "Le témoignage ne peut pas dépasser 500 caractères."),
+    location: z.string().min(2, "La localisation est requise.").max(50, "La localisation ne peut pas dépasser 50 caractères."),
+    avatar: z.any().optional(), // File object or URL string
+  })).max(5, "Vous ne pouvez ajouter que 5 témoignages maximum.").optional(), // Optional for wizard
+
+  // Skills/Expertise (New for wizard, but optional)
+  skills: z.array(z.object({
+    title: z.string().min(3, "Le titre de la compétence est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
+    description: z.string().min(10, "La description est requise.").max(200, "La description ne peut pas dépasser 200 caractères."),
+    icon: z.string().optional(), // Lucide icon name or similar
+  })).max(6, "Vous ne pouvez ajouter que 6 compétences maximum.").optional(), // Optional for wizard
 
   // Étape 3 (maintenant Étape 4): Configuration et Réseaux
   contactButtonAction: z.string().min(1, { message: "Veuillez sélectionner une action pour le bouton de contact." }),
   facebookLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
   instagramLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
   linkedinLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
-  paymentMethods: z.array(z.string()).min(1, { message: "Veuillez sélectionner au moins un mode de paiement." }),
+  paymentMethods: z.array(z.string()).max(5, "Vous ne pouvez sélectionner que 5 modes de paiement maximum."),
   deliveryOption: z.string().min(1, { message: "Veuillez sélectionner une option de livraison/déplacement." }),
   depositRequired: z.boolean(),
   businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
   showContactForm: z.boolean(),
   templateType: z.string().min(1, { message: "Veuillez sélectionner un type de template." }), // Add templateType to the schema
-});
 
-// The final wizardFormSchema is the base schema (no superRefine needed here as validations are direct)
-const wizardFormSchema = baseWizardFormSchema;
+  // Section Visibility (New for wizard, but optional)
+  sectionsVisibility: z.object({
+    showHero: z.boolean(),
+    showAbout: z.boolean(),
+    showProductsServices: z.boolean(),
+    showTestimonials: z.boolean(),
+    showSkills: z.boolean(),
+    showContact: z.boolean(),
+  }).optional(),
+});
 
 // Infer the type for the entire wizard form data from the schema
 type WizardFormData = z.infer<typeof wizardFormSchema> & { subdomain?: string }; // Add subdomain as optional property for internal use
@@ -93,7 +115,7 @@ const steps: {
     id: "essentialDesign",
     title: "Infos Essentielles & Design",
     component: EssentialDesignStep,
-    schema: baseWizardFormSchema.pick({
+    schema: wizardFormSchema.pick({
       publicName: true,
       whatsappNumber: true,
       secondaryPhoneNumber: true,
@@ -101,24 +123,26 @@ const steps: {
       primaryColor: true,
       secondaryColor: true,
       logoOrPhoto: true,
+      businessLocation: true, // Added to essential design
     }),
   },
   {
     id: "content",
     title: "Contenu (Pages Clés)",
     component: ContentStep,
-    schema: baseWizardFormSchema.pick({
+    schema: wizardFormSchema.pick({
       heroSlogan: true,
       aboutStory: true,
-      portfolioProofLink: true,
-      portfolioProofDescription: true,
+      portfolioProofLink: true, // Kept for now, but might be removed if replaced by new sections
+      portfolioProofDescription: true, // Kept for now
+      heroBackgroundImage: true, // Added hero background image
     }),
   },
   {
-    id: "productsServices", // New step ID
+    id: "productsServices",
     title: "Produits & Services",
     component: ProductsServicesStep,
-    schema: baseWizardFormSchema.pick({
+    schema: wizardFormSchema.pick({
       productsAndServices: true,
     }),
   },
@@ -126,7 +150,7 @@ const steps: {
     id: "configurationNetwork",
     title: "Configuration et Réseaux",
     component: ConfigurationNetworkStep,
-    schema: baseWizardFormSchema.pick({
+    schema: wizardFormSchema.pick({
       contactButtonAction: true,
       facebookLink: true,
       instagramLink: true,
@@ -134,14 +158,14 @@ const steps: {
       paymentMethods: true,
       deliveryOption: true,
       depositRequired: true,
-      businessLocation: true,
       showContactForm: true,
+      // Removed businessLocation as it's now in EssentialDesignStep
     }),
   },
 ];
 
 // Utility function to sanitize file names for storage keys
-const sanitizeFileName = (fileName: string): string => {
+const sanitizeFileNameForStorage = (fileName: string): string => {
   if (!fileName) return '';
   // Replace special characters (including spaces, accents) with hyphens
   // Keep alphanumeric characters, hyphens, and dots
@@ -178,13 +202,18 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     primaryColor: initialSiteData?.primaryColor || "blue", // Default color
     secondaryColor: initialSiteData?.secondaryColor || "red", // Default color
     logoOrPhoto: initialSiteData?.logoOrPhoto || undefined, // This will be a URL if existing, not a File
+    businessLocation: initialSiteData?.businessLocation || "",
 
     heroSlogan: initialSiteData?.heroSlogan || "",
     aboutStory: initialSiteData?.aboutStory || "",
     portfolioProofLink: initialSiteData?.portfolioProofLink || "",
     portfolioProofDescription: initialSiteData?.portfolioProofDescription || "",
+    heroBackgroundImage: initialSiteData?.heroBackgroundImage || undefined,
 
     productsAndServices: initialSiteData?.productsAndServices || [], // Initialize with an empty array, ProductsServicesStep will add one if needed
+
+    testimonials: initialSiteData?.testimonials || [], // New field
+    skills: initialSiteData?.skills || [], // New field
 
     contactButtonAction: initialSiteData?.contactButtonAction || "whatsapp", // Default to WhatsApp
     facebookLink: initialSiteData?.facebookLink || "",
@@ -193,10 +222,17 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     paymentMethods: initialSiteData?.paymentMethods || [],
     deliveryOption: initialSiteData?.deliveryOption || "",
     depositRequired: initialSiteData?.depositRequired || false,
-    businessLocation: initialSiteData?.businessLocation || "",
     showContactForm: initialSiteData?.showContactForm !== undefined ? initialSiteData.showContactForm : true, // Default to true
     templateType: initialSiteData?.templateType || "default", // Default template
     subdomain: initialSiteData?.subdomain, // Include existing subdomain for updates
+    sectionsVisibility: initialSiteData?.sectionsVisibility || { // Default visibility for new sites
+      showHero: true,
+      showAbout: true,
+      showProductsServices: true,
+      showTestimonials: true,
+      showSkills: true,
+      showContact: true,
+    },
   };
 
   const methods = useForm<WizardFormData>({
@@ -243,6 +279,28 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     setCurrentStep((prev) => prev - 1);
   };
 
+  const handleFileUpload = async (file: File, path: string, siteIdentifier: string): Promise<string | null> => {
+    if (!file) return null;
+
+    const sanitizedFileName = sanitizeFileNameForStorage(file.name);
+    const filePath = `${user?.id}/${siteIdentifier}/${path}/${Date.now()}-${sanitizedFileName}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('site-assets')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      toast.error(`Erreur lors du téléchargement de l'image: ${uploadError.message}`);
+      return null;
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('site-assets').getPublicUrl(filePath);
+    return publicUrlData.publicUrl;
+  };
+
   const onSubmit: SubmitHandler<WizardFormData> = async (data: WizardFormData) => { // Explicitly type 'data'
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -286,54 +344,80 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
 
     // Handle file uploads (logo and product images)
     let logoUrl: string | null = null;
+    let heroBackgroundImageUrl: string | null = null;
     const productImages: { [key: number]: string | null } = {};
+    const testimonialAvatars: { [key: number]: string | null } = {};
 
     try {
       // Upload logo/photo if present and it's a new File (not an existing URL)
       if (data.logoOrPhoto instanceof File) {
-        const sanitizedLogoFileName = sanitizeFileName(data.logoOrPhoto.name);
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('site-assets')
-          .upload(`${user.id}/${siteIdentifier}/logo/${sanitizedLogoFileName}`, data.logoOrPhoto, {
-            cacheControl: '3600',
-            upsert: false,
-          });
-
-        if (uploadError) throw uploadError;
-        logoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+        logoUrl = await handleFileUpload(data.logoOrPhoto, 'logo', siteIdentifier!);
+        if (logoUrl === null) throw new Error("Logo upload failed.");
       } else if (typeof data.logoOrPhoto === 'string') {
-        // If it's already a string, it's an existing URL, so keep it
         logoUrl = data.logoOrPhoto;
+      } else {
+        logoUrl = null;
+      }
+
+      // Upload hero background image
+      if (data.heroBackgroundImage instanceof File) {
+        heroBackgroundImageUrl = await handleFileUpload(data.heroBackgroundImage, 'hero', siteIdentifier!);
+        if (heroBackgroundImageUrl === null) throw new Error("Hero background image upload failed.");
+      } else if (typeof data.heroBackgroundImage === 'string') {
+        heroBackgroundImageUrl = data.heroBackgroundImage;
+      } else {
+        heroBackgroundImageUrl = null;
       }
 
       // Upload product images if present and they are new Files
       for (const [index, product] of data.productsAndServices.entries()) {
         if (product.image instanceof File) {
-          const sanitizedProductFileName = sanitizeFileName(product.image.name);
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('site-assets')
-            .upload(`${user.id}/${siteIdentifier}/products/${index}-${sanitizedProductFileName}`, product.image, {
-              cacheControl: '3600',
-              upsert: false,
-            });
-
-          if (uploadError) throw uploadError;
-          productImages[index] = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-assets/${uploadData.path}`;
+          productImages[index] = await handleFileUpload(product.image, `products/${index}`, siteIdentifier!);
+          if (productImages[index] === null) throw new Error(`Product image ${index} upload failed.`);
         } else if (typeof product.image === 'string') {
-          // If it's already a string, it's an existing URL, so keep it
           productImages[index] = product.image;
+        } else {
+          productImages[index] = null;
+        }
+      }
+
+      // Upload testimonial avatars if present and they are new Files
+      if (data.testimonials) {
+        for (const [index, testimonial] of data.testimonials.entries()) {
+          if (testimonial.avatar instanceof File) {
+            testimonialAvatars[index] = await handleFileUpload(testimonial.avatar, `testimonials/${index}`, siteIdentifier!);
+            if (testimonialAvatars[index] === null) throw new Error(`Testimonial avatar ${index} upload failed.`);
+          } else if (typeof testimonial.avatar === 'string') {
+            testimonialAvatars[index] = testimonial.avatar;
+          } else {
+            testimonialAvatars[index] = null;
+          }
         }
       }
 
       // Prepare site_data for Supabase, replacing File objects with URLs
-      const siteDataToSave = {
+      const siteDataToSave: SiteEditorFormData = {
         ...data,
         logoOrPhoto: logoUrl,
-        productsAndServices: data.productsAndServices.map((product: typeof data.productsAndServices[number], index: number) => ({ // Explicitly type 'product' and 'index'
+        heroBackgroundImage: heroBackgroundImageUrl,
+        productsAndServices: data.productsAndServices.map((product, index) => ({
           ...product,
-          image: productImages[index] !== undefined ? productImages[index] : product.image, // Use uploaded URL or original if not uploaded
+          image: productImages[index] !== undefined ? productImages[index] : product.image,
         })),
-        subdomain: siteIdentifier, // Ensure the generated identifier is saved within site_data
+        testimonials: data.testimonials?.map((testimonial, index) => ({
+          ...testimonial,
+          avatar: testimonialAvatars[index] !== undefined ? testimonialAvatars[index] : testimonial.avatar,
+        })) || [],
+        skills: data.skills || [], // Ensure skills array is passed
+        sectionsVisibility: data.sectionsVisibility || { // Ensure visibility is passed
+          showHero: true,
+          showAbout: true,
+          showProductsServices: true,
+          showTestimonials: true,
+          showSkills: true,
+          showContact: true,
+        },
+        subdomain: siteIdentifier!, // Ensure the generated identifier is saved within site_data
       };
 
       if (initialSiteData?.id) {

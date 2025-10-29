@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Palette, LayoutTemplate, Type, EyeOff } from "lucide-react";
+import { Pencil, Palette, LayoutTemplate, Type, EyeOff, Settings } from "lucide-react"; // Added Settings icon for advanced editor
 import {
   Drawer,
   DrawerClose,
@@ -148,7 +148,24 @@ export function ContentModification({
           </p>
         </div>
 
-        {/* Mode Avancé */}
+        <Separator />
+
+        {/* Mode Avancé - Éditeur de Contenu */}
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Éditeur de Contenu Avancé</h3>
+          <p className="text-muted-foreground mb-4">
+            Personnalisez en détail toutes les sections de votre site (textes, images, témoignages, compétences, etc.).
+          </p>
+          <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Link href={`/dashboard/${subdomain}/edit-content`}>
+              <Settings className="mr-2 h-5 w-5" /> Accéder à l'Éditeur Avancé
+            </Link>
+          </Button>
+        </div>
+
+        <Separator />
+
+        {/* Mode Avancé - Design (Existing Drawer) */}
         <div>
           <h3 className="text-xl font-semibold mb-2">Modifier l'Apparence (Design)</h3>
           <p className="text-muted-foreground mb-4">

@@ -52,23 +52,7 @@ export function ConfigurationNetworkStep() {
       </p>
 
       {/* Le champ sous-domaine est supprimé ici */}
-
-      <FormField
-        control={control}
-        name="businessLocation"
-        render={({ field }: { field: ControllerRenderProps<FieldValues, "businessLocation"> }) => (
-          <FormItem>
-            <FormLabel>Localisation de l'Entreprise</FormLabel>
-            <FormControl>
-              <Input placeholder="Ex: Dakar, Sénégal" {...field} />
-            </FormControl>
-            <FormMessage />
-            <p className="text-sm text-muted-foreground">
-              L'adresse principale ou la zone de service de votre entreprise.
-            </p>
-          </FormItem>
-        )}
-      />
+      {/* businessLocation a été déplacé vers EssentialDesignStep */}
 
       <Separator className="my-8" />
 

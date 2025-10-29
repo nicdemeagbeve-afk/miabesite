@@ -7,50 +7,14 @@ import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import { createClient } from "@/lib/supabase/client"; // Import Supabase client
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { z } from "zod"; // Import z for WizardFormData inference
-
-// Define the schema for the wizard form data (copied from SiteCreationWizard for type inference)
-const wizardFormSchema = z.object({
-  publicName: z.string(),
-  whatsappNumber: z.string(),
-  secondaryPhoneNumber: z.string().optional().or(z.literal('')),
-  email: z.string().optional().or(z.literal('')),
-  primaryColor: z.string(),
-  secondaryColor: z.string(),
-  logoOrPhoto: z.any().optional(),
-  heroSlogan: z.string(),
-  aboutStory: z.string(),
-  portfolioProofLink: z.string().optional().or(z.literal('')),
-  portfolioProofDescription: z.string().optional().or(z.literal('')),
-  productsAndServices: z.array(z.object({
-    title: z.string(),
-    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().optional()),
-    currency: z.string(),
-    description: z.string(),
-    image: z.any().optional(),
-    actionButton: z.string(),
-  })),
-  subdomain: z.string(), // This is also in WizardFormData
-  contactButtonAction: z.string(),
-  facebookLink: z.string().optional().or(z.literal('')),
-  instagramLink: z.string().optional().or(z.literal('')),
-  linkedinLink: z.string().optional().or(z.literal('')),
-  paymentMethods: z.array(z.string()),
-  deliveryOption: z.string(),
-  depositRequired: z.boolean(),
-  businessLocation: z.string(),
-  showContactForm: z.boolean(),
-  templateType: z.string(), // ADDED: Ensure templateType is part of the schema
-});
-
-type WizardFormData = z.infer<typeof wizardFormSchema>;
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new comprehensive schema type
 
 // Interface for the data fetched directly from the 'sites' table
 interface FetchedSiteData {
   id: string;
   user_id: string;
   subdomain: string;
-  site_data: WizardFormData; // This is the key change
+  site_data: SiteEditorFormData; // Use the new comprehensive type
   status: string;
   template_type: string;
   created_at: string;
@@ -63,7 +27,7 @@ export default function CreateSitePage() {
   const supabase = createClient();
 
   // The state for initialSiteData should match what SiteCreationWizard expects
-  const [initialSiteData, setInitialSiteData] = React.useState<(WizardFormData & { id?: string }) | undefined>(undefined);
+  const [initialSiteData, setInitialSiteData] = React.useState<(SiteEditorFormData & { id?: string }) | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -75,7 +39,19 @@ export default function CreateSitePage() {
           setInitialSiteData(prev => ({
             ...prev,
             templateType: templateTypeFromUrl,
-          } as WizardFormData & { id?: string }));
+            // Set default values for new fields if not provided by initialSiteData
+            heroBackgroundImage: undefined,
+            testimonials: [],
+            skills: [],
+            sectionsVisibility: {
+              showHero: true,
+              showAbout: true,
+              showProductsServices: true,
+              showTestimonials: true,
+              showSkills: true,
+              showContact: true,
+            },
+          } as SiteEditorFormData & { id?: string }));
         }
         setLoading(false);
         return;
