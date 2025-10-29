@@ -35,7 +35,7 @@ interface ProfessionalPortfolioTemplateProps {
 export function ProfessionalPortfolioTemplate({ siteData, subdomain }: ProfessionalPortfolioTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = React.useState<any>(null); // Initialize with null
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [formData, setFormData] = React.useState({
     name: '',
@@ -84,6 +84,12 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const [emblaRefCallback, emblaApiInstance] = useEmblaCarousel({ loop: true });
+
+  React.useEffect(() => {
+    setEmblaApi(emblaApiInstance);
+  }, [emblaApiInstance]);
 
   React.useEffect(() => {
     if (!emblaApi) return;
@@ -380,12 +386,12 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
             <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
               <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Ils m'ont fait confiance
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", secondaryColorClass)}></span> {/* Adjusted width for mobile */}
+                <span className className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", secondaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
               <p className="mt-6 text-base text-gray-600 max-w-2xl mx-auto">Retours d'expérience de clients satisfaits</p> {/* Adjusted mt and text size for mobile */}
             </div>
             <div className="relative">
-              <div className="overflow-hidden" ref={emblaRef}>
+              <div className="overflow-hidden" ref={emblaRefCallback}>
                 <div className="flex -ml-4 sm:-ml-8"> {/* Adjusted margin for mobile */}
                   {testimonialsToDisplay.map((testimonial: any, index: number) => (
                     <div key={index} className="flex-none w-full pl-4 sm:pl-8"> {/* Adjusted padding for mobile */}
