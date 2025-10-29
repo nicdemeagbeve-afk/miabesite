@@ -48,6 +48,14 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [cartCount, setCartCount] = React.useState(0);
+  const [formData, setFormData] = React.useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: '', // For services section contact
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
@@ -85,7 +93,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll); // Corrected event listener cleanup
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
@@ -104,6 +112,45 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
   const handleAddToCart = (productTitle: string) => {
     setCartCount(prev => prev + 1);
     toast.success(`"${productTitle}" a été ajouté à votre panier !`);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/site/${subdomain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender_name: formData.name,
+          sender_email: formData.email,
+          sender_phone: formData.phone,
+          service_interested: formData.service,
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Erreur lors de l'envoi du message.");
+      } else {
+        toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
+        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+      }
+    } catch (error) {
+      console.error("Failed to submit contact form:", error);
+      toast.error("Une erreur inattendue est survenue lors de l'envoi du message.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const paymentMethods = siteData.paymentMethods && siteData.paymentMethods.length > 0

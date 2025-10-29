@@ -2,17 +2,27 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, MapPin, Star, Wrench, Phone, Mail } from 'lucide-react'; // Added Phone, Mail icons
+import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check } from 'lucide-react'; // Added Check icon
 import { cn } from '@/lib/utils';
-import Image from 'next/image'; // Import Image component
-import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type
+import Image from 'next/image';
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
+import { toast } from 'sonner'; // Import toast for notifications
 
 interface DefaultTemplateProps {
-  siteData: SiteEditorFormData; // Use the comprehensive type
-  subdomain: string; // Add subdomain prop
+  siteData: SiteEditorFormData;
+  subdomain: string;
 }
 
 export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
+  const [formData, setFormData] = React.useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
   const secondaryColorClass = `bg-${siteData.secondaryColor}-500`;
@@ -25,6 +35,57 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
     showTestimonials: true,
     showSkills: true,
     showContact: true,
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/site/${subdomain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender_name: formData.name,
+          sender_email: formData.email,
+          sender_phone: formData.phone,
+          service_interested: formData.service,
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Erreur lors de l'envoi du message.");
+      } else {
+        toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
+        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+      }
+    } catch (error) {
+      console.error("Failed to submit contact form:", error);
+      toast.error("Une erreur inattendue est survenue lors de l'envoi du message.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const productsAndServicesToDisplay = siteData.productsAndServices || [];
+  const testimonialsToDisplay = siteData.testimonials || [];
+  const skillsToDisplay = siteData.skills || [];
+
+  // Helper to get Lucide icon component by name (simplified for DefaultTemplate)
+  const getLucideIcon = (iconName: string) => {
+    const icons: { [key: string]: React.ElementType } = {
+      Wrench, Star, Check, User, Phone, Mail, MapPin, MessageSquare
+    };
+    return icons[iconName] || Wrench; // Default to Wrench if not found
   };
 
   return (
@@ -74,12 +135,12 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
         </section>
       )}
 
-      {sectionsVisibility.showProductsServices && siteData.productsAndServices && siteData.productsAndServices.length > 0 && (
+      {sectionsVisibility.showProductsServices && productsAndServicesToDisplay.length > 0 && (
         <section className="py-12 md:py-24 w-full bg-gray-50 text-center">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <h2 className={cn("text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Offres</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {siteData.productsAndServices.map((product, index) => (
+              {productsAndServicesToDisplay.map((product, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
                   {product.image && (
                     <Image src={product.image} alt={product.title} width={150} height={100} className="mx-auto mb-4 object-cover rounded-md" />
@@ -106,12 +167,12 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
         </section>
       )}
 
-      {sectionsVisibility.showTestimonials && siteData.testimonials && siteData.testimonials.length > 0 && (
+      {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
         <section className="py-12 md:py-24 w-full bg-white text-center">
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
             <h2 className={cn("text-3xl font-bold mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {siteData.testimonials.map((testimonial, index) => (
+              {testimonialsToDisplay.map((testimonial, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg shadow-sm p-6 text-left">
                   <p className="text-lg italic text-gray-700 mb-4">"{testimonial.quote}"</p>
                   <div className="flex items-center gap-3">
@@ -130,27 +191,16 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
         </section>
       )}
 
-      {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && (
+      {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && (
         <section className="py-12 md:py-24 w-full bg-gray-50 text-center">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <h2 className={cn("text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Compétences</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {siteData.skills.map((skill, index) => {
-                const IconComponent = skill.icon ? (
-                  // Dynamically render Lucide icon based on string name
-                  // This requires a mapping or a dynamic import, for simplicity,
-                  // we'll use a placeholder or a limited set for now.
-                  // In a real app, you'd have a map like { "Wrench": Wrench, ... }
-                  // For this example, let's just use a generic icon or a few hardcoded ones.
-                  // A more robust solution would involve a component that takes a string and returns the Lucide icon.
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                ) : (
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                );
-
+              {skillsToDisplay.map((skill, index) => {
+                const IconComponent = skill.icon ? getLucideIcon(skill.icon) : Wrench;
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-                    <div className="flex items-center justify-center mb-4">{IconComponent}</div>
+                    <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-8 w-8", primaryColorTextClass)} /></div>
                     <h3 className="text-xl font-semibold text-gray-800">{skill.title}</h3>
                     <p className="text-muted-foreground text-sm">{skill.description}</p>
                   </div>
@@ -165,28 +215,65 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
         <section className="py-12 md:py-24 w-full bg-white text-center">
           <div className="container mx-auto px-4 md:px-6 max-w-3xl">
             <h2 className={cn("text-3xl font-bold mb-8", primaryColorTextClass)}>Contactez-nous</h2>
-            <div className="space-y-4">
-              {siteData.whatsappNumber && (
-                <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
-                  <MessageSquare className="h-6 w-6 text-green-500" /> WhatsApp: {siteData.whatsappNumber}
-                </p>
-              )}
-              {siteData.secondaryPhoneNumber && (
-                <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
-                  <Phone className="h-6 w-6 text-blue-500" /> Téléphone: {siteData.secondaryPhoneNumber}
-                </p>
-              )}
-              {siteData.email && (
-                <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
-                  <Mail className="h-6 w-6 text-red-500" /> Email: {siteData.email}
-                </p>
-              )}
-              {siteData.businessLocation && (
-                <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
-                  <MapPin className="h-6 w-6 text-gray-500" /> Localisation: {siteData.businessLocation}
-                </p>
-              )}
-            </div>
+            {siteData.showContactForm ? (
+              <div className="bg-gray-100 p-8 rounded-lg shadow-md">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
+                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                  </div>
+                  {productsAndServicesToDisplay.length > 0 && (
+                    <div>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
+                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                        <option value="">Sélectionnez un service</option>
+                        {productsAndServicesToDisplay.map((product: any, idx: number) => (
+                          <option key={idx} value={product.title}>{product.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <div>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
+                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                  </div>
+                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, `hover:bg-${siteData.primaryColor}-700`)} disabled={isSubmitting}>
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {siteData.whatsappNumber && (
+                  <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
+                    <MessageSquare className="h-6 w-6 text-green-500" /> WhatsApp: {siteData.whatsappNumber}
+                  </p>
+                )}
+                {siteData.secondaryPhoneNumber && (
+                  <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
+                    <Phone className="h-6 w-6 text-blue-500" /> Téléphone: {siteData.secondaryPhoneNumber}
+                  </p>
+                )}
+                {siteData.email && (
+                  <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
+                    <Mail className="h-6 w-6 text-red-500" /> Email: {siteData.email}
+                  </p>
+                )}
+                {siteData.businessLocation && (
+                  <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
+                    <MapPin className="h-6 w-6 text-gray-500" /> Localisation: {siteData.businessLocation}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </section>
       )}

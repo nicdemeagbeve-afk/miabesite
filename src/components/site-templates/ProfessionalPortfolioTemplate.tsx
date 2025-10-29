@@ -20,15 +20,16 @@ import {
   Star,
   User,
   CheckCircle,
-  Briefcase, // Added import
+  Briefcase,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
-import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
+import { toast } from 'sonner'; // Import toast for notifications
 
 interface ProfessionalPortfolioTemplateProps {
-  siteData: SiteEditorFormData; // Use the comprehensive type
-  subdomain: string; // Add subdomain prop
+  siteData: SiteEditorFormData;
+  subdomain: string;
 }
 
 export function ProfessionalPortfolioTemplate({ siteData, subdomain }: ProfessionalPortfolioTemplateProps) {
@@ -36,6 +37,14 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [formData, setFormData] = React.useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const primaryColorClass = `bg-${siteData.primaryColor}-700`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-700`;
@@ -73,7 +82,7 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('change', handleScroll); // Corrected event listener cleanup
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   React.useEffect(() => {
@@ -98,6 +107,45 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
         behavior: 'smooth',
       });
       setIsMobileMenuOpen(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/site/${subdomain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender_name: formData.name,
+          sender_email: formData.email,
+          sender_phone: formData.phone,
+          service_interested: formData.service,
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Erreur lors de l'envoi du message.");
+      } else {
+        toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
+        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+      }
+    } catch (error) {
+      console.error("Failed to submit contact form:", error);
+      toast.error("Une erreur inattendue est survenue lors de l'envoi du message.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -367,22 +415,58 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
         </section>
       )}
 
-      {/* CTA Section */}
       {sectionsVisibility.showContact && (
         <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-600) 0%, var(--${siteData.primaryColor}-800) 100%)` }}>
           <div className="container mx-auto px-4 md:px-6 max-w-4xl">
             <h2 className="text-4xl font-bold mb-4">Prêt à concrétiser votre projet ?</h2>
             <p className="text-lg md:text-xl mb-8 opacity-90">N'hésitez pas à me contacter pour discuter de vos besoins et obtenir un devis personnalisé</p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
-                <MessageSquare className="h-6 w-6" /> Discuter de mon projet
-              </a>
-              {siteData.secondaryPhoneNumber && (
-                <a href={`tel:${siteData.secondaryPhoneNumber}`} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
-                  <Phone className="h-6 w-6" /> Appeler maintenant
+            {siteData.showContactForm ? (
+              <div className="bg-white p-8 rounded-lg shadow-md text-gray-800">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
+                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                  </div>
+                  {siteData.productsAndServices.length > 0 && (
+                    <div>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
+                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                        <option value="">Sélectionnez un service</option>
+                        {siteData.productsAndServices.map((product: any, idx: number) => (
+                          <option key={idx} value={product.title}>{product.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <div>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
+                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                  </div>
+                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}>
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
+                  <MessageSquare className="h-6 w-6" /> Discuter de mon projet
                 </a>
-              )}
-            </div>
+                {siteData.secondaryPhoneNumber && (
+                  <a href={`tel:${siteData.secondaryPhoneNumber}`} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+                    <Phone className="h-6 w-6" /> Appeler maintenant
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -437,7 +521,7 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
                     <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                       <Mail className="h-5 w-5" />
                     </div>
-                    <p>{siteData.email}</p>
+                    <p>{siteData.email || `contact@${subdomain}.com`}</p>
                   </div>
                 )}
                 <div className="flex items-center gap-3">

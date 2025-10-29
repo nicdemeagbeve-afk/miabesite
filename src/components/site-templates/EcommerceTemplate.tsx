@@ -3,20 +3,28 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User } from 'lucide-react'; // ADD User icon
+import { MessageSquare, ShoppingCart, Store, Phone, Mail, Facebook, Instagram, ChevronUp, Menu, X, Star, Wrench, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the comprehensive schema type
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
 
 interface EcommerceTemplateProps {
-  siteData: SiteEditorFormData; // Use the comprehensive type
-  subdomain: string; // Add subdomain prop
+  siteData: SiteEditorFormData;
+  subdomain: string;
 }
 
 export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [cartCount, setCartCount] = React.useState(0);
+  const [formData, setFormData] = React.useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: '', // For services section contact
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
@@ -46,7 +54,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('change', handleScroll); // Corrected event listener cleanup
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
@@ -65,6 +73,45 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
   const handleAddToCart = (productTitle: string) => {
     setCartCount(prev => prev + 1);
     toast.success(`"${productTitle}" a été ajouté à votre panier !`);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/site/${subdomain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender_name: formData.name,
+          sender_email: formData.email,
+          sender_phone: formData.phone,
+          service_interested: formData.service,
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Erreur lors de l'envoi du message.");
+      } else {
+        toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
+        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+      }
+    } catch (error) {
+      console.error("Failed to submit contact form:", error);
+      toast.error("Une erreur inattendue est survenue lors de l'envoi du message.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const products = siteData.productsAndServices.filter(item => item.actionButton === 'buy');
@@ -312,34 +359,71 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         <section id="contact" className="py-16 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
             <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Contactez-nous</h2>
-            <div className="flex flex-col items-center space-y-6">
-              {siteData.whatsappNumber && (
-                <a
-                  href={`https://wa.me/${siteData.whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E]")}
-                >
-                  <MessageSquare className="h-6 w-6" /> Discuter sur WhatsApp
-                </a>
-              )}
-              {siteData.secondaryPhoneNumber && (
-                <a
-                  href={`tel:${siteData.secondaryPhoneNumber}`}
-                  className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", secondaryColorClass, secondaryColorHoverBgClass)}
-                >
-                  <Phone className="h-6 w-6" /> Appeler {siteData.secondaryPhoneNumber}
-                </a>
-              )}
-              {siteData.email && (
-                <a
-                  href={`mailto:${siteData.email}`}
-                  className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, primaryColorHoverBgClass)}
-                >
-                  <Mail className="h-6 w-6" /> Envoyer un e-mail
-                </a>
-              )}
-            </div>
+            {siteData.showContactForm ? (
+              <div className="bg-white p-8 rounded-lg shadow-md">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
+                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                  </div>
+                  {siteData.productsAndServices.filter(item => item.actionButton !== 'buy').length > 0 && (
+                    <div>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
+                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                        <option value="">Sélectionnez un service</option>
+                        {siteData.productsAndServices.filter(item => item.actionButton !== 'buy').map((service: any, idx: number) => (
+                          <option key={idx} value={service.title}>{service.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <div>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
+                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                  </div>
+                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}>
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center space-y-6">
+                {siteData.whatsappNumber && (
+                  <a
+                    href={`https://wa.me/${siteData.whatsappNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E]")}
+                  >
+                    <MessageSquare className="h-6 w-6" /> Discuter sur WhatsApp
+                  </a>
+                )}
+                {siteData.secondaryPhoneNumber && (
+                  <a
+                    href={`tel:${siteData.secondaryPhoneNumber}`}
+                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", secondaryColorClass, secondaryColorHoverBgClass)}
+                  >
+                    <Phone className="h-6 w-6" /> Appeler {siteData.secondaryPhoneNumber}
+                  </a>
+                )}
+                {siteData.email && (
+                  <a
+                    href={`mailto:${siteData.email}`}
+                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, primaryColorHoverBgClass)}
+                  >
+                    <Mail className="h-6 w-6" /> Envoyer un e-mail
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </section>
       )}
