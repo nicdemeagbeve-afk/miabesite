@@ -3,18 +3,15 @@ import React from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: any; // Temporarily set to any to resolve TS2344 error from generated types
 }
 
-export default function Layout({
-  children,
-  params,
-}: LayoutProps) {
-  // Handle potential string[] for subdomain, though for [subdomain] it's usually string
-  const subdomain = Array.isArray(params.subdomain) ? params.subdomain[0] : params.subdomain;
-
+export default function DashboardRootLayout({ children }: LayoutProps) {
+  // This layout is for /dashboard, /dashboard/sites, /dashboard/profile
+  // It does not have a subdomain param directly.
+  // DashboardLayout will be rendered without a specific subdomain,
+  // and the sidebar will only show general links.
   return (
-    <DashboardLayout subdomain={subdomain}>
+    <DashboardLayout>
       {children}
     </DashboardLayout>
   );
