@@ -38,10 +38,7 @@ const baseWizardFormSchema = z.object({
   // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    price: z.preprocess(
-      (val: unknown) => (val === '' ? undefined : val), // Explicitly type 'val'
-      z.number().min(0, "Le prix ne peut pas être négatif.").optional()
-    ),
+    price: z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional(), // Changed to z.coerce.number()
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(200, "La description ne peut pas dépasser 200 caractères."),
     image: z.any().optional(), // File object

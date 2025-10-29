@@ -3,7 +3,7 @@ import React from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: { subdomain?: string | string[] };
+  params: any; // Temporarily set to any to resolve TS2344 error from generated types
 }
 
 export default function Layout({

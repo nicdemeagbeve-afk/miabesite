@@ -30,6 +30,7 @@ export function ExamplesSection() {
                 width={400}
                 height={300}
                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                priority={index === 0} // Add priority to the first image
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
                 <h3 className="text-white text-lg font-semibold">{site.name}</h3>

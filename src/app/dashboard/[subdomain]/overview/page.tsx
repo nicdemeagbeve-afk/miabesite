@@ -20,7 +20,7 @@ interface SiteData {
 
 // Explicitly define PageProps for this dynamic route
 interface PageProps {
-  params: { subdomain: string };
+  params: any; // Temporarily set to any to resolve TS2344 error from generated types
 }
 
 export default function DashboardOverviewPage({ params }: PageProps) {

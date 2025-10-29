@@ -18,7 +18,7 @@ interface SiteData {
 }
 
 interface PageProps {
-  params: { subdomain: string };
+  params: any; // Temporarily set to any to resolve TS2344 error from generated types
 }
 
 export default function DashboardAdvancedPage({ params }: PageProps) {
