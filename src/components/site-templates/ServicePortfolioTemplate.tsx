@@ -28,9 +28,10 @@ import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // I
 
 interface ServicePortfolioTemplateProps {
   siteData: SiteEditorFormData; // Use the comprehensive type
+  subdomain: string; // Add subdomain prop
 }
 
-export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateProps) {
+export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfolioTemplateProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
 
@@ -279,11 +280,17 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {siteData.skills.map((skill, index) => {
                 const IconComponent = skill.icon ? (
-                  // Placeholder for dynamic Lucide icon rendering
+                  // Dynamically render Lucide icon based on string name
+                  // This requires a mapping or a dynamic import, for simplicity,
+                  // we'll use a placeholder or a limited set for now.
+                  // In a real app, you'd have a map like { "Wrench": Wrench, ... }
+                  // For this example, let's just use a generic icon or a few hardcoded ones.
+                  // A more robust solution would involve a component that takes a string and returns the Lucide icon.
                   <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
                 ) : (
                   <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
                 );
+
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
                     <div className="flex items-center justify-center mb-4">{IconComponent}</div>
@@ -331,7 +338,6 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
         </section>
       )}
 
-      {/* Contact Section */}
       {sectionsVisibility.showContact && (
         <section id="contact" className="py-16 bg-white">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -366,10 +372,7 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
                     <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
                       <Mail className="h-5 w-5" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">Email</h3>
-                      <p className="text-gray-600">{siteData.email || `contact@${siteData.subdomain}.com`}</p>
-                    </div>
+                    <p className="text-gray-600">{siteData.email || `contact@${subdomain}.com`}</p>
                   </div>
                 )}
                 {siteData.businessLocation && (
@@ -435,31 +438,85 @@ export function ServicePortfolioTemplate({ siteData }: ServicePortfolioTemplateP
       )}
 
       {/* Footer */}
-      <footer className={cn("py-8 text-white", primaryColorDarkBgClass)}>
-        <div className="container mx-auto px-4 md:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-center sm:text-left">
-            <Link href="/" className="font-bold text-xl">
-              {siteData.publicName}
-            </Link>
-            <p className="text-sm text-gray-300 mt-2">
-              {siteData.heroSlogan}
-            </p>
+      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+                {siteData.publicName}
+              </h3>
+              <p className="text-gray-300">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p>
+              <div className="flex gap-4 mt-4">
+                {siteData.facebookLink && (
+                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Facebook className="h-6 w-6" />
+                  </a>
+                )}
+                {siteData.instagramLink && (
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <Instagram className="h-6 w-6" />
+                  </a>
+                )}
+                {siteData.whatsappNumber && (
+                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                    <MessageSquare className="h-6 w-6" />
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+                Contact
+              </h3>
+              <div className="space-y-3 text-gray-300">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.whatsappNumber}</p>
+                </div>
+                {siteData.email && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <p>{siteData.email || `contact@${subdomain}.com`}</p>
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+                Modes de paiement
+              </h3>
+              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
+              <div className="flex flex-wrap gap-3 mt-4">
+                {paymentMethods.map((method: string, index: number) => (
+                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex gap-4">
-            {siteData.facebookLink && (
-              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Facebook className="h-6 w-6" />
-              </a>
-            )}
-            {siteData.instagramLink && (
-              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Instagram className="h-6 w-6" />
-              </a>
-            )}
+
+          <div className="text-center pt-8 border-t border-white/10 opacity-70">
+            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
           </div>
-        </div>
-        <div className="container px-4 md:px-6 text-center text-xs text-gray-400 mt-6">
-          © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
         </div>
       </footer>
 

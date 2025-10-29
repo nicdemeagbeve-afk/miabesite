@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useForm, FormProvider, SubmitHandler, ControllerRenderProps, FieldValues } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler, ControllerRenderProps, FieldValues, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -460,7 +460,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Gérez les produits ou services que vous proposez (max 5).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {productFields.map((item, index) => (
+              {productFields.map((item: SiteEditorFormData['productsAndServices'][number], index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Offre {index + 1}</h4>
                   <Button
@@ -584,7 +584,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Ajoutez les témoignages de vos clients (max 5).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {testimonialFields.map((item, index) => (
+              {testimonialFields.map((item: SiteEditorFormData['testimonials'][number], index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Témoignage {index + 1}</h4>
                   <Button
@@ -678,7 +678,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Listez vos compétences ou domaines d'expertise (max 6).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {skillFields.map((item, index) => (
+              {skillFields.map((item: SiteEditorFormData['skills'][number], index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Compétence {index + 1}</h4>
                   <Button

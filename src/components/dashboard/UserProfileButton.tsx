@@ -13,7 +13,7 @@ interface UserProfileButtonProps {
 
 export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
   const supabase = createClient();
-  const [userName, setUserName] = React.useState<string | null>(null); // Changed to userName
+  const [userName, setUserName] = React.useState<string | null>(null);
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const [userAvatarUrl, setUserAvatarUrl] = React.useState<string | null>(null);
 
@@ -22,13 +22,17 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
         console.error("Error fetching user:", error);
-        toast.error("Erreur lors du chargement du profil utilisateur.");
+        // No toast here, as it might be expected if not logged in
         return;
       }
       if (user) {
-        setUserName(user.user_metadata?.full_name || user.email || null); // Prefer full_name, fallback to email
+        setUserName(user.user_metadata?.full_name || user.email || null);
         setUserEmail(user.email || null);
         setUserAvatarUrl(user.user_metadata?.avatar_url || null);
+      } else {
+        setUserName(null);
+        setUserEmail(null);
+        setUserAvatarUrl(null);
       }
     }
     fetchUserProfile();

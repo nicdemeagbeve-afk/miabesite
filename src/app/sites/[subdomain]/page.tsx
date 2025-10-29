@@ -42,16 +42,16 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   // Dynamically render the correct template based on templateType
   switch (templateType) {
     case 'ecommerce':
-      return <EcommerceTemplate siteData={siteData} />;
+      return <EcommerceTemplate siteData={siteData} subdomain={subdomain} />;
     case 'service-portfolio':
-      return <ServicePortfolioTemplate siteData={siteData} />;
+      return <ServicePortfolioTemplate siteData={siteData} subdomain={subdomain} />;
     case 'professional-portfolio':
-      return <ProfessionalPortfolioTemplate siteData={siteData} />;
+      return <ProfessionalPortfolioTemplate siteData={siteData} subdomain={subdomain} />;
     case 'artisan-ecommerce':
       // Assuming ArtisanEcommerceTemplate also uses SiteEditorFormData
-      return <ArtisanEcommerceTemplate siteData={siteData} />;
+      return <ArtisanEcommerceTemplate siteData={siteData} subdomain={subdomain} />;
     case 'default':
     default:
-      return <DefaultTemplate siteData={siteData} />;
+      return <DefaultTemplate siteData={siteData} subdomain={subdomain} />;
   }
 }

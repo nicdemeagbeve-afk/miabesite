@@ -44,6 +44,7 @@ const wizardFormSchema = z.object({
   primaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur principale." }),
   secondaryColor: z.string().min(1, { message: "Veuillez sélectionner une couleur secondaire." }),
   logoOrPhoto: z.any().optional(), // File object or URL string
+  businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
 
   // Étape 2: Contenu (Les Pages Clés)
   heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(100, { message: "Le slogan ne peut pas dépasser 100 caractères." }),
@@ -496,7 +497,8 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
                 isValid={isCurrentStepValid} // Pass the current step's validity
               />
             </form>
-          </CardContent>
+          </Form> {/* Closing Form tag added here */}
+        </CardContent>
       </Card>
     </div>
   );
