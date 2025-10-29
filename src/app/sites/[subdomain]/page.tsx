@@ -52,6 +52,7 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   if (error || !site) {
     console.error('Error fetching site data:', error);
     notFound();
+    return; // Explicitly return after notFound() to satisfy TypeScript
   }
 
   const siteData: SiteData = site.site_data as SiteData;

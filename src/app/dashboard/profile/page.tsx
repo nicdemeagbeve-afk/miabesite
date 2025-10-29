@@ -25,7 +25,7 @@ const profileFormSchema = z.object({
   newPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères.").optional().or(z.literal('')),
   confirmNewPassword: z.string().optional().or(z.literal('')),
   profilePicture: z.any().optional(), // File object
-}).refine((data) => {
+}).refine((data) => { // Removed explicit type annotation here to break circular reference
   if (data.newPassword && data.newPassword !== data.confirmNewPassword) {
     return false;
   }
@@ -37,6 +37,17 @@ const profileFormSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileFormSchema>;
 
+// Define empty default values once, outside the component
+const emptyDefaultValues: ProfileFormData = {
+  fullName: "",
+  email: "",
+  whatsappNumber: "",
+  secondaryPhoneNumber: "",
+  newPassword: "",
+  confirmNewPassword: "",
+  profilePicture: undefined,
+};
+
 export default function ProfilePage() {
   const supabase = createClient();
   const router = useRouter();
@@ -46,15 +57,7 @@ export default function ProfilePage() {
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      whatsappNumber: "",
-      secondaryPhoneNumber: "",
-      newPassword: "",
-      confirmNewPassword: "",
-      profilePicture: undefined,
-    },
+    defaultValues: emptyDefaultValues, // Use emptyDefaultValues here
   });
 
   React.useEffect(() => {
@@ -83,7 +86,32 @@ export default function ProfilePage() {
       setLoading(false);
     }
     fetchUserProfile();
-  }, [supabase, router, form]);
+
+    // Listen for auth state changes to update profile info
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        setUser(session?.user || null); // Update user state
+        form.reset({ // Reset form with new data
+          fullName: session?.user?.user_metadata?.full_name || "",
+          email: session?.user?.email || "",
+          whatsappNumber: session?.user?.user_metadata?.whatsapp_number || "",
+          secondaryPhoneNumber: session?.user?.user_metadata?.secondary_phone_number || "",
+          newPassword: "",
+          confirmNewPassword: "",
+          profilePicture: undefined,
+        });
+        setAvatarPreview(session?.user?.user_metadata?.avatar_url || null);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        form.reset(emptyDefaultValues); // Use emptyDefaultValues here
+        setAvatarPreview(null);
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [supabase, router, form]); // Added form to dependency array
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
