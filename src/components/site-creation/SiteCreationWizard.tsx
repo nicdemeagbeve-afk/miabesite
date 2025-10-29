@@ -105,60 +105,69 @@ interface SiteCreationWizardProps {
   initialSiteData?: WizardFormData & { id?: string }; // Add id for existing sites
 }
 
+// Define separate schemas for each step
+const essentialDesignStepSchema = z.object({
+  publicName: wizardFormSchema.shape.publicName,
+  whatsappNumber: wizardFormSchema.shape.whatsappNumber,
+  secondaryPhoneNumber: wizardFormSchema.shape.secondaryPhoneNumber,
+  email: wizardFormSchema.shape.email,
+  primaryColor: wizardFormSchema.shape.primaryColor,
+  secondaryColor: wizardFormSchema.shape.secondaryColor,
+  logoOrPhoto: wizardFormSchema.shape.logoOrPhoto,
+  businessLocation: wizardFormSchema.shape.businessLocation,
+});
+
+const contentStepSchema = z.object({
+  heroSlogan: wizardFormSchema.shape.heroSlogan,
+  aboutStory: wizardFormSchema.shape.aboutStory,
+  heroBackgroundImage: wizardFormSchema.shape.heroBackgroundImage,
+});
+
+const productsServicesStepSchema = z.object({
+  productsAndServices: wizardFormSchema.shape.productsAndServices,
+});
+
+const configurationNetworkStepSchema = z.object({
+  contactButtonAction: wizardFormSchema.shape.contactButtonAction,
+  facebookLink: wizardFormSchema.shape.facebookLink,
+  instagramLink: wizardFormSchema.shape.instagramLink,
+  linkedinLink: wizardFormSchema.shape.linkedinLink,
+  paymentMethods: wizardFormSchema.shape.paymentMethods,
+  deliveryOption: wizardFormSchema.shape.deliveryOption,
+  depositRequired: wizardFormSchema.shape.depositRequired,
+  showContactForm: wizardFormSchema.shape.showContactForm,
+});
+
+
 const steps: {
   id: string;
   title: string;
   component: React.ComponentType<any>;
-  schema: z.ZodSchema<any>;
+  schema: z.ZodObject<any>; // Make this more specific to ZodObject
 }[] = [
   {
     id: "essentialDesign",
     title: "Infos Essentielles & Design",
     component: EssentialDesignStep,
-    schema: wizardFormSchema.pick({
-      publicName: true,
-      whatsappNumber: true,
-      secondaryPhoneNumber: true,
-      email: true,
-      primaryColor: true,
-      secondaryColor: true,
-      logoOrPhoto: true,
-      businessLocation: true, // Added to essential design
-    }),
+    schema: essentialDesignStepSchema,
   },
   {
     id: "content",
     title: "Contenu (Pages Clés)",
     component: ContentStep,
-    schema: wizardFormSchema.pick({
-      heroSlogan: true,
-      aboutStory: true,
-      heroBackgroundImage: true, // Added hero background image
-    }),
+    schema: contentStepSchema,
   },
   {
     id: "productsServices",
     title: "Produits & Services",
     component: ProductsServicesStep,
-    schema: wizardFormSchema.pick({
-      productsAndServices: true,
-    }),
+    schema: productsServicesStepSchema,
   },
   {
     id: "configurationNetwork",
     title: "Configuration et Réseaux",
     component: ConfigurationNetworkStep,
-    schema: wizardFormSchema.pick({
-      contactButtonAction: true,
-      facebookLink: true,
-      instagramLink: true,
-      linkedinLink: true,
-      paymentMethods: true,
-      deliveryOption: true,
-      depositRequired: true,
-      showContactForm: true,
-      // Removed businessLocation as it's now in EssentialDesignStep
-    }),
+    schema: configurationNetworkStepSchema,
   },
 ];
 
