@@ -4,34 +4,87 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Menu, X } from "lucide-react"; // Import Menu and X icons for mobile toggle
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
 
 export function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
+      <div className="container flex h-14 items-center justify-between px-4 md:px-6"> {/* Added px-4 md:px-6 */}
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <span className="font-bold text-lg">Miabesite</span>
         </Link>
-        <nav className="flex items-center space-x-4 lg:space-x-6">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6"> {/* Hidden on mobile, shown on md and up */}
           <Link
             href="#about"
-            className="text-sm font-medium transition-colors hover:text-primary hidden sm:inline-block"
+            className="text-sm font-medium transition-colors hover:text-primary"
           >
             À propos
           </Link>
           <Link
             href="#services"
-            className="text-sm font-medium transition-colors hover:text-primary hidden sm:inline-block"
+            className="text-sm font-medium transition-colors hover:text-primary"
           >
             Services
           </Link>
-          <Button asChild variant="ghost" className="text-sm font-medium hidden sm:inline-flex">
+          <Link
+            href="#pricing"
+            className="text-sm font-medium transition-colors hover:text-primary"
+          >
+            Tarifs
+          </Link>
+          <Button asChild variant="ghost" className="text-sm font-medium">
             <Link href="/login">Connexion</Link>
           </Button>
           <Button asChild className="text-sm font-medium">
             <Link href="/signup">Inscription</Link>
           </Button>
         </nav>
+
+        {/* Mobile Menu */}
+        <div className="md:hidden">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[250px] sm:w-[300px] p-4">
+              <div className="flex flex-col gap-4 pt-6">
+                <Link
+                  href="#about"
+                  className="text-lg font-medium hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  À propos
+                </Link>
+                <Link
+                  href="#services"
+                  className="text-lg font-medium hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Services
+                </Link>
+                <Link
+                  href="#pricing"
+                  className="text-lg font-medium hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Tarifs
+                </Link>
+                <Button asChild variant="ghost" className="text-lg font-medium justify-start px-0">
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>Connexion</Link>
+                </Button>
+                <Button asChild className="text-lg font-medium justify-start">
+                  <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>Inscription</Link>
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

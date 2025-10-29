@@ -48,30 +48,30 @@ export default function SelectTemplatePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-muted py-12 px-4">
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl mb-4">
+      <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4"> {/* Adjusted text size for mobile */}
           Choisissez votre Template
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-base md:text-lg text-muted-foreground"> {/* Adjusted text size for mobile */}
           Sélectionnez le modèle qui correspond le mieux à votre activité. Vous pourrez le personnaliser par la suite.
         </p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
         {templates.map((template) => (
-          <Card key={template.id} className="flex flex-col items-center p-6 text-center shadow-md hover:shadow-lg transition-shadow duration-300">
+          <Card key={template.id} className="flex flex-col items-center p-4 md:p-6 text-center shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Adjusted padding for mobile */}
             <CardHeader className="pb-4">
               <div className="flex items-center justify-center mb-4">
                 {template.icon}
               </div>
-              <CardTitle className="text-xl font-semibold">{template.name}</CardTitle>
+              <CardTitle className="text-lg md:text-xl font-semibold">{template.name}</CardTitle> {/* Adjusted text size for mobile */}
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-between">
+            <CardContent className="flex-1 flex flex-col justify-between p-0">
               <p className="text-muted-foreground text-sm mb-4">{template.description}</p>
               <div className="relative w-full h-32 rounded-md overflow-hidden mb-4">
                 <img src={template.image} alt={template.name} className="w-full h-full object-cover" />
               </div>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full text-sm"> {/* Ensured button is full width and text-sm */}
                 <Link href={`/create-site?templateType=${template.id}`}>
                   Sélectionner
                 </Link>

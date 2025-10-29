@@ -126,6 +126,14 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         { quote: "Des créations magnifiques et un excellent rapport qualité-prix. J'adore mes nouveaux bijoux !", author: "Aïcha Koné", location: siteData.businessLocation || "Lomé", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
       ];
 
+  // Helper to get Lucide icon component by name (simplified for DefaultTemplate)
+  const getLucideIcon = (iconName: string) => {
+    const icons: { [key: string]: React.ElementType } = {
+      Wrench, Star, Check, User, Phone, Mail, MessageSquare
+    };
+    return icons[iconName] || Wrench; // Default to Wrench if not found
+  };
+
   return (
     <div className="font-sans antialiased text-gray-800 bg-white overflow-x-hidden">
       {/* Header */}
@@ -134,36 +142,36 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> /* Adjusted size for mobile */
               ) : (
-                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}> {/* Adjusted size for mobile */}
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
               <div className="flex flex-col">
-                <h1 className={cn("text-xl font-bold", primaryColorTextClass)}>{siteData.publicName}</h1>
-                <p className="text-sm text-gray-600">Boutique en ligne</p>
+                <h1 className={cn("text-lg font-bold", primaryColorTextClass)}>{siteData.publicName}</h1> {/* Adjusted text size for mobile */}
+                <p className="text-xs text-gray-600">Boutique en ligne</p> {/* Adjusted text size for mobile */}
               </div>
             </div>
             <div className="hidden md:flex items-center gap-6">
-              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Produits</a>}
-              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>}
-              {sectionsVisibility.showAbout && <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>}
+              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Produits</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Services</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showAbout && <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">À propos</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Compétences</a>}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>}
+              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Contact</a>} {/* Adjusted text size for mobile */}
               <div className="relative">
-                <ShoppingCart className={cn("h-6 w-6", primaryColorTextClass)} />
+                <ShoppingCart className={cn("h-5 w-5", primaryColorTextClass)} /> {/* Adjusted size for mobile */}
                 {cartCount > 0 && (
-                  <span className={cn("absolute -top-2 -right-2 h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold text-white", secondaryColorClass)}>
+                  <span className={cn("absolute -top-2 -right-2 h-4 w-4 rounded-full flex items-center justify-center text-xs font-bold text-white", secondaryColorClass)}> {/* Adjusted size for mobile */}
                     {cartCount}
                   </span>
                 )}
               </div>
             </div>
-            <button className="md:hidden text-gray-700 text-2xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <button className="md:hidden text-gray-700 text-xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}> {/* Adjusted text size for mobile */}
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
           </nav>
@@ -172,18 +180,18 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 z-40">
             <nav className="flex flex-col items-center gap-4">
-              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Produits</a>}
-              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>}
-              {sectionsVisibility.showAbout && <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>}
+              {sectionsVisibility.showProductsServices && products.length > 0 && <a href="#products" onClick={(e) => handleSmoothScroll(e, '#products')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Produits</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && services.length > 0 && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Services</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showAbout && <a href="#about" onClick={(e) => handleSmoothScroll(e, '#about')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">À propos</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+                <a href="#testimonials" onClick={(e) => handleSmoothScroll(e, '#testimonials')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>}
+              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Contact</a>} {/* Adjusted text size for mobile */}
               <div className="relative mt-4">
-                <ShoppingCart className={cn("h-6 w-6", primaryColorTextClass)} />
+                <ShoppingCart className={cn("h-5 w-5", primaryColorTextClass)} /> {/* Adjusted size for mobile */}
                 {cartCount > 0 && (
-                  <span className={cn("absolute -top-2 -right-2 h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold text-white", secondaryColorClass)}>
+                  <span className={cn("absolute -top-2 -right-2 h-4 w-4 rounded-full flex items-center justify-center text-xs font-bold text-white", secondaryColorClass)}> {/* Adjusted size for mobile */}
                     {cartCount}
                   </span>
                 )}
@@ -195,25 +203,25 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="hero" className={cn("relative py-24 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--${siteData.primaryColor}-600)` }}>
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+        <section id="hero" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--${siteData.primaryColor}-600)` }}> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image
                 src={siteData.logoOrPhoto}
                 alt={`${siteData.publicName} Logo`}
-                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
-                height={siteData.heroBackgroundImage ? 80 : 150}
+                width={siteData.heroBackgroundImage ? 60 : 100} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 60 : 100}
                 className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
               />
             )}
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
-            <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2> {/* Adjusted text size for mobile */}
+            <p className="text-base md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p> {/* Adjusted text size for mobile */}
             <Link
               href="#products"
               onClick={(e) => handleSmoothScroll(e, '#products')}
-              className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-lg bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorTextClass)}
+              className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-base bg-white text-blue-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorTextClass)} /* Adjusted padding, text size, and width for mobile */
             >
-              <ShoppingCart className="h-6 w-6" /> Acheter maintenant
+              <ShoppingCart className="h-5 w-5" /> Acheter maintenant
             </Link>
           </div>
         </section>
@@ -221,32 +229,32 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
 
       {/* Products Section */}
       {sectionsVisibility.showProductsServices && products.length > 0 && (
-        <section id="products" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Produits</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <section id="products" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Produits</h2> {/* Adjusted text size and mb for mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {products.map((product, index) => (
                 <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-56 overflow-hidden">
+                  <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
                     {product.image ? (
-                      <Image src={product.image} alt={product.title} width={400} height={224} className="w-full h-full object-cover" />
+                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover" /> /* Adjusted width/height for mobile */
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Store className="h-12 w-12" />
+                        <Store className="h-10 w-10" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+                  <div className="p-4"> {/* Adjusted padding for mobile */}
+                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-gray-600 text-xs mb-4">{product.description}</p> {/* Ensured text-xs for smaller screens */}
                     {product.price !== undefined && (
-                      <p className={cn("text-2xl font-bold mb-4", secondaryColorTextClass)}>
+                      <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
                         {product.price} {product.currency}
                       </p>
                     )}
                     <button
                       onClick={() => handleAddToCart(product.title)}
-                      className={cn("w-full px-5 py-2 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
+                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} /* Adjusted padding, text size for mobile */
                     >
                       Ajouter au panier
                     </button>
@@ -260,26 +268,26 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
 
       {/* Services Section (New for Ecommerce Template) */}
       {sectionsVisibility.showProductsServices && services.length > 0 && (
-        <section id="services" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Services</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <section id="services" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Services</h2> {/* Adjusted text size and mb for mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {services.map((service, index) => (
                 <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-48 overflow-hidden">
+                  <div className="h-40 overflow-hidden"> {/* Adjusted height for mobile */}
                     {service.image ? (
-                      <Image src={service.image} alt={service.title} width={400} height={192} className="w-full h-full object-cover" />
+                      <Image src={service.image} alt={service.title} width={300} height={160} className="w-full h-full object-cover" /> /* Adjusted width/height for mobile */
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Wrench className="h-12 w-12" />
+                        <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-800">{service.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{service.description}</p>
+                  <div className="p-4"> {/* Adjusted padding for mobile */}
+                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{service.title}</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-gray-600 text-xs mb-4">{service.description}</p> {/* Ensured text-xs for smaller screens */}
                     {service.price !== undefined && (
-                      <p className={cn("text-2xl font-bold mb-4", secondaryColorTextClass)}>
+                      <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
                         {service.price} {service.currency}
                       </p>
                     )}
@@ -287,7 +295,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                       href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn("w-full px-5 py-2 rounded-lg font-bold text-white transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")}
+                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")} /* Adjusted padding, text size for mobile */
                     >
                       {service.actionButton === 'quote' ? 'Demander un devis' : service.actionButton === 'book' ? 'Réserver' : 'Contacter'}
                     </Link>
@@ -300,10 +308,10 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       )}
 
       {sectionsVisibility.showAbout && (
-        <section id="about" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl text-center">
-            <h2 className={cn("text-3xl md:text-4xl font-bold mb-8", primaryColorTextClass)}>À propos de nous</h2>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+        <section id="about" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold mb-8", primaryColorTextClass)}>À propos de nous</h2> {/* Adjusted text size for mobile */}
+            <p className="text-base text-gray-700 max-w-3xl mx-auto leading-relaxed"> {/* Adjusted text size for mobile */}
               {siteData.aboutStory}
             </p>
           </div>
@@ -311,22 +319,17 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       )}
 
       {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && (
-        <section id="skills" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Compétences</h2>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <section id="skills" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted gap and grid for mobile */}
               {siteData.skills.map((skill, index) => {
-                const IconComponent = skill.icon ? (
-                  // Placeholder for dynamic Lucide icon rendering
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                ) : (
-                  <Wrench className={cn("h-8 w-8", primaryColorTextClass)} />
-                );
+                const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
                 return (
-                  <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-                    <div className="flex items-center justify-center mb-4">{IconComponent}</div>
-                    <h3 className="text-xl font-semibold text-gray-800">{skill.title}</h3>
-                    <p className="text-muted-foreground text-sm">{skill.description}</p>
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3"> {/* Adjusted padding for mobile */}
+                    <div className="flex items-center justify-center mb-4">{<IconComponent className={cn("h-6 w-6", primaryColorTextClass)} />}</div>
+                    <h3 className="text-lg font-semibold text-gray-800">{skill.title}</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-muted-foreground text-xs">{skill.description}</p> {/* Ensured text-xs for smaller screens */}
                   </div>
                 );
               })}
@@ -336,25 +339,25 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       )}
 
       {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-        <section id="testimonials" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <section id="testimonials" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2> {/* Adjusted text size and mb for mobile */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {testimonialsToDisplay.map((testimonial, index) => (
-                <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
-                  <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span>
-                  <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
+                <div key={index} className="bg-white rounded-lg p-6 shadow-lg relative"> {/* Adjusted padding for mobile */}
+                  <span className={cn("absolute top-2 left-4 text-5xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span> {/* Adjusted text size for mobile */}
+                  <p className="text-base italic mb-4 relative z-10">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
-                      <Image src={testimonial.avatar} alt="Client" width={50} height={50} className="rounded-full object-cover border-2 border-gray-200" />
+                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className="rounded-full object-cover border-2 border-gray-200" /> /* Adjusted size for mobile */
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <User className="h-6 w-6" />
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                        <User className="h-5 w-5" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
-                      <p className="text-sm text-gray-600">{testimonial.location}</p>
+                      <h4 className="font-semibold text-gray-800 text-sm">{testimonial.author}</h4> {/* Adjusted text size for mobile */}
+                      <p className="text-xs text-gray-600">{testimonial.location}</p> {/* Ensured text-xs for smaller screens */}
                     </div>
                   </div>
                 </div>
@@ -365,28 +368,28 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       )}
 
       {sectionsVisibility.showContact && (
-        <section id="contact" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Contactez-nous</h2>
+        <section id="contact" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-3xl text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Contactez-nous</h2> {/* Adjusted text size and mb for mobile */}
             {siteData.showContactForm ? (
-              <div className="bg-white p-8 rounded-lg shadow-md">
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="bg-white p-6 rounded-lg shadow-md"> {/* Adjusted padding for mobile */}
+                <form onSubmit={handleSubmit} className="space-y-4"> {/* Adjusted space-y for mobile */}
                   <div>
-                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
-                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-1 text-sm">Nom complet</label> {/* Adjusted text size for mobile */}
+                    <input type="text" id="name" name="name" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.name} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
-                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-1 text-sm">Téléphone</label> {/* Adjusted text size for mobile */}
+                    <input type="tel" id="phone" name="phone" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.phone} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-1 text-sm">Email</label> {/* Adjusted text size for mobile */}
+                    <input type="email" id="email" name="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.email} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   {siteData.productsAndServices.filter(item => item.actionButton !== 'buy').length > 0 && (
                     <div>
-                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
-                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-1 text-sm">Service intéressé</label> {/* Adjusted text size for mobile */}
+                      <select id="service" name="service" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.service} onChange={handleChange}> {/* Adjusted padding and text size for mobile */}
                         <option value="">Sélectionnez un service</option>
                         {siteData.productsAndServices.filter(item => item.actionButton !== 'buy').map((service: any, idx: number) => (
                           <option key={idx} value={service.title}>{service.title}</option>
@@ -395,40 +398,40 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                     </div>
                   )}
                   <div>
-                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
-                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-1 text-sm">Message</label> {/* Adjusted text size for mobile */}
+                    <textarea id="message" name="message" required className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.message} onChange={handleChange}></textarea> {/* Adjusted padding, min-height, and text size for mobile */}
                   </div>
-                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}>
+                  <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
                     {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="flex flex-col items-center space-y-6">
+              <div className="flex flex-col items-center space-y-4"> {/* Adjusted space-y for mobile */}
                 {siteData.whatsappNumber && (
                   <a
                     href={`https://wa.me/${siteData.whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E]")}
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E] w-full sm:w-auto")} /* Adjusted padding, text size, and width for mobile */
                   >
-                    <MessageSquare className="h-6 w-6" /> Discuter sur WhatsApp
+                    <MessageSquare className="h-5 w-5" /> Discuter sur WhatsApp
                   </a>
                 )}
                 {siteData.secondaryPhoneNumber && (
                   <a
                     href={`tel:${siteData.secondaryPhoneNumber}`}
-                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", secondaryColorClass, secondaryColorHoverBgClass)}
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", secondaryColorClass, secondaryColorHoverBgClass)} /* Adjusted padding, text size, and width for mobile */
                   >
-                    <Phone className="h-6 w-6" /> Appeler {siteData.secondaryPhoneNumber}
+                    <Phone className="h-5 w-5" /> Appeler {siteData.secondaryPhoneNumber}
                   </a>
                 )}
                 {siteData.email && (
                   <a
                     href={`mailto:${siteData.email}`}
-                    className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-lg text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg", primaryColorClass, primaryColorHoverBgClass)}
+                    className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorClass, primaryColorHoverBgClass)} /* Adjusted padding, text size, and width for mobile */
                   >
-                    <Mail className="h-6 w-6" /> Envoyer un e-mail
+                    <Mail className="h-5 w-5" /> Envoyer un e-mail
                   </a>
                 )}
               </div>
@@ -438,41 +441,11 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
       )}
 
       {/* Footer */}
-      <footer className={cn("py-8 text-white", primaryColorDarkBgClass)}>
-        <div className="container mx-auto px-4 md:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-center sm:text-left">
-            <Link href="/" className="font-bold text-xl">
-              {siteData.publicName}
-            </Link>
-            <p className="text-sm text-gray-300 mt-2">
-              {siteData.heroSlogan}
-            </p>
-          </div>
-          <div className="flex gap-4">
-            {siteData.facebookLink && (
-              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Facebook className="h-6 w-6" />
-              </a>
-            )}
-            {siteData.instagramLink && (
-              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Instagram className="h-6 w-6" />
-              </a>
-            )}
-          </div>
-        </div>
-        <div className="container px-4 md:px-6 text-center text-xs text-gray-400 mt-6">
+      <footer className={cn("py-6 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
+        <p className="text-xs text-gray-400"> {/* Ensured text-xs for smaller screens */}
           © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
-        </div>
+        </p>
       </footer>
-
-      {/* Back to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
-      >
-        <ChevronUp className="h-6 w-6" />
-      </button>
     </div>
   );
 }

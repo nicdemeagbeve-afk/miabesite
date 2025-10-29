@@ -39,12 +39,12 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-      <div className="container px-4 md:px-6 text-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted px-4"> {/* Added px-4 */}
+      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12">
           Ce que tu obtiens gratuitement
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"> {/* Added max-w-5xl mx-auto */}
           {features.map((feature, index) => (
             <Card key={index} className="flex flex-col items-center p-6 text-center shadow-md hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="pb-4">
@@ -54,7 +54,7 @@ export function FeaturesSection() {
                 <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
+                <p className="text-muted-foreground text-sm">{feature.description}</p> {/* Ensured text-sm for smaller screens */}
               </CardContent>
             </Card>
           ))}

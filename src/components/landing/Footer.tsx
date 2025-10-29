@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="w-full py-8 bg-card text-card-foreground border-t">
-      <div className="container px-4 md:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer className="w-full py-8 bg-card text-card-foreground border-t px-4"> {/* Added px-4 */}
+      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
         <div className="text-center sm:text-left">
           <Link href="/" className="font-bold text-xl">Miabesite</Link>
           <p className="text-sm text-muted-foreground mt-2">
@@ -22,7 +22,7 @@ export function Footer() {
           </Link>
         </nav>
       </div>
-      <div className="container px-4 md:px-6 text-center text-xs text-muted-foreground mt-6">
+      <div className="container mx-auto text-center text-xs text-muted-foreground mt-6"> {/* Removed px-4 md:px-6, using container mx-auto */}
         © 2025 Miabesite. Tous droits réservés.
       </div>
     </footer>

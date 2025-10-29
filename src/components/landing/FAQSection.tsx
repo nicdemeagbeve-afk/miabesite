@@ -38,8 +38,8 @@ export function FAQSection() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-      <div className="container px-4 md:px-6 text-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted px-4"> {/* Added px-4 */}
+      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12">
           Questions fréquentes
         </h2>
@@ -47,10 +47,10 @@ export function FAQSection() {
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-lg text-left hover:no-underline">
+                <AccordionTrigger className="text-base md:text-lg text-left hover:no-underline"> {/* Adjusted text size for mobile */}
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-base text-left">
+                <AccordionContent className="text-muted-foreground text-sm text-left"> {/* Ensured text-sm for smaller screens */}
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

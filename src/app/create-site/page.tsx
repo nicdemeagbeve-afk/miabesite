@@ -32,9 +32,24 @@ export default function CreateSitePage() {
   const [initialSiteData, setInitialSiteData] = React.useState<(SiteEditorFormData & { id?: string }) | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null); // Track authentication status
 
   React.useEffect(() => {
-    async function fetchSiteData() {
+    async function checkAuthAndFetchSiteData() {
+      setLoading(true);
+      setError(null);
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        setIsAuthenticated(false);
+        toast.error("Veuillez vous connecter ou créer un compte pour créer un site.");
+        router.push("/signup"); // Redirect to signup if not authenticated
+        setLoading(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
+
       if (!subdomain) {
         // If no subdomain, but templateType is provided, initialize with templateType
         if (templateTypeFromUrl) {
@@ -60,25 +75,15 @@ export default function CreateSitePage() {
         return;
       }
 
-      setLoading(true);
-      setError(null);
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        // User not logged in, wizard will handle redirection
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from('sites')
         .select('*')
         .eq('user_id', user.id)
         .eq('subdomain', subdomain)
         .single();
 
-      if (error) {
-        console.error("Error fetching site data for wizard:", error);
+      if (fetchError) {
+        console.error("Error fetching site data for wizard:", fetchError);
         setError("Erreur lors du chargement des données du site pour modification.");
         toast.error("Erreur lors du chargement des données du site.");
       } else if (data) {
@@ -92,10 +97,14 @@ export default function CreateSitePage() {
       setLoading(false);
     }
 
-    fetchSiteData();
-  }, [subdomain, templateTypeFromUrl, supabase, router]); // Added router to dependencies
+    checkAuthAndFetchSiteData();
+  }, [subdomain, templateTypeFromUrl, supabase, router]);
 
-  if (loading && subdomain) {
+  if (isAuthenticated === false) {
+    return null; // Or a simple loading spinner while redirecting
+  }
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-muted py-12">
         <Skeleton className="w-full max-w-2xl h-[600px] p-6" />

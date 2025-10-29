@@ -214,27 +214,27 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
           <nav className="flex justify-between items-center py-4">
             <div className="flex items-center gap-3">
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> {/* Adjusted size for mobile */}
               ) : (
-                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)}>
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)}> {/* Adjusted size for mobile */}
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
               <div className="flex flex-col">
-                <h1 className={cn("text-xl font-bold", primaryColorTextClass)}>{siteData.publicName}</h1>
-                <p className={cn("text-sm font-medium", accentColorTextClass)}>Réalisations & Compétences</p>
+                <h1 className={cn("text-lg font-bold", primaryColorTextClass)}>{siteData.publicName}</h1> {/* Adjusted text size for mobile */}
+                <p className={cn("text-xs font-medium", accentColorTextClass)}>Réalisations & Compétences</p> {/* Adjusted text size for mobile */}
               </div>
             </div>
-            <div className={cn("hidden md:flex items-center gap-8")}>
-              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Accueil</a>}
-              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Compétences</a>}
-              {sectionsVisibility.showProductsServices && portfolioItemsToDisplay.length > 0 && <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Réalisations</a>}
+            <div className={cn("hidden md:flex items-center gap-6")}> {/* Adjusted gap for mobile */}
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300 text-sm">Accueil</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300 text-sm">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && portfolioItemsToDisplay.length > 0 && <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300 text-sm">Réalisations</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Témoignages</a>
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300 text-sm">Témoignages</a>
               )}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300">Contact</a>}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-semibold relative after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:rounded-full after:bg-red-500 hover:text-red-500 hover:after:w-full transition-all duration-300 text-sm">Contact</a>} {/* Adjusted text size for mobile */}
             </div>
-            <button className={cn("md:hidden text-2xl", primaryColorTextClass)} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <button className={cn("md:hidden text-xl", primaryColorTextClass)} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}> {/* Adjusted text size for mobile */}
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
           </nav>
@@ -243,13 +243,13 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 z-40">
             <nav className="flex flex-col items-center gap-4">
-              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>}
-              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>}
-              {sectionsVisibility.showProductsServices && portfolioItemsToDisplay.length > 0 && <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Réalisations</a>}
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Accueil</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && portfolioItemsToDisplay.length > 0 && <a href="#realisations" onClick={(e) => handleSmoothScroll(e, '#realisations')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Réalisations</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Témoignages</a>
               )}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Contact</a>} {/* Adjusted text size for mobile */}
             </nav>
           </div>
         )}
@@ -257,21 +257,21 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="accueil" className={cn("relative py-32 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), var(--${siteData.primaryColor}-700)` }}>
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+        <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), url('${siteData.heroBackgroundImage}')` : `linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%), var(--${siteData.primaryColor}-700)` }}> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image
                 src={siteData.logoOrPhoto}
                 alt={`${siteData.publicName} Logo`}
-                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
-                height={siteData.heroBackgroundImage ? 80 : 150}
+                width={siteData.heroBackgroundImage ? 60 : 100} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 60 : 100}
                 className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
               />
             )}
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2>
-            <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
-              <MessageSquare className="h-6 w-6" /> Discuter de mon projet
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2> {/* Adjusted text size for mobile */}
+            <p className="text-base md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p> {/* Adjusted text size for mobile */}
+            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-base transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl w-full sm:w-auto")}> {/* Adjusted padding, text size, and width for mobile */}
+              <MessageSquare className="h-5 w-5" /> Discuter de mon projet
             </a>
           </div>
         </section>
@@ -279,27 +279,27 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
 
       {/* Skills Section */}
       {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && (
-        <section id="competences" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="competences" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Mes Domaines d'Expertise
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", secondaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", secondaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
-              <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Un savoir-faire diversifié pour répondre à tous vos besoins</p>
+              <p className="mt-6 text-base text-gray-600 max-w-2xl mx-auto">Un savoir-faire diversifié pour répondre à tous vos besoins</p> {/* Adjusted mt and text size for mobile */}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {skillsToDisplay.map((skill: any, index: number) => {
                 const IconComponent = getLucideIcon(skill.icon);
                 return (
-                  <div key={index} className="bg-white rounded-xl p-8 shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}>
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-700), var(--${siteData.secondaryColor}-500))` }}>
-                        <IconComponent className="h-6 w-6" />
+                  <div key={index} className="bg-white rounded-xl p-6 shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-2 border-t-4" style={{ borderColor: `var(--${siteData.secondaryColor}-500)` }}> {/* Adjusted padding for mobile */}
+                    <div className="flex items-center gap-4 mb-4"> {/* Adjusted mb for mobile */}
+                      <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-xl", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-700), var(--${siteData.secondaryColor}-500))` }}> {/* Adjusted size for mobile */}
+                        <IconComponent className="h-5 w-5" /> {/* Adjusted size for mobile */}
                       </div>
-                      <h3 className={cn("text-2xl font-semibold", primaryColorTextClass)}>{skill.title}</h3>
+                      <h3 className={cn("text-xl font-semibold", primaryColorTextClass)}>{skill.title}</h3> {/* Adjusted text size for mobile */}
                     </div>
-                    <p className="text-gray-600">{skill.description}</p>
+                    <p className="text-gray-600 text-sm">{skill.description}</p> {/* Ensured text-sm for smaller screens */}
                   </div>
                 );
               })}
@@ -309,24 +309,24 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       )}
 
       {/* Stats Section (Hardcoded for now, could be dynamic) */}
-      <section className={cn("py-20 text-white text-center", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-700) 0%, var(--${siteData.secondaryColor}-500) 100%)` }}>
-        <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="p-4">
-              <span className="block text-5xl font-bold mb-2">150+</span>
-              <span className="text-lg opacity-90">Projets Réalisés</span>
+      <section className={cn("py-16 text-white text-center px-4", primaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.primaryColor}-700) 0%, var(--${siteData.secondaryColor}-500) 100%)` }}> {/* Adjusted padding for mobile */}
+        <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6"> {/* Adjusted grid for mobile */}
+            <div className="p-2"> {/* Adjusted padding for mobile */}
+              <span className="block text-4xl font-bold mb-1">150+</span> {/* Adjusted text size for mobile */}
+              <span className="text-base opacity-90">Projets Réalisés</span> {/* Adjusted text size for mobile */}
             </div>
-            <div className="p-4">
-              <span className="block text-5xl font-bold mb-2">10+</span>
-              <span className="text-lg opacity-90">Années d'Expérience</span>
+            <div className="p-2"> {/* Adjusted padding for mobile */}
+              <span className="block text-4xl font-bold mb-1">10+</span> {/* Adjusted text size for mobile */}
+              <span className="text-base opacity-90">Années d'Expérience</span> {/* Adjusted text size for mobile */}
             </div>
-            <div className="p-4">
-              <span className="block text-5xl font-bold mb-2">98%</span>
-              <span className="text-lg opacity-90">Clients Satisfaits</span>
+            <div className="p-2"> {/* Adjusted padding for mobile */}
+              <span className="block text-4xl font-bold mb-1">98%</span> {/* Adjusted text size for mobile */}
+              <span className="text-base opacity-90">Clients Satisfaits</span> {/* Adjusted text size for mobile */}
             </div>
-            <div className="p-4">
-              <span className="block text-5xl font-bold mb-2">24h</span>
-              <span className="text-lg opacity-90">Délai d'Intervention</span>
+            <div className="p-2"> {/* Adjusted padding for mobile */}
+              <span className="block text-4xl font-bold mb-1">24h</span> {/* Adjusted text size for mobile */}
+              <span className="text-base opacity-90">Délai d'Intervention</span> {/* Adjusted text size for mobile */}
             </div>
           </div>
         </div>
@@ -334,34 +334,34 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
 
       {/* Portfolio Section */}
       {sectionsVisibility.showProductsServices && portfolioItemsToDisplay.length > 0 && (
-        <section id="realisations" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="realisations" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Mes Réalisations
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", secondaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", secondaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
-              <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Découvrez une sélection de mes projets les plus représentatifs</p>
+              <p className="mt-6 text-base text-gray-600 max-w-2xl mx-auto">Découvrez une sélection de mes projets les plus représentatifs</p> {/* Adjusted mt and text size for mobile */}
             </div>
             {/* Filters (simplified for now, can be made dynamic later) */}
-            <div className="flex justify-center gap-4 mb-12 flex-wrap">
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Tous</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Rénovation</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Réparation</button>
-              <button className={cn("px-5 py-2 rounded-full font-semibold transition-all duration-300 border", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Finitions</button>
+            <div className="flex justify-center gap-2 mb-8 flex-wrap"> {/* Adjusted gap and flex-wrap for mobile */}
+              <button className={cn("px-4 py-1.5 rounded-full font-semibold transition-all duration-300 border text-sm", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Tous</button> {/* Adjusted padding and text size for mobile */}
+              <button className={cn("px-4 py-1.5 rounded-full font-semibold transition-all duration-300 border text-sm", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Rénovation</button> {/* Adjusted padding and text size for mobile */}
+              <button className={cn("px-4 py-1.5 rounded-full font-semibold transition-all duration-300 border text-sm", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Réparation</button> {/* Adjusted padding and text size for mobile */}
+              <button className={cn("px-4 py-1.5 rounded-full font-semibold transition-all duration-300 border text-sm", primaryColorBorderClass, primaryColorTextClass, primaryColorHoverBgClass, "hover:text-white")}>Finitions</button> {/* Adjusted padding and text size for mobile */}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {portfolioItemsToDisplay.map((item: any, index: number) => (
                 <div key={index} className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-64 overflow-hidden">
-                    <Image src={item.image} alt={item.title} width={400} height={256} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
+                  <div className="h-56 overflow-hidden"> {/* Adjusted height for mobile */}
+                    <Image src={item.image} alt={item.title} width={300} height={224} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" /> {/* Adjusted width/height for mobile */}
                   </div>
-                  <div className="p-6 bg-white">
-                    <h3 className={cn("text-xl font-semibold mb-2", primaryColorTextClass)}>{item.title}</h3>
-                    <p className="text-gray-600 mb-4 text-sm">{item.description}</p>
+                  <div className="p-4 bg-white"> {/* Adjusted padding for mobile */}
+                    <h3 className={cn("text-lg font-semibold mb-2", primaryColorTextClass)}>{item.title}</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-gray-600 mb-4 text-xs">{item.description}</p> {/* Ensured text-xs for smaller screens */}
                     <div className="flex flex-wrap gap-2">
                       {item.tags?.map((tag: string, tagIndex: number) => (
-                        <span key={tagIndex} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                        <span key={tagIndex} className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium"> {/* Adjusted padding and text size for mobile */}
                           {tag}
                         </span>
                       ))}
@@ -375,34 +375,34 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       )}
 
       {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-        <section id="temoignages" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="temoignages" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Ils m'ont fait confiance
-                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-24 h-1 rounded-full", secondaryColorClass)}></span>
+                <span className={cn("absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", secondaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
-              <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto">Retours d'expérience de clients satisfaits</p>
+              <p className="mt-6 text-base text-gray-600 max-w-2xl mx-auto">Retours d'expérience de clients satisfaits</p> {/* Adjusted mt and text size for mobile */}
             </div>
             <div className="relative">
               <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex -ml-8">
+                <div className="flex -ml-4 sm:-ml-8"> {/* Adjusted margin for mobile */}
                   {testimonialsToDisplay.map((testimonial: any, index: number) => (
-                    <div key={index} className="flex-none w-full pl-8">
-                      <div className="bg-white rounded-xl p-12 shadow-lg text-center relative">
-                        <span className={cn("absolute top-6 left-8 text-7xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
-                        <p className="text-xl italic mb-8 relative z-10 leading-relaxed">{testimonial.quote}</p>
+                    <div key={index} className="flex-none w-full pl-4 sm:pl-8"> {/* Adjusted padding for mobile */}
+                      <div className="bg-white rounded-xl p-8 shadow-lg text-center relative"> {/* Adjusted padding for mobile */}
+                        <span className={cn("absolute top-4 left-4 text-6xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span> {/* Adjusted text size for mobile */}
+                        <p className="text-base italic mb-6 relative z-10 leading-relaxed">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                         <div className="flex flex-col items-center justify-center gap-4">
                           {testimonial.avatar ? (
-                            <Image src={testimonial.avatar} alt="Client" width={70} height={70} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} />
+                            <Image src={testimonial.avatar} alt="Client" width={60} height={60} className={cn("rounded-full object-cover border-4", accentColorBorderClass)} /> {/* Adjusted size for mobile */}
                           ) : (
-                            <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                              <User className="h-8 w-8" />
+                            <div className="h-14 w-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                              <User className="h-7 w-7" /> {/* Adjusted size for mobile */}
                             </div>
                           )}
                           <div>
-                            <h4 className={cn("text-xl font-semibold mb-1", primaryColorTextClass)}>{testimonial.author}</h4>
-                            <p className="text-gray-600">{testimonial.location}</p>
+                            <h4 className={cn("text-lg font-semibold mb-1", primaryColorTextClass)}>{testimonial.author}</h4> {/* Adjusted text size for mobile */}
+                            <p className="text-sm text-gray-600">{testimonial.location}</p> {/* Adjusted text size for mobile */}
                           </div>
                         </div>
                       </div>
@@ -410,11 +410,11 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
                   ))}
                 </div>
               </div>
-              <div className="flex justify-center gap-3 mt-8">
+              <div className="flex justify-center gap-3 mt-6"> {/* Adjusted mt for mobile */}
                 {testimonialsToDisplay.map((_, index) => (
                   <button
                     key={index}
-                    className={cn("h-3 w-3 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && cn("bg-red-500 scale-125", secondaryColorClass))}
+                    className={cn("h-2.5 w-2.5 rounded-full bg-gray-300 cursor-pointer transition-all duration-300", selectedIndex === index && cn("bg-red-500 scale-125", secondaryColorClass))} {/* Adjusted size for mobile */}
                     onClick={() => emblaApi && emblaApi.scrollTo(index)}
                   />
                 ))}
@@ -425,29 +425,29 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       )}
 
       {sectionsVisibility.showContact && (
-        <section className={cn("py-20 text-white text-center", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-600) 0%, var(--${siteData.primaryColor}-800) 100%)` }}>
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-            <h2 className="text-4xl font-bold mb-4">Prêt à concrétiser votre projet ?</h2>
-            <p className="text-lg md:text-xl mb-8 opacity-90">N'hésitez pas à me contacter pour discuter de vos besoins et obtenir un devis personnalisé</p>
+        <section className={cn("py-16 text-white text-center px-4", secondaryColorClass)} style={{ background: `linear-gradient(135deg, var(--${siteData.secondaryColor}-600) 0%, var(--${siteData.primaryColor}-800) 100%)` }}> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-4xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className="text-3xl font-bold mb-4">Prêt à concrétiser votre projet ?</h2> {/* Adjusted text size for mobile */}
+            <p className="text-base md:text-xl mb-8 opacity-90">N'hésitez pas à me contacter pour discuter de vos besoins et obtenir un devis personnalisé</p> {/* Adjusted text size for mobile */}
             {siteData.showContactForm ? (
-              <div className="bg-white p-8 rounded-lg shadow-md text-gray-800">
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="bg-white p-6 rounded-lg shadow-md text-gray-800"> {/* Adjusted padding for mobile */}
+                <form onSubmit={handleSubmit} className="space-y-4"> {/* Adjusted space-y for mobile */}
                   <div>
-                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
-                    <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                    <label htmlFor="name" className="block text-gray-700 font-medium mb-1 text-sm">Nom complet</label> {/* Adjusted text size for mobile */}
+                    <input type="text" id="name" name="name" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.name} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
-                    <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-1 text-sm">Téléphone</label> {/* Adjusted text size for mobile */}
+                    <input type="tel" id="phone" name="phone" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.phone} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                    <label htmlFor="email" className="block text-gray-700 font-medium mb-1 text-sm">Email</label> {/* Adjusted text size for mobile */}
+                    <input type="email" id="email" name="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.email} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                   </div>
                   {siteData.productsAndServices.length > 0 && (
                     <div>
-                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
-                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-1 text-sm">Service intéressé</label> {/* Adjusted text size for mobile */}
+                      <select id="service" name="service" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.service} onChange={handleChange}> {/* Adjusted padding and text size for mobile */}
                         <option value="">Sélectionnez un service</option>
                         {siteData.productsAndServices.map((product: any, idx: number) => (
                           <option key={idx} value={product.title}>{product.title}</option>
@@ -456,22 +456,22 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
                     </div>
                   )}
                   <div>
-                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
-                    <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                    <label htmlFor="message" className="block text-gray-700 font-medium mb-1 text-sm">Message</label> {/* Adjusted text size for mobile */}
+                    <textarea id="message" name="message" required className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.message} onChange={handleChange}></textarea> {/* Adjusted padding, min-height, and text size for mobile */}
                   </div>
-                  <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}>
+                  <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
                     {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl")}>
-                  <MessageSquare className="h-6 w-6" /> Discuter de mon projet
+              <div className="flex flex-col sm:flex-row gap-4 justify-center"> {/* Adjusted gap for mobile */}
+                <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-base transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "shadow-lg hover:shadow-xl w-full sm:w-auto")}> {/* Adjusted padding, text size, and width for mobile */}
+                  <MessageSquare className="h-5 w-5" /> Discuter de mon projet
                 </a>
                 {siteData.secondaryPhoneNumber && (
-                  <a href={`tel:${siteData.secondaryPhoneNumber}`} className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
-                    <Phone className="h-6 w-6" /> Appeler maintenant
+                  <a href={`tel:${siteData.secondaryPhoneNumber}`} className="inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold text-base bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto"> {/* Adjusted padding, text size, and width for mobile */}
+                    <Phone className="h-5 w-5" /> Appeler maintenant
                   </a>
                 )}
               </div>
@@ -481,94 +481,40 @@ export function ProfessionalPortfolioTemplate({ siteData, subdomain }: Professio
       )}
 
       {/* Footer */}
-      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                {siteData.publicName}
-              </h3>
-              <p className="text-gray-300">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p>
-              <div className="flex gap-4 mt-4">
-                {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-6 w-6" />
-                  </a>
-                )}
-                {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-6 w-6" />
-                  </a>
-                )}
-                {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-6 w-6" />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Contact
-              </h3>
-              <div className="space-y-3 text-gray-300">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.whatsappNumber}</p>
-                </div>
-                {siteData.email && (
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5" />
-                    </div>
-                    <p>{siteData.email || `contact@${subdomain}.com`}</p>
-                  </div>
-                )}
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
-                Modes de paiement
-              </h3>
-              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
-              <div className="flex flex-wrap gap-3 mt-4">
-                {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
-                    {method}
-                  </span>
-                ))}
-              </div>
-            </div>
+      <footer id="contact" className={cn("py-12 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
+          <div className="text-center sm:text-left">
+            <Link href="/" className="font-bold text-lg"> {/* Adjusted text size for mobile */}
+              {siteData.publicName}
+            </Link>
+            <p className="text-xs text-gray-300 mt-2"> {/* Ensured text-xs for smaller screens */}
+              {siteData.heroSlogan}
+            </p>
           </div>
-
-          <div className="text-center pt-8 border-t border-white/10 opacity-70">
-            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
+          <div className="flex gap-4">
+            {siteData.facebookLink && (
+              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
+                <Facebook className="h-5 w-5" /> {/* Adjusted size for mobile */}
+              </a>
+            )}
+            {siteData.instagramLink && (
+              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
+                <Instagram className="h-5 w-5" /> {/* Adjusted size for mobile */}
+              </a>
+            )}
           </div>
+        </div>
+        <div className="container px-4 md:px-6 text-center text-xs text-gray-400 mt-6">
+          © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
         </div>
       </footer>
 
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')} {/* Adjusted size and position for mobile */}
       >
-        <ChevronUp className="h-6 w-6" />
+        <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
       </button>
     </div>
   );

@@ -62,15 +62,15 @@ export function PricingSection() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background" id="pricing">
-      <div className="container px-4 md:px-6 text-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-background px-4" id="pricing"> {/* Added px-4 */}
+      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
           Nos Plans d'Abonnement
         </h2>
-        <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+        <p className="text-base md:text-lg text-muted-foreground mb-12 max-w-2xl mx-auto"> {/* Adjusted text size for mobile */}
           Choisissez le plan qui correspond le mieux à vos besoins et faites passer votre business au niveau supérieur.
         </p>
-        <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"> {/* Adjusted gap and grid for mobile */}
           {plans.map((plan, index) => (
             <Card key={index} className={cn(
               "flex flex-col p-6 text-left shadow-lg transition-all duration-300 hover:scale-[1.02]",
@@ -78,15 +78,15 @@ export function PricingSection() {
             )}>
               <CardHeader className="pb-4 flex flex-col items-center text-center">
                 <div className="mb-4">{plan.icon}</div>
-                <CardTitle className="text-2xl font-bold mb-2">{plan.name}</CardTitle>
-                <CardDescription className="text-muted-foreground">{plan.description}</CardDescription>
-                <p className="text-4xl font-extrabold mt-4 mb-6">
+                <CardTitle className="text-xl md:text-2xl font-bold mb-2">{plan.name}</CardTitle> {/* Adjusted text size for mobile */}
+                <CardDescription className="text-muted-foreground text-sm">{plan.description}</CardDescription> {/* Ensured text-sm for smaller screens */}
+                <p className="text-3xl md:text-4xl font-extrabold mt-4 mb-6"> {/* Adjusted text size for mobile */}
                   {plan.price}
-                  {plan.name !== "Gratuit" && <span className="text-lg font-medium text-muted-foreground">/mois</span>}
+                  {plan.name !== "Gratuit" && <span className="text-base font-medium text-muted-foreground">/mois</span>} {/* Adjusted text size for mobile */}
                 </p>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-between p-0">
-                <ul className="space-y-3 mb-8 text-gray-700">
+                <ul className="space-y-3 mb-8 text-gray-700 text-sm"> {/* Ensured text-sm for smaller screens */}
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-2">
                       <CheckCircle className="h-5 w-5 text-green-500" />

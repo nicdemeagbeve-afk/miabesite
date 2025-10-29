@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link"; // Import Link
 
 // Placeholder images - in a real app, these would be actual images or dynamic
 const exampleSites = [
@@ -16,8 +17,8 @@ const exampleSites = [
 
 export function ExamplesSection() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-      <div className="container px-4 md:px-6 text-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted px-4"> {/* Added px-4 */}
+      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12">
           Exemples de sites créés automatiquement
         </h2>
@@ -39,7 +40,7 @@ export function ExamplesSection() {
           ))}
         </div>
         <div className="mt-12">
-          <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105">
+          <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto"> {/* Added w-full sm:w-auto */}
             Voir la démo en direct
           </Button>
         </div>

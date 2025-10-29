@@ -179,31 +179,31 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6">
           <nav className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2"> {/* Adjusted gap for mobile */}
               {siteData.logoOrPhoto ? (
-                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={50} height={50} className="rounded-full object-cover" />
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" /> {/* Adjusted size for mobile */}
               ) : (
-                <div className={cn("h-12 w-12 rounded-full flex items-center justify-center text-white text-xl font-bold", primaryColorClass)}>
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center text-white text-xl font-bold", primaryColorClass)}> {/* Adjusted size for mobile */}
                   {siteData.publicName.charAt(0)}
                 </div>
               )}
               <div className="flex flex-col">
-                <h1 className={cn("text-xl font-bold", primaryColorTextClass)}>{siteData.publicName}</h1>
-                <p className="text-sm text-gray-600">Expert en Rénovation</p>
+                <h1 className={cn("text-lg font-bold", primaryColorTextClass)}>{siteData.publicName}</h1> {/* Adjusted text size for mobile */}
+                <p className="text-xs text-gray-600">Expert en Rénovation</p> {/* Adjusted text size for mobile */}
               </div>
             </div>
-            <div className={cn("hidden md:flex items-center gap-6")}>
-              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Accueil</a>}
-              {sectionsVisibility.showAbout && <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">À propos</a>}
-              {sectionsVisibility.showProductsServices && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Services</a>}
-              {sectionsVisibility.showProductsServices && <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Portfolio</a>}
+            <div className={cn("hidden md:flex items-center gap-6")}> {/* Adjusted gap for mobile */}
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Accueil</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showAbout && <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">À propos</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Services</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Portfolio</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Témoignages</a>
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Compétences</a>}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors">Contact</a>}
+              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Contact</a>} {/* Adjusted text size for mobile */}
             </div>
-            <button className="md:hidden text-gray-700 text-2xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <button className="md:hidden text-xl text-gray-700" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}> {/* Adjusted text size for mobile */}
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
           </nav>
@@ -212,15 +212,15 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 z-40">
             <nav className="flex flex-col items-center gap-4">
-              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Accueil</a>}
-              {sectionsVisibility.showAbout && <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">À propos</a>}
-              {sectionsVisibility.showProductsServices && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Services</a>}
-              {sectionsVisibility.showProductsServices && <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Portfolio</a>}
+              {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Accueil</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showAbout && <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">À propos</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Services</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showProductsServices && <a href="#portfolio" onClick={(e) => handleSmoothScroll(e, '#portfolio')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Portfolio</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Témoignages</a>
+                <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Compétences</a>}
-              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2">Contact</a>}
+              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Contact</a>} {/* Adjusted text size for mobile */}
             </nav>
           </div>
         )}
@@ -228,21 +228,21 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
 
       {/* Hero Section */}
       {sectionsVisibility.showHero && (
-        <section id="accueil" className={cn("relative py-24 text-white text-center bg-cover bg-center", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--${siteData.primaryColor}-600)` }}>
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+        <section id="accueil" className={cn("relative py-16 md:py-24 text-white text-center bg-cover bg-center px-4", primaryColorClass)} style={{ backgroundImage: siteData.heroBackgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteData.heroBackgroundImage}')` : `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--${siteData.primaryColor}-600)` }}> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-3xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             {siteData.logoOrPhoto && (
               <Image
                 src={siteData.logoOrPhoto}
                 alt={`${siteData.publicName} Logo`}
-                width={siteData.heroBackgroundImage ? 80 : 150} // Smaller if background image, larger if not
-                height={siteData.heroBackgroundImage ? 80 : 150}
+                width={siteData.heroBackgroundImage ? 60 : 100} // Smaller if background image, larger if not
+                height={siteData.heroBackgroundImage ? 60 : 100}
                 className={cn("rounded-full object-cover mb-4", siteData.heroBackgroundImage ? "mx-auto" : "mx-auto")}
               />
             )}
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2>
-            <p className="text-lg md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p>
-            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass)}>
-              <MessageSquare className="h-6 w-6" /> Contactez-moi sur WhatsApp
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">{siteData.heroSlogan}</h2> {/* Adjusted text size for mobile */}
+            <p className="text-base md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p> {/* Adjusted text size for mobile */}
+            <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-base transition-all duration-300 ease-in-out transform", whatsappBgClass, whatsappHoverBgClass, "w-full sm:w-auto")}> {/* Adjusted padding, text size, and width for mobile */}
+              <MessageSquare className="h-5 w-5" /> Contactez-moi sur WhatsApp
             </a>
           </div>
         </section>
@@ -250,22 +250,22 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
 
       {/* About Section */}
       {sectionsVisibility.showAbout && (
-        <section id="apropos" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="apropos" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 À propos de nous
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full", primaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="md:w-1/2 text-lg leading-relaxed space-y-4">
+              <div className="md:w-1/2 text-sm leading-relaxed space-y-4"> {/* Adjusted text size for mobile */}
                 <p>{siteData.aboutStory}</p>
                 <p>Nous nous engageons à fournir un travail de qualité avec une attention particulière aux détails. Notre objectif est de satisfaire pleinement nos clients en répondant à leurs besoins spécifiques et en respectant les délais convenus. Chaque projet est pour nous l'occasion de créer un espace de vie amélioré et fonctionnel.</p>
                 <p>Basé à {siteData.businessLocation || "Dakar, Sénégal"}, nous nous déplaçons dans toute la région pour réaliser vos projets.</p>
               </div>
               <div className="md:w-1/2 rounded-lg overflow-hidden shadow-lg">
-                <Image src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Artisan au travail" width={700} height={400} className="w-full h-auto object-cover" />
+                <Image src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Artisan au travail" width={500} height={300} className="w-full h-auto object-cover" /> {/* Adjusted width/height for mobile */}
               </div>
             </div>
           </div>
@@ -273,35 +273,35 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       )}
 
       {sectionsVisibility.showProductsServices && siteData.productsAndServices && siteData.productsAndServices.length > 0 && (
-        <section id="services" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="services" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Nos Services
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full", primaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted grid and gap for mobile */}
               {siteData.productsAndServices.map((product: any, index: number) => (
                 <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-52 overflow-hidden">
+                  <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
                     {product.image ? (
-                      <Image src={product.image} alt={product.title} width={400} height={208} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
+                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" /> {/* Adjusted width/height for mobile */}
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Wrench className="h-12 w-12" />
+                        <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h3>
+                  <div className="p-4"> {/* Adjusted padding for mobile */}
+                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
                     {product.price !== undefined && (
-                      <div className={cn("text-2xl font-bold mb-4", primaryColorTextClass)}>
+                      <div className={cn("text-xl font-bold mb-4", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                         {product.price} {product.currency}
                       </div>
                     )}
-                    <p className="text-gray-600 mb-6 text-sm">{product.description}</p>
-                    <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-5 py-2 rounded-lg font-bold text-white transition-colors duration-300", secondaryColorClass, secondaryColorHoverBgClass)}>
+                    <p className="text-gray-600 mb-6 text-xs">{product.description}</p> {/* Adjusted text size for mobile */}
+                    <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 w-full", secondaryColorClass, secondaryColorHoverBgClass)}> {/* Adjusted padding, text size, and width for mobile */}
                       {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
                     </a>
                   </div>
@@ -314,22 +314,22 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
 
       {/* Portfolio Section (using productsAndServices as portfolio items) */}
       {sectionsVisibility.showProductsServices && siteData.productsAndServices && siteData.productsAndServices.length > 0 && (
-        <section id="portfolio" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="portfolio" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Nos Réalisations
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full", primaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"> {/* Adjusted grid and gap for mobile */}
               {portfolioItems.map((item: any, index: number) => (
                 <div key={index} className="relative rounded-lg overflow-hidden shadow-lg group">
-                  <Image src={item.image} alt={item.title} width={400} height={250} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <Image src={item.image} alt={item.title} width={300} height={180} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" /> {/* Adjusted height for mobile */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"> {/* Adjusted padding for mobile */}
                     <div>
-                      <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                      <p className="text-gray-200 text-sm">{item.description}</p>
+                      <h3 className="text-lg font-semibold text-white mb-1">{item.title}</h3> {/* Adjusted text size for mobile */}
+                      <p className="text-gray-200 text-xs">{item.description}</p> {/* Adjusted text size for mobile */}
                     </div>
                   </div>
                 </div>
@@ -340,17 +340,17 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       )}
 
       {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && (
-        <section id="skills" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <h2 className={cn("text-3xl md:text-4xl font-bold text-center mb-12", primaryColorTextClass)}>Nos Compétences</h2>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <section id="skills" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted grid and gap for mobile */}
               {siteData.skills.map((skill, index) => {
                 const IconComponent = skill.icon ? getLucideIcon(skill.icon) : Wrench;
                 return (
-                  <div key={index} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-                    <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-8 w-8", primaryColorTextClass)} /></div>
-                    <h3 className="text-xl font-semibold text-gray-800">{skill.title}</h3>
-                    <p className="text-muted-foreground text-sm">{skill.description}</p>
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3"> {/* Adjusted padding for mobile */}
+                    <div className="flex items-center justify-center mb-4"><IconComponent className={cn("h-6 w-6", primaryColorTextClass)} /></div> {/* Adjusted size for mobile */}
+                    <h3 className="text-lg font-semibold text-gray-800">{skill.title}</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-muted-foreground text-sm">{skill.description}</p> {/* Adjusted text size for mobile */}
                   </div>
                 );
               })}
@@ -360,30 +360,30 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       )}
 
       {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-        <section id="temoignages" className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="temoignages" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Témoignages Clients
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full", primaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Adjusted grid and gap for mobile */}
               {testimonialsToDisplay.map((testimonial: any, index: number) => (
-                <div key={index} className="bg-white rounded-lg p-8 shadow-lg relative">
-                  <span className={cn("absolute top-4 left-6 text-6xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span>
-                  <p className="text-lg italic mb-6 relative z-10">{testimonial.quote}</p>
+                <div key={index} className="bg-white rounded-lg p-6 shadow-lg relative"> {/* Adjusted padding for mobile */}
+                  <span className={cn("absolute top-4 left-4 text-6xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span> {/* Adjusted text size for mobile */}
+                  <p className="text-base italic mb-6 relative z-10">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
-                      <Image src={testimonial.avatar} alt="Client" width={50} height={50} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} />
+                      <Image src={testimonial.avatar} alt="Client" width={40} height={40} className={cn("rounded-full object-cover border-3", accentColorBorderClass)} /> {/* Adjusted size for mobile */}
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <User className="h-6 w-6" />
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                        <User className="h-5 w-5" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-gray-800">{testimonial.author}</h4>
-                      <p className="text-sm text-gray-600">{testimonial.location}</p>
+                      <h4 className="font-semibold text-gray-800 text-sm">{testimonial.author}</h4> {/* Adjusted text size for mobile */}
+                      <p className="text-gray-600 text-xs">{testimonial.location}</p> {/* Adjusted text size for mobile */}
                     </div>
                   </div>
                 </div>
@@ -394,83 +394,83 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       )}
 
       {sectionsVisibility.showContact && (
-        <section id="contact" className="py-16 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}>
+        <section id="contact" className="py-12 bg-white px-4"> {/* Adjusted padding for mobile */}
+          <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
+            <div className="text-center mb-8 md:mb-12"> {/* Adjusted mb for mobile */}
+              <h2 className={cn("text-2xl md:text-4xl font-bold mb-4 relative inline-block", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
                 Contactez-nous
-                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 rounded-full", primaryColorClass)}></span>
+                <span className={cn("absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full", primaryColorClass)}></span> {/* Adjusted width for mobile */}
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> {/* Adjusted grid and gap for mobile */}
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
-                    <Phone className="h-5 w-5" />
+                  <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
+                    <Phone className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800">Téléphone</h3>
-                    <p className="text-gray-600">{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
+                    <h3 className="text-base font-semibold text-gray-800">Téléphone</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-sm text-gray-600">{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p> {/* Adjusted text size for mobile */}
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
-                    <MessageSquare className="h-5 w-5" />
+                  <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
+                    <MessageSquare className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800">WhatsApp</h3>
-                    <p className="text-gray-600">{siteData.whatsappNumber}</p>
+                    <h3 className="text-base font-semibold text-gray-800">WhatsApp</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-sm text-gray-600">{siteData.whatsappNumber}</p> {/* Adjusted text size for mobile */}
                   </div>
                 </div>
                 {siteData.email && (
                   <div className="flex items-start gap-4">
-                    <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
-                      <Mail className="h-5 w-5" />
+                    <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
+                      <Mail className="h-4 w-4" /> {/* Adjusted size for mobile */}
                     </div>
-                    <p className="text-gray-600">{siteData.email || `contact@${subdomain}.com`}</p>
+                    <p className="text-sm text-gray-600">{siteData.email || `contact@${subdomain}.com`}</p> {/* Adjusted text size for mobile */}
                   </div>
                 )}
                 {siteData.businessLocation && (
                   <div className="flex items-start gap-4">
-                    <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
-                      <MapPin className="h-5 w-5" />
+                    <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
+                      <MapPin className="h-4 w-4" /> {/* Adjusted size for mobile */}
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">Adresse</h3>
-                      <p className="text-gray-600">{siteData.businessLocation}</p>
-                      <p className="text-gray-600">Intervention dans toute la région</p>
+                      <h3 className="text-base font-semibold text-gray-800">Adresse</h3> {/* Adjusted text size for mobile */}
+                      <p className="text-sm text-gray-600">{siteData.businessLocation}</p> {/* Adjusted text size for mobile */}
+                      <p className="text-sm text-gray-600">Intervention dans toute la région</p> {/* Adjusted text size for mobile */}
                     </div>
                   </div>
                 )}
                 <div className="flex items-start gap-4">
-                  <div className={cn("flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white", primaryColorClass)}>
-                    <Clock className="h-5 w-5" />
+                  <div className={cn("flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white", primaryColorClass)}> {/* Adjusted size for mobile */}
+                    <Clock className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800">Horaires</h3>
-                    <p className="text-gray-600">Lun - Sam: 8h00 - 18h00</p>
-                    <p className="text-gray-600">Dimanche: Sur rendez-vous</p>
+                    <h3 className="text-base font-semibold text-gray-800">Horaires</h3> {/* Adjusted text size for mobile */}
+                    <p className="text-sm text-gray-600">Lun - Sam: 8h00 - 18h00</p> {/* Adjusted text size for mobile */}
+                    <p className="text-sm text-gray-600">Dimanche: Sur rendez-vous</p> {/* Adjusted text size for mobile */}
                   </div>
                 </div>
               </div>
               {siteData.showContactForm && (
-                <div className="bg-gray-100 p-8 rounded-lg shadow-md">
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md"> {/* Adjusted padding for mobile */}
+                  <form onSubmit={handleSubmit} className="space-y-4"> {/* Adjusted space-y for mobile */}
                     <div>
-                      <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nom complet</label>
-                      <input type="text" id="name" name="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.name} onChange={handleChange} />
+                      <label htmlFor="name" className="block text-gray-700 font-medium mb-1 text-sm">Nom complet</label> {/* Adjusted text size for mobile */}
+                      <input type="text" id="name" name="name" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.name} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Téléphone</label>
-                      <input type="tel" id="phone" name="phone" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.phone} onChange={handleChange} />
+                      <label htmlFor="phone" className="block text-gray-700 font-medium mb-1 text-sm">Téléphone</label> {/* Adjusted text size for mobile */}
+                      <input type="tel" id="phone" name="phone" required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.phone} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                      <input type="email" id="email" name="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.email} onChange={handleChange} />
+                      <label htmlFor="email" className="block text-gray-700 font-medium mb-1 text-sm">Email</label> {/* Adjusted text size for mobile */}
+                      <input type="email" id="email" name="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.email} onChange={handleChange} /> {/* Adjusted padding and text size for mobile */}
                     </div>
                     <div>
-                      <label htmlFor="service" className="block text-gray-700 font-medium mb-2">Service intéressé</label>
-                      <select id="service" name="service" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.service} onChange={handleChange}>
+                      <label htmlFor="service" className="block text-gray-700 font-medium mb-1 text-sm">Service intéressé</label> {/* Adjusted text size for mobile */}
+                      <select id="service" name="service" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.service} onChange={handleChange}> {/* Adjusted padding and text size for mobile */}
                         <option value="">Sélectionnez un service</option>
                         {siteData.productsAndServices.map((product: any, idx: number) => (
                           <option key={idx} value={product.title}>{product.title}</option>
@@ -478,10 +478,10 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                       </select>
                     </div>
                     <div>
-                      <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Message</label>
-                      <textarea id="message" name="message" required className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[150px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value={formData.message} onChange={handleChange}></textarea>
+                      <label htmlFor="message" className="block text-gray-700 font-medium mb-1 text-sm">Message</label> {/* Adjusted text size for mobile */}
+                      <textarea id="message" name="message" required className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.message} onChange={handleChange}></textarea> {/* Adjusted padding, min-height, and text size for mobile */}
                     </div>
-                    <button type="submit" className={cn("w-full px-6 py-3 rounded-lg font-bold text-white transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}>
+                    <button type="submit" className={cn("w-full px-5 py-2 rounded-lg font-bold text-white text-base transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)} disabled={isSubmitting}> {/* Adjusted padding and text size for mobile */}
                       {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                     </button>
                   </form>
@@ -493,61 +493,61 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       )}
 
       {/* Footer */}
-      <footer id="contact" className={cn("py-16 text-white", primaryColorDarkBgClass)}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+      <footer id="contact" className={cn("py-12 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
+        <div className="container mx-auto"> {/* Removed px-4 md:px-6, using container mx-auto */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-12"> {/* Adjusted gap and mb for mobile */}
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
                 {siteData.publicName}
               </h3>
-              <p className="text-gray-300">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p>
-              <div className="flex gap-4 mt-4">
+              <p className="text-gray-300 text-sm">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p> {/* Adjusted text size for mobile */}
+              <div className="flex gap-3 mt-4"> {/* Adjusted gap for mobile */}
                 {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Facebook className="h-6 w-6" />
+                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
+                    <Facebook className="h-5 w-5" /> {/* Adjusted size for mobile */}
                   </a>
                 )}
                 {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <Instagram className="h-6 w-6" />
+                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
+                    <Instagram className="h-5 w-5" /> {/* Adjusted size for mobile */}
                   </a>
                 )}
                 {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
-                    <MessageSquare className="h-6 w-6" />
+                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
+                    <MessageSquare className="h-5 w-5" /> {/* Adjusted size for mobile */}
                   </a>
                 )}
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
                 Contact
               </h3>
-              <div className="space-y-3 text-gray-300">
+              <div className="space-y-3 text-gray-300 text-sm"> {/* Adjusted space-y and text size for mobile */}
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-5 w-5" />
+                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
+                    <Phone className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="h-5 w-5" />
+                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
+                    <MessageSquare className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <p>{siteData.whatsappNumber}</p>
                 </div>
                 {siteData.email && (
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5" />
+                    <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
+                      <Mail className="h-4 w-4" /> {/* Adjusted size for mobile */}
                     </div>
                     <p>{siteData.email || `contact@${subdomain}.com`}</p>
                   </div>
                 )}
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5" />
+                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
+                    <MapPin className="h-4 w-4" /> {/* Adjusted size for mobile */}
                   </div>
                   <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
                 </div>
@@ -555,13 +555,13 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:rounded-full after:bg-blue-500">
+              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
                 Modes de paiement
               </h3>
-              <p className="text-gray-300">Nous acceptons les paiements suivants :</p>
-              <div className="flex flex-wrap gap-3 mt-4">
+              <p className="text-gray-300 text-sm">Nous acceptons les paiements suivants :</p> {/* Adjusted text size for mobile */}
+              <div className="flex flex-wrap gap-2 mt-4"> {/* Adjusted gap for mobile */}
                 {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-3 py-1 rounded-md text-sm font-semibold">
+                  <span key={index} className="bg-white text-gray-800 px-2.5 py-1 rounded-md text-xs font-semibold"> {/* Adjusted padding and text size for mobile */}
                     {method}
                   </span>
                 ))}
@@ -569,8 +569,8 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
             </div>
           </div>
 
-          <div className="text-center pt-8 border-t border-white/10 opacity-70">
-            <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p>
+          <div className="text-center pt-6 border-t border-white/10 opacity-70"> {/* Adjusted padding for mobile */}
+            <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p> {/* Adjusted text size for mobile */}
           </div>
         </div>
       </footer>
@@ -578,9 +578,9 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-8 right-8 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')} {/* Adjusted size and position for mobile */}
       >
-        <ChevronUp className="h-6 w-6" />
+        <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
       </button>
     </div>
   );
