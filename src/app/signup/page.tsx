@@ -25,8 +25,13 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
 import { useRouter } from "next/navigation";
+import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa'; // Import social icons from react-icons
+import type { Provider } from '@supabase/supabase-js'; // Import Provider type
 
 const formSchema = z.object({
+  firstName: z.string().min(2, { message: "Le prénom est requis." }).max(50, { message: "Le prénom ne peut pas dépasser 50 caractères." }),
+  lastName: z.string().min(2, { message: "Le nom est requis." }).max(50, { message: "Le nom ne peut pas dépasser 50 caractères." }),
+  expertise: z.string().min(3, { message: "Le domaine d'expertise est requis." }).max(100, { message: "Le domaine d'expertise ne peut pas dépasser 100 caractères." }),
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
@@ -41,6 +46,9 @@ export default function SignupPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      expertise: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -48,23 +56,41 @@ export default function SignupPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { email, password } = values;
+    const { email, password, firstName, lastName, expertise } = values;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`, // For email confirmation flow
+        emailRedirectTo: `${location.origin}/auth/confirm`, // Redirect to email confirmation page
+        data: {
+          full_name: `${firstName} ${lastName}`,
+          first_name: firstName,
+          last_name: lastName,
+          expertise: expertise,
+        },
       },
     });
 
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte. Redirection vers le tableau de bord...");
-      router.push("/dashboard/sites"); // Redirect to the new sites listing page
-      router.refresh(); // Refresh to update auth state
+      toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
+      router.push("/auth/confirm"); // Redirect to the new email confirmation page
     }
   }
+
+  const handleOAuthSignIn = async (provider: Provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted">
@@ -78,6 +104,45 @@ export default function SignupPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "firstName"> }) => (
+                  <FormItem>
+                    <FormLabel>Prénom</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Votre prénom" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "lastName"> }) => (
+                  <FormItem>
+                    <FormLabel>Nom</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Votre nom" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="expertise"
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "expertise"> }) => (
+                  <FormItem>
+                    <FormLabel>Domaine d'expertise / Travail</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Développeur Web" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -122,6 +187,30 @@ export default function SignupPage() {
               </Button>
             </form>
           </Form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Ou continuer avec
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" className="w-full" onClick={() => handleOAuthSignIn('google')}>
+              <FaGoogle className="mr-2 h-4 w-4" /> Google
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => handleOAuthSignIn('facebook')}>
+              <FaFacebookF className="mr-2 h-4 w-4" /> Facebook
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => toast.info("Instagram login requires additional setup and is not a direct Supabase provider.")} disabled>
+              <FaInstagram className="mr-2 h-4 w-4" /> Instagram
+            </Button>
+          </div>
+
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Vous avez déjà un compte ?{" "}
             <Link href="/login" className="text-primary hover:underline">

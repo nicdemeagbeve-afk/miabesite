@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation'; // Import redirect
 import React from 'react';
 import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate';
 import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate';
@@ -16,7 +16,7 @@ export default async function DynamicSitePage(props: any) {
   // Fetch site data and template_type from Supabase based on the subdomain
   const { data: site, error } = await supabase
     .from('sites')
-    .select('site_data, template_type')
+    .select('site_data, template_type, user_id') // Also select user_id for access control
     .eq('subdomain', subdomain)
     .single();
 
@@ -24,6 +24,16 @@ export default async function DynamicSitePage(props: any) {
     console.error('Error fetching site data:', error);
     notFound();
     return; // Explicitly return after notFound() to satisfy TypeScript
+  }
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Implement access control:
+  // If the site has a user_id and the current user is not the owner,
+  // redirect to landing page with an unauthorized message.
+  if (site.user_id && (!user || user.id !== site.user_id)) {
+    // Do not send any site-specific information in the redirect.
+    redirect('/?message=unauthorized');
   }
 
   const siteData: SiteEditorFormData = site.site_data as SiteEditorFormData; // Cast to the new comprehensive type

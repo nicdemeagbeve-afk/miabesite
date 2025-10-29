@@ -11,6 +11,11 @@ export const siteEditorFormSchema = z.object({
   logoOrPhoto: z.any().optional(), // File object or URL string
   businessLocation: z.string().min(3, "La localisation de l'entreprise est requise.").max(100, "La localisation ne peut pas dépasser 100 caractères."),
 
+  // New fields for user profile (can be used in site data if desired, or just for user metadata)
+  firstName: z.string().min(2, "Le prénom est requis.").max(50, "Le prénom ne peut pas dépasser 50 caractères.").optional(),
+  lastName: z.string().min(2, "Le nom est requis.").max(50, "Le nom ne peut pas dépasser 50 caractères.").optional(),
+  expertise: z.string().min(3, "Le domaine d'expertise est requis.").max(100, "Le domaine d'expertise ne peut pas dépasser 100 caractères.").optional(),
+
   // Hero Section
   heroSlogan: z.string().min(10, "Le slogan est requis.").max(100, "Le slogan ne peut pas dépasser 100 caractères."),
   aboutStory: z.string().min(50, "Votre histoire/mission est requise.").max(500, "Votre histoire/mission ne peut pas dépasser 500 caractères."),

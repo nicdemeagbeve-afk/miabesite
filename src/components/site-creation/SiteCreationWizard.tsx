@@ -46,6 +46,11 @@ const wizardFormSchema = z.object({
   logoOrPhoto: z.any().optional(), // File object or URL string
   businessLocation: z.string().min(3, { message: "La localisation de l'entreprise est requise." }).max(100, { message: "La localisation ne peut pas dépasser 100 caractères." }),
 
+  // New fields for user profile (optional in wizard, but part of schema)
+  firstName: z.string().min(2, "Le prénom est requis.").max(50, "Le prénom ne peut pas dépasser 50 caractères.").optional().or(z.literal('')),
+  lastName: z.string().min(2, "Le nom est requis.").max(50, "Le nom ne peut pas dépasser 50 caractères.").optional().or(z.literal('')),
+  expertise: z.string().min(3, "Le domaine d'expertise est requis.").max(100, "Le domaine d'expertise ne peut pas dépasser 100 caractères.").optional().or(z.literal('')),
+
   // Étape 2: Contenu (Les Pages Clés)
   heroSlogan: z.string().min(10, { message: "Le slogan est requis et doit contenir au moins 10 caractères." }).max(100, { message: "Le slogan ne peut pas dépasser 100 caractères." }),
   aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(500, { message: "Votre histoire/mission ne peut pas dépasser 500 caractères." }),
@@ -115,6 +120,9 @@ const essentialDesignStepSchema = z.object({
   secondaryColor: wizardFormSchema.shape.secondaryColor,
   logoOrPhoto: wizardFormSchema.shape.logoOrPhoto,
   businessLocation: wizardFormSchema.shape.businessLocation,
+  firstName: wizardFormSchema.shape.firstName,
+  lastName: wizardFormSchema.shape.lastName,
+  expertise: wizardFormSchema.shape.expertise,
 });
 
 const contentStepSchema = z.object({
@@ -219,6 +227,10 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     secondaryColor: initialSiteData?.secondaryColor || "red", // Default color
     logoOrPhoto: initialSiteData?.logoOrPhoto || undefined, // This will be a URL if existing, not a File
     businessLocation: initialSiteData?.businessLocation || "",
+
+    firstName: initialSiteData?.firstName || "",
+    lastName: initialSiteData?.lastName || "",
+    expertise: initialSiteData?.expertise || "",
 
     heroSlogan: initialSiteData?.heroSlogan || "",
     aboutStory: initialSiteData?.aboutStory || "",

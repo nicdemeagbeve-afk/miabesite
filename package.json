@@ -50,6 +50,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.4",
+    "react-icons": "^5.5.0",
     "react-resizable-panels": "^3.0.2",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
@@ -59,7 +60,7 @@
     "zod": "^3.25.28"
   },
   "devDependencies": {
-    "@dyad-sh/nextjs-webpack-component-tagger": "^0.8.0",
+    "@dyad-sh/nextjs-webpack-component-tagger": "latest",
     "@types/node": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",

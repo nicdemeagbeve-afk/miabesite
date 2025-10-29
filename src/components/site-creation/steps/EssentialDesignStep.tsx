@@ -45,6 +45,46 @@ export function EssentialDesignStep() {
 
       <FormField
         control={control}
+        name="firstName"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "firstName"> }) => (
+          <FormItem>
+            <FormLabel>Prénom</FormLabel>
+            <FormControl>
+              <Input placeholder="Ex: Jean" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="lastName"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "lastName"> }) => (
+          <FormItem>
+            <FormLabel>Nom</FormLabel>
+            <FormControl>
+              <Input placeholder="Ex: Dupont" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="expertise"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "expertise"> }) => (
+          <FormItem>
+            <FormLabel>Domaine d'expertise / Travail</FormLabel>
+            <FormControl>
+              <Input placeholder="Ex: Développeur Web, Artisan Plombier" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
         name="publicName"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "publicName"> }) => (
           <FormItem>

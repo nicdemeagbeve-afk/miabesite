@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// import { SupabaseStatusIndicator } from "@/components/SupabaseStatusIndicator"; // Removed import
+import { Toaster } from "@/components/ui/sonner"; // Import Toaster
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,8 +29,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="relative min-h-screen">
-          {/* Removed SupabaseStatusIndicator from here */}
           {children}
+          <Toaster /> {/* Add Toaster here for global notifications */}
         </div>
       </body>
     </html>

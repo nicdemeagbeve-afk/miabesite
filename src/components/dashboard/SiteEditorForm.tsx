@@ -281,6 +281,39 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
             <CardContent className="space-y-4">
               <FormField
                 control={control}
+                name="firstName"
+                render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "firstName"> }) => (
+                  <FormItem>
+                    <FormLabel>Prénom</FormLabel>
+                    <FormControl><Input placeholder="Ex: Jean" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="lastName"
+                render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "lastName"> }) => (
+                  <FormItem>
+                    <FormLabel>Nom</FormLabel>
+                    <FormControl><Input placeholder="Ex: Dupont" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="expertise"
+                render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "expertise"> }) => (
+                  <FormItem>
+                    <FormLabel>Domaine d'expertise / Travail</FormLabel>
+                    <FormControl><Input placeholder="Ex: Développeur Web, Artisan Plombier" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
                 name="publicName"
                 render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "publicName"> }) => (
                   <FormItem>

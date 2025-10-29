@@ -14,7 +14,7 @@ export function HeroSection() {
             Ton site web en 5 minutes.
           </h1>
           <p className="text-xl md:text-2xl lg:text-3xl font-light">
-            Ton business en ligne démarre aujourd’hui — pour seulement <span className="font-semibold">1000 F CFA</span> !
+            Ton business en ligne démarre aujourd’hui — <span className="font-semibold">Gratuitement</span> !
           </p>
           <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105">
             <Link href="/create-site/select-template">Créer mon site maintenant</Link>

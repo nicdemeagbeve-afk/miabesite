@@ -106,7 +106,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
           href="https://wa.me/+22870832482" // Updated WhatsApp number
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground text-green-600 hover:text-green-700"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-green-700 text-green-600"
           onClick={onLinkClick}
         >
           <MessageSquare className="h-5 w-5" />

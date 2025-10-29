@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, DollarSign, CheckCircle } from "lucide-react";
+import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,6 +26,7 @@ const profileFormSchema = z.object({
   newPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères.").optional().or(z.literal('')),
   confirmNewPassword: z.string().optional().or(z.literal('')),
   profilePicture: z.any().optional(), // File object
+  expertise: z.string().min(3, "Le domaine d'expertise est requis.").max(100, "Le domaine d'expertise ne peut pas dépasser 100 caractères.").optional().or(z.literal('')),
 }).refine((data) => { // Removed explicit type annotation here to break circular reference
   if (data.newPassword && data.newPassword !== data.confirmNewPassword) {
     return false;
@@ -47,6 +48,7 @@ const emptyDefaultValues: ProfileFormData = {
   newPassword: "",
   confirmNewPassword: "",
   profilePicture: undefined,
+  expertise: "",
 };
 
 export default function ProfilePage() {
@@ -81,6 +83,7 @@ export default function ProfilePage() {
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
+          expertise: currentUser.user_metadata?.expertise || "",
         });
         setAvatarPreview(currentUser.user_metadata?.avatar_url || null);
       }
@@ -100,6 +103,7 @@ export default function ProfilePage() {
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
+          expertise: session?.user?.user_metadata?.expertise || "",
         });
         setAvatarPreview(session?.user?.user_metadata?.avatar_url || null);
       } else if (event === 'SIGNED_OUT') {
@@ -167,6 +171,8 @@ export default function ProfilePage() {
     if (values.whatsappNumber !== user.user_metadata?.whatsapp_number) updates.whatsapp_number = values.whatsappNumber;
     if (values.secondaryPhoneNumber !== user.user_metadata?.secondary_phone_number) updates.secondary_phone_number = values.secondaryPhoneNumber;
     if (avatarUrl !== user.user_metadata?.avatar_url) updates.avatar_url = avatarUrl;
+    if (values.expertise !== user.user_metadata?.expertise) updates.expertise = values.expertise;
+
 
     if (Object.keys(updates).length > 0) {
       const { error: updateMetadataError } = await supabase.auth.updateUser({
@@ -221,41 +227,6 @@ export default function ProfilePage() {
     if (!nameOrEmail) return "U";
     return nameOrEmail.charAt(0).toUpperCase();
   };
-
-  const plans = [
-    {
-      name: "Freemium",
-      price: "Gratuit",
-      features: [
-        "2 sites web basiques",
-        "Pas de paiement mobile",
-        "Assistance WhatsApp",
-      ],
-      icon: <UserIcon className="h-5 w-5 text-blue-500" />,
-    },
-    {
-      name: "Standard",
-      price: "1500 F CFA/mois",
-      features: [
-        "5 sites web (3 premium)",
-        "Paiement mobile uniquement",
-        "Assistance WhatsApp et Bot",
-      ],
-      icon: <DollarSign className="h-5 w-5 text-green-500" />,
-    },
-    {
-      name: "Premium",
-      price: "2500 F CFA/mois",
-      features: [
-        "10 sites web (5 premium)",
-        "Paiement mobile et international",
-        "Assistance 24h/24",
-        "Exportation de code (ZIP)",
-        "Changement de nom de domaine",
-      ],
-      icon: <CheckCircle className="h-5 w-5 text-purple-500" />,
-    },
-  ];
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -313,6 +284,19 @@ export default function ProfilePage() {
                       <FormLabel>Nom Complet</FormLabel>
                       <FormControl>
                         <Input placeholder="Votre nom complet" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="expertise"
+                  render={({ field }: { field: ControllerRenderProps<FieldValues, "expertise"> }) => (
+                    <FormItem>
+                      <FormLabel>Domaine d'expertise / Travail</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Développeur Web, Artisan Plombier" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -400,32 +384,12 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Globe className="h-6 w-6" /> Plans & Paramètres
+              <Globe className="h-6 w-6" /> Options Avancées
             </CardTitle>
-            <CardDescription>Gérez votre abonnement et les options avancées.</CardDescription>
+            <CardDescription>Gérez les options avancées de votre compte.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <h3 className="text-xl font-semibold mb-4">Vos Plans d'Abonnement</h3>
-            <div className="grid gap-4">
-              {plans.map((plan, index) => (
-                <div key={index} className="border rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    {plan.icon}
-                    <div>
-                      <h4 className="font-bold text-lg">{plan.name}</h4>
-                      <p className="text-muted-foreground text-sm">{plan.price}</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Choisir ce plan
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <Separator />
-
-            <h3 className="text-xl font-semibold mb-4">Options Avancées</h3>
+            <h3 className="text-xl font-semibold mb-4">Gestion des Sites</h3>
             <div className="space-y-4">
               <Button asChild variant="outline" className="w-full justify-start">
                 <Link href={`/dashboard/${user?.user_metadata?.subdomain || 'sites'}/advanced`}>
@@ -437,11 +401,14 @@ export default function ProfilePage() {
                   <Upload className="mr-2 h-5 w-5" /> Exporter le code source (ZIP)
                 </Link>
               </Button>
-              {/* Placeholder for age/domain modification, as these are not directly user profile fields in Supabase auth */}
-              <p className="text-sm text-muted-foreground">
-                Pour modifier l'âge ou les domaines d'activité, veuillez contacter le support.
-              </p>
             </div>
+            <Separator />
+            <h3 className="text-xl font-semibold mb-4">Support</h3>
+            <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
+              <a href="https://wa.me/+22870832482" target="_blank" rel="noopener noreferrer">
+                <MessageSquare className="mr-2 h-5 w-5" /> Support WhatsApp
+              </a>
+            </Button>
           </CardContent>
         </Card>
       </div>

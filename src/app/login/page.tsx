@@ -25,6 +25,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
 import { useRouter } from "next/navigation";
+import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa'; // Import social icons from react-icons
+import type { Provider } from '@supabase/supabase-js'; // Import Provider type
 
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
@@ -57,6 +59,19 @@ export default function LoginPage() {
       router.refresh(); // Refresh to update auth state
     }
   }
+
+  const handleOAuthSignIn = async (provider: Provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted">
@@ -101,6 +116,30 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Ou continuer avec
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" className="w-full" onClick={() => handleOAuthSignIn('google')}>
+              <FaGoogle className="mr-2 h-4 w-4" /> Google
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => handleOAuthSignIn('facebook')}>
+              <FaFacebookF className="mr-2 h-4 w-4" /> Facebook
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => toast.info("Instagram login requires additional setup and is not a direct Supabase provider.")} disabled>
+              <FaInstagram className="mr-2 h-4 w-4" /> Instagram
+            </Button>
+          </div>
+
           <div className="mt-4 text-center text-sm">
             <Link href="/forgot-password" className="text-primary hover:underline">
               Mot de passe oublié ?
