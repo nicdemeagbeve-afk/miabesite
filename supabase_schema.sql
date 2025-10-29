@@ -7,6 +7,14 @@ DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON public.sit
 DROP POLICY IF EXISTS "Enable update for users based on user_id" ON public.sites;
 DROP POLICY IF EXISTS "Enable delete for users based on user_id" ON public.sites;
 
+-- Supprimer les politiques RLS de stockage existantes
+DROP POLICY IF EXISTS "Allow authenticated users to upload their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to update their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Allow public read access to profile pictures" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to upload site assets" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to update site assets" ON storage.objects;
+DROP POLICY IF EXISTS "Allow public read access to site assets" ON storage.objects;
+
 -- Supprimer les tables existantes si elles existent
 DROP TABLE IF EXISTS public.sites CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
