@@ -11,6 +11,10 @@ DROP POLICY IF EXISTS "Enable delete for users based on user_id" ON public.sites
 DROP TABLE IF EXISTS public.sites CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 
+-- Supprimer TOUS les objets des buckets avant de supprimer les buckets
+DELETE FROM storage.objects WHERE bucket_id = 'profile-pictures';
+DELETE FROM storage.objects WHERE bucket_id = 'site-assets';
+
 -- Supprimer les buckets de stockage existants en utilisant DELETE FROM storage.buckets
 DELETE FROM storage.buckets WHERE id = 'profile-pictures';
 DELETE FROM storage.buckets WHERE id = 'site-assets';
