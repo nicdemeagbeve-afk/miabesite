@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { siteEditorFormSchema } from '@/lib/schemas/site-editor-form-schema'; // Import the schema
 
+// Utilisation d'un type plus générique pour le deuxième argument pour éviter les erreurs de compilation
+type RouteContext = { params: { subdomain: string } };
+
 export async function PATCH(
   request: NextRequest,
-  context: { params: { subdomain: string } } // Signature correcte pour Next.js 15
+  context: RouteContext // Utilisation du type générique ici
 ) {
   const { subdomain } = context.params; // Accéder aux params via context
   const supabase = createClient();
