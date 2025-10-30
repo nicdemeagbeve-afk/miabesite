@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { siteEditorFormSchema } from '@/lib/schemas/site-editor-form-schema'; // Import the schema
 
+// Définissez le type des paramètres de route pour plus de clarté
+type RouteContext = {
+  params: {
+    subdomain: string;
+  }
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { subdomain: string } } // Déstructuration directe de params
+  { params }: RouteContext // Utilisation de la déstructuration et du type défini
 ) {
   const { subdomain } = params; // Accès direct à subdomain
   const supabase = createClient();
