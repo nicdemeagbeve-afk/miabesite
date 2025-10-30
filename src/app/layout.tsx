@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Miabesite",
     images: [
       {
-        url: "/next.svg", // Replace with a more appropriate default image
+        url: "/miabesite-logo.png", // Use the new logo
         width: 1200,
         height: 630,
         alt: "Miabesite - Création de site web rapide",
@@ -44,7 +44,10 @@ export const metadata: Metadata = {
     title: "Miabesite - Créez votre site web en 5 minutes",
     description: "Créez votre site web professionnel gratuitement et automatiquement en moins de 5 minutes avec Miabesite. Idéal pour les petites entreprises et artisans en Afrique.",
     creator: '@Miabesite', // Replace with your Twitter handle
-    images: ["/next.svg"], // Replace with a more appropriate default image
+    images: ["/miabesite-logo.png"], // Use the new logo
+  },
+  icons: {
+    icon: "/favicon.ico", // Use the new favicon
   },
   metadataBase: new URL('https://www.miabesite.com'), // Replace with your actual domain
 };

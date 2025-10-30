@@ -17,6 +17,13 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
+import type { Metadata } from 'next'; // Import Metadata type
+
+// Metadata for this client component page
+// Note: Client Components cannot export `metadata` directly.
+// This would typically be set in a parent Server Component layout or page.
+// For simplicity in this context, we'll assume a parent layout handles it or it's a client-only route.
+// If this were a standalone page, you'd define metadata in a `layout.tsx` or `page.tsx` in a parent folder.
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis.").optional().or(z.literal('')),

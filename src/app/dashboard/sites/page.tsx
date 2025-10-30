@@ -1,12 +1,16 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { toast } from "sonner"; // toast is client-side, will be removed if not used in a client component
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Globe, Loader2 } from "lucide-react";
+import { PlusCircle, Globe } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Mes Sites",
+  description: "Gérez tous vos sites web créés avec Miabesite.",
+};
 
 interface SiteData {
   id: string;

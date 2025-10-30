@@ -1,9 +1,14 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { SiteEditorForm } from "@/components/dashboard/SiteEditorForm";
 import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Éditeur Avancé",
+  description: "Personnalisez en détail toutes les sections de votre site web.",
+};
 
 interface SiteDataFromDB {
   id: string;

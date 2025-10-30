@@ -3,7 +3,12 @@ import { OverviewAndQuickActions } from "@/components/dashboard/OverviewAndQuick
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Vue d'Ensemble du Site",
+  description: "Aperçu rapide et actions pour votre site web.",
+};
 
 interface SiteData {
   id: string;

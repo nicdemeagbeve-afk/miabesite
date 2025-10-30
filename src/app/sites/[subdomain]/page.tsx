@@ -29,13 +29,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
       title: "Site non trouvé",
       description: "Le site que vous recherchez n'existe pas ou n'est pas accessible.",
+      icons: {
+        icon: "/favicon.ico", // Fallback to SaaS favicon
+      },
     };
   }
 
   const siteData: SiteEditorFormData = site.site_data as SiteEditorFormData;
 
-  const title = siteData.publicName ? `${siteData.publicName} - ${siteData.heroSlogan || "Votre site professionnel"}` : `Site ${subdomain}`;
+  const title = siteData.publicName ? `${siteData.publicName} | ${siteData.heroSlogan || "Votre site professionnel"}` : `Site ${subdomain}`;
   const description = siteData.aboutStory || `Découvrez le site de ${siteData.publicName || subdomain}.`;
+  const siteLogoUrl = siteData.logoOrPhoto || '/favicon.ico'; // Use site logo or fallback to SaaS favicon
 
   return {
     title: title,
@@ -47,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: siteData.publicName || "Miabesite",
       images: [
         {
-          url: siteData.logoOrPhoto || '/next.svg', // Fallback image
+          url: siteData.logoOrPhoto || '/miabesite-logo.png', // Fallback image for OG
           width: 800,
           height: 600,
           alt: siteData.publicName || "Logo du site",
@@ -61,7 +65,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: title,
       description: description,
       creator: '@Miabesite', // Replace with your Twitter handle
-      images: [siteData.logoOrPhoto || '/next.svg'],
+      images: [siteData.logoOrPhoto || '/miabesite-logo.png'], // Fallback image for Twitter
+    },
+    icons: {
+      icon: siteLogoUrl, // Dynamic favicon for user's site
     },
   };
 }
@@ -101,9 +108,8 @@ export default async function DynamicSitePage({ params }: PageProps) {
     case 'service-portfolio':
       return <ServicePortfolioTemplate siteData={siteData} subdomain={subdomain} />;
     case 'professional-portfolio':
+    case 'artisan-ecommerce': // ArtisanEcommerceTemplate also uses ProfessionalPortfolioTemplate's structure for some parts
       return <ProfessionalPortfolioTemplate siteData={siteData} subdomain={subdomain} />;
-    case 'artisan-ecommerce':
-      return <ArtisanEcommerceTemplate siteData={siteData} subdomain={subdomain} />;
     case 'default':
     default:
       return <DefaultTemplate siteData={siteData} subdomain={subdomain} />;

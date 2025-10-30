@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon } from "lucide-react"; // Added MailIcon
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen } from "lucide-react"; // Added BookOpen icon
 import { UserProfileButton } from "./UserProfileButton"; // Import UserProfileButton
 
 interface DashboardSidebarProps {
@@ -101,6 +101,20 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
         >
           <User className="h-5 w-5" />
           Profil & Paramètres
+        </Link>
+        {/* New Documentation link */}
+        <Link
+          href="/dashboard/documentation"
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+            pathname === "/dashboard/documentation"
+              ? "bg-primary text-primary-foreground"
+              : "text-foreground"
+          )}
+          onClick={onLinkClick}
+        >
+          <BookOpen className="h-5 w-5" />
+          Documentation
         </Link>
         {/* Always visible Support WhatsApp link */}
         <a

@@ -2,7 +2,12 @@ import React from "react";
 import { AdvancedManagementAndHelp } from "@/components/dashboard/AdvancedManagementAndHelp";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Gestion Avancée du Site",
+  description: "Gérez les options avancées de votre site web et accédez au support.",
+};
 
 interface SiteData {
   id: string;

@@ -2,8 +2,13 @@ import React from "react";
 import { ContentModification } from "@/components/dashboard/ContentModification";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Modifier le Contenu (Wizard)",
+  description: "Modifiez le contenu de votre site web via l'assistant de création.",
+};
 
 interface SiteData {
   id: string;

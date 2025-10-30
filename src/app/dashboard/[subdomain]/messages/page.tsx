@@ -2,7 +2,12 @@ import React from "react";
 import { MessagesList } from "@/components/dashboard/MessagesList";
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Messages du Site",
+  description: "Consultez et gérez les messages reçus via votre site web.",
+};
 
 interface SiteData {
   id: string;
