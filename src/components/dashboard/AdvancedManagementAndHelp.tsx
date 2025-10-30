@@ -120,18 +120,18 @@ export function AdvancedManagementAndHelp({ subdomain }: AdvancedManagementAndHe
           <p className="text-muted-foreground mb-4">
             Besoin d'aide ? Nous sommes là pour vous.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <Link href="#faq" passHref>
             <Button asChild variant="secondary" className="flex-1">
-              <Link href="#faq">
+              <div>
                 <HelpCircle className="mr-2 h-5 w-5" /> FAQ
-              </Link>
+              </div>
             </Button>
-            <Button asChild className="flex-1 bg-green-500 hover:bg-green-600 text-white">
-              <Link href={`https://wa.me/${supportWhatsAppNumber}`} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 h-5 w-5" /> Support WhatsApp
-              </Link>
-            </Button>
-          </div>
+          </Link>
+          <Button asChild className="flex-1 bg-green-500 hover:bg-green-600 text-white">
+            <Link href={`https://wa.me/${supportWhatsAppNumber}`} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="mr-2 h-5 w-5" /> Support WhatsApp
+            </Link>
+          </Button>
         </div>
       </CardContent>
     </Card>

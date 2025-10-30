@@ -56,22 +56,26 @@ export default async function DashboardSitesPage() {
     <div className="container mx-auto p-4 md:p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-center lg:text-left">Mes Sites</h1>
-        <Button asChild>
-          <Link href="/create-site/select-template">
-            <PlusCircle className="mr-2 h-5 w-5" /> Créer un nouveau site
-          </Link>
-        </Button>
+        <Link href="/create-site/select-template" passHref>
+          <Button asChild>
+            <div>
+              <PlusCircle className="mr-2 h-5 w-5" /> Créer un nouveau site
+            </div>
+          </Button>
+        </Link>
       </div>
 
       {userSites.length === 0 ? (
         <div className="text-center p-12 border rounded-lg bg-card text-muted-foreground">
           <p className="text-xl mb-4">Vous n'avez pas encore créé de site.</p>
           <p className="mb-6">Commencez dès maintenant à mettre votre business en ligne !</p>
-          <Button asChild size="lg">
-            <Link href="/create-site/select-template">
-              <PlusCircle className="mr-2 h-5 w-5" /> Créer mon premier site
-            </Link>
-          </Button>
+          <Link href="/create-site/select-template" passHref>
+            <Button asChild size="lg">
+              <div>
+                <PlusCircle className="mr-2 h-5 w-5" /> Créer mon premier site
+              </div>
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -90,11 +94,13 @@ export default async function DashboardSitesPage() {
                 <p className="text-sm text-muted-foreground">
                   Statut: <span className="font-medium text-green-600">{site.status === 'published' ? 'En ligne' : 'Brouillon'}</span>
                 </p>
-                <Button asChild className="w-full">
-                  <Link href={`/dashboard/${site.subdomain}/overview`}>
-                    Gérer le site
-                  </Link>
-                </Button>
+                <Link href={`/dashboard/${site.subdomain}/overview`} passHref>
+                  <Button asChild className="w-full">
+                    <div>
+                      Gérer le site
+                    </div>
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

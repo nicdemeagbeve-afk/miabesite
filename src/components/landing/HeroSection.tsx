@@ -28,9 +28,11 @@ export function HeroSection() {
           <p className="text-lg md:text-xl lg:text-2xl font-light">
             Ton business en ligne démarre aujourd’hui — <span className="font-semibold">Gratuitement</span> !
           </p>
-          <Link href="/create-site/select-template" passHref legacyBehavior>
-            <Button size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
-              Créer mon site maintenant
+          <Link href="/create-site/select-template" passHref>
+            <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+              <div>
+                Créer mon site maintenant
+              </div>
             </Button>
           </Link>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 text-base md:text-lg">

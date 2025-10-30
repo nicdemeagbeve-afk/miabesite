@@ -38,14 +38,18 @@ export function Header() {
           >
             Tarifs
           </Link>
-          <Link href="/login" passHref legacyBehavior>
-            <Button variant="ghost" className="text-sm font-medium">
-              Connexion
+          <Link href="/login" passHref>
+            <Button asChild variant="ghost" className="text-sm font-medium">
+              <div>
+                Connexion
+              </div>
             </Button>
           </Link>
-          <Link href="/signup" passHref legacyBehavior>
-            <Button className="text-sm font-medium">
-              Inscription
+          <Link href="/signup" passHref>
+            <Button asChild className="text-sm font-medium">
+              <div>
+                Inscription
+              </div>
             </Button>
           </Link>
         </nav>
@@ -83,14 +87,18 @@ export function Header() {
                 >
                   Tarifs
                 </Link>
-                <Link href="/login" passHref legacyBehavior>
-                  <Button variant="ghost" className="text-lg font-medium justify-start px-0" onClick={() => setIsMobileMenuOpen(false)}>
-                    Connexion
+                <Link href="/login" passHref>
+                  <Button asChild variant="ghost" className="text-lg font-medium justify-start px-0" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div>
+                      Connexion
+                    </div>
                   </Button>
                 </Link>
-                <Link href="/signup" passHref legacyBehavior>
-                  <Button className="text-lg font-medium justify-start" onClick={() => setIsMobileMenuOpen(false)}>
-                    Inscription
+                <Link href="/signup" passHref>
+                  <Button asChild className="text-lg font-medium justify-start" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div>
+                      Inscription
+                    </div>
                   </Button>
                 </Link>
               </div>

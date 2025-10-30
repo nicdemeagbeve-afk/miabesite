@@ -86,17 +86,11 @@ export function PricingSection() {
                 </p>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-between p-0">
-                <ul className="space-y-3 mb-8 text-gray-700 text-sm">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link href={plan.link} passHref legacyBehavior>
-                  <Button className="w-full mt-auto" variant={plan.buttonVariant as any}>
-                    {plan.buttonText}
+                <Link href={plan.link} passHref>
+                  <Button asChild className="w-full mt-auto" variant={plan.buttonVariant as any}>
+                    <div>
+                      {plan.buttonText}
+                    </div>
                   </Button>
                 </Link>
               </CardContent>

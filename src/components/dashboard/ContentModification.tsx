@@ -139,11 +139,13 @@ export function ContentModification({
           <p className="text-muted-foreground mb-4">
             Mettez à jour rapidement les informations clés de votre site via l'assistant.
           </p>
-          <Button asChild size="lg" className="w-full">
-            <Link href={`/create-site?subdomain=${subdomain}`}> {/* Pass subdomain for editing */}
-              <Pencil className="mr-2 h-5 w-5" /> Modifier le Contenu (Wizard)
-            </Link>
-          </Button>
+          <Link href={`/create-site?subdomain=${subdomain}`} passHref>
+            <Button asChild size="lg" className="w-full">
+              <div>
+                <Pencil className="mr-2 h-5 w-5" /> Modifier le Contenu (Wizard)
+              </div>
+            </Button>
+          </Link>
           <p className="text-sm text-muted-foreground mt-2">
             Note: Ce bouton vous permet de créer un nouveau site ou de re-parcourir l'assistant. Pour modifier un site existant avec ses données pré-remplies, cette fonctionnalité est en cours de développement.
           </p>
@@ -157,11 +159,13 @@ export function ContentModification({
           <p className="text-muted-foreground mb-4">
             Personnalisez en détail toutes les sections de votre site (textes, images, témoignages, compétences, etc.).
           </p>
-          <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-            <Link href={`/dashboard/${subdomain}/edit-content`}>
-              <Settings className="mr-2 h-5 w-5" /> Accéder à l'Éditeur Avancé
-            </Link>
-          </Button>
+          <Link href={`/dashboard/${subdomain}/edit-content`} passHref>
+            <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <div>
+                <Settings className="mr-2 h-5 w-5" /> Accéder à l'Éditeur Avancé
+              </div>
+            </Button>
+          </Link>
         </div>
 
         <Separator />

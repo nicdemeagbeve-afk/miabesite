@@ -129,11 +129,13 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
         </a>
       </nav>
       <div className="mt-auto pt-4 border-t border-border">
-        <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/create-site/select-template" onClick={onLinkClick}>
-            <PlusCircle className="mr-2 h-5 w-5" /> Créer un site
-          </Link>
-        </Button>
+        <Link href="/create-site/select-template" passHref>
+          <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" onClick={onLinkClick}>
+            <div>
+              <PlusCircle className="mr-2 h-5 w-5" /> Créer un site
+            </div>
+          </Button>
+        </Link>
       </div>
     </aside>
   );

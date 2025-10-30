@@ -19,9 +19,11 @@ export function CallToActionSection() {
           <p className="text-lg md:text-xl lg:text-2xl font-light">
             Mets ton business en ligne aujourd’hui <span className="font-semibold">gratuitement</span> !
           </p>
-          <Link href="/create-site/select-template" passHref legacyBehavior>
-            <Button size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
-              Je crée mon site maintenant
+          <Link href="/create-site/select-template" passHref>
+            <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+              <div>
+                Je crée mon site maintenant
+              </div>
             </Button>
           </Link>
         </div>

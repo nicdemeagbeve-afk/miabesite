@@ -71,11 +71,13 @@ export default function SelectTemplatePage() {
               <div className="relative w-full h-32 rounded-md overflow-hidden mb-4">
                 <img src={template.image} alt={template.name} className="w-full h-full object-cover" />
               </div>
-              <Button asChild className="w-full text-sm"> {/* Ensured button is full width and text-sm */}
-                <Link href={`/create-site?templateType=${template.id}`}>
-                  Sélectionner
-                </Link>
-              </Button>
+              <Link href={`/create-site?templateType=${template.id}`} passHref>
+                <Button asChild className="w-full text-sm">
+                  <div>
+                    Sélectionner
+                  </div>
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         ))}

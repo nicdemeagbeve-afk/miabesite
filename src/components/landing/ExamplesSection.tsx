@@ -40,9 +40,11 @@ export function ExamplesSection() {
           ))}
         </div>
         <div className="mt-12">
-          <Link href="/create-site/select-template" passHref legacyBehavior>
-            <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
-              Voir la démo en direct
+          <Link href="/create-site/select-template" passHref>
+            <Button asChild size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+              <div>
+                Voir la démo en direct
+              </div>
             </Button>
           </Link>
         </div>

@@ -21,9 +21,11 @@ export default function ConfirmEmailPage() {
           <p className="text-sm text-muted-foreground">
             Si vous ne recevez pas l'email, vérifiez votre dossier de spams ou réessayez de vous connecter.
           </p>
-          <Button asChild className="w-full">
-            <Link href="/login">Retour à la connexion</Link>
-          </Button>
+          <Link href="/login" passHref>
+            <Button asChild className="w-full">
+              <div>Retour à la connexion</div>
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>
