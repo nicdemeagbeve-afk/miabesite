@@ -12,26 +12,31 @@ export function AboutSection() {
       name: "Nicodème AGBEVE",
       role: "Fondateur & Développeur",
       description: "Visionnaire et architecte technique de Miabesite, il transforme les idées en réalité numérique.",
+      avatar: "team-nicodeme.png", // Use filename from Supabase Storage
     },
     {
       name: "Christian ADEGBETI",
       role: "Co-fondateur & Cybersec",
       description: "Garant de la sécurité de nos plateformes et de la protection des données de nos utilisateurs.",
+      avatar: "team-christian.png", // Use filename from Supabase Storage
     },
     {
       name: "Communication & Media Manager",
       role: "Un membre clé de notre équipe",
       description: "Assure la visibilité de Miabesite et la connexion avec notre communauté.",
+      avatar: "team-generic-1.png", // Use filename from Supabase Storage
     },
     {
       name: "Développeur Back-end",
       role: "Un membre clé de notre équipe",
       description: "Construit l'infrastructure robuste qui alimente nos sites web automatisés.",
+      avatar: "team-generic-2.png", // Use filename from Supabase Storage
     },
     {
       name: "Développeur Front-end",
       role: "Un membre clé de notre équipe",
       description: "Crée des interfaces utilisateur intuitives et esthétiques pour une expérience optimale.",
+      avatar: "team-generic-3.png", // Use filename from Supabase Storage
     },
   ];
 
@@ -82,7 +87,17 @@ export function AboutSection() {
           {teamMembers.map((member, index) => (
             <Card key={index} className="flex flex-col items-center p-6 text-center shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-blue-500">
               <div className="relative h-32 w-32 rounded-full overflow-hidden mb-4 border-4 border-yellow-400 flex items-center justify-center bg-gray-200">
-                <UserIcon className="h-16 w-16 text-gray-500" /> {/* Always render the UserIcon */}
+                {member.avatar ? (
+                  <Image
+                    src={getSupabaseStorageUrl(member.avatar)}
+                    alt={member.name}
+                    width={128} // Adjust width/height as needed for the container
+                    height={128}
+                    className="object-cover"
+                  />
+                ) : (
+                  <UserIcon className="h-16 w-16 text-gray-500" />
+                )}
               </div>
               <h4 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h4>
               <p className="text-blue-600 font-medium mb-3">{member.role}</p>
