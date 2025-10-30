@@ -4,13 +4,13 @@ import { Header } from "@/components/landing/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StepsSection } from "@/components/landing/StepsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { TrustSection } from "@/components/landing/TrustSection";
 import { ExamplesSection } from "@/components/landing/ExamplesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { CallToActionSection } from "@/components/landing/CallToActionSection";
 import { Footer } from "@/components/landing/Footer";
 import { PricingSection } from "@/components/landing/PricingSection"; // Import new PricingSection
+import { AboutSection } from "@/components/landing/AboutSection"; // Import new AboutSection
 import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import React from "react";
 import { toast } from "sonner"; // Import toast
@@ -32,7 +32,7 @@ export default function Home() {
         <HeroSection />
         <StepsSection />
         <FeaturesSection />
-        <TrustSection />
+        <AboutSection /> {/* Replaced TrustSection with AboutSection */}
         <ExamplesSection />
         <TestimonialsSection />
         <FAQSection />

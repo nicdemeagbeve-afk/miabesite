@@ -16,6 +16,9 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm">
+          <Link href="#about" className="hover:text-primary transition-colors">
+            À propos
+          </Link>
           <Link href="#legal" className="hover:text-primary transition-colors">
             Mentions légales
           </Link>
