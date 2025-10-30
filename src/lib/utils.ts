@@ -14,10 +14,15 @@ export function cn(...inputs: ClassValue[]) {
 export const getSupabaseStorageUrl = (path: string) => {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     console.error("NEXT_PUBLIC_SUPABASE_URL n'est pas défini. Les assets Supabase ne seront pas chargés.");
-    return path; // Fallback au chemin original ou gestion d'erreur
+    // Fallback à un chemin local ou un placeholder si l'URL Supabase n'est pas configurée
+    return `/public/${path}`; 
   }
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   // Supprime le slash final si présent
   const baseUrl = supabaseUrl.endsWith('/') ? supabaseUrl.slice(0, -1) : supabaseUrl;
+  // Assurez-vous que le chemin du bucket est correct.
+  // Si votre bucket est 'static-assets', le chemin est 'storage/v1/object/public/static-assets/'
+  // Si votre bucket est 'profile-pictures', le chemin est 'storage/v1/object/public/profile-pictures/'
+  // Pour les assets statiques globaux, on suppose 'static-assets'
   return `${baseUrl}/storage/v1/object/public/static-assets/${path}`;
 };
