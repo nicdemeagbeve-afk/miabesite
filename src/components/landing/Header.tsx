@@ -13,12 +13,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between px-4 md:px-6"> {/* Added px-4 md:px-6 */}
+      <div className="container flex h-14 items-center justify-between px-4 md:px-6">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Image src="/miabesite-logo.png" alt="Miabesite Logo" width={32} height={32} className="h-8 w-8" />
           <span className="font-bold text-lg">Miabesite</span>
         </Link>
-        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6"> {/* Hidden on mobile, shown on md and up */}
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
           <Link
             href="#about"
             className="text-sm font-medium transition-colors hover:text-primary"
@@ -37,12 +37,16 @@ export function Header() {
           >
             Tarifs
           </Link>
-          <Button asChild variant="ghost" className="text-sm font-medium">
-            <Link href="/login"><span>Connexion</span></Link>
-          </Button>
-          <Button asChild className="text-sm font-medium">
-            <Link href="/signup"><span>Inscription</span></Link>
-          </Button>
+          <Link href="/login" passHref legacyBehavior>
+            <Button variant="ghost" className="text-sm font-medium">
+              Connexion
+            </Button>
+          </Link>
+          <Link href="/signup" passHref legacyBehavior>
+            <Button className="text-sm font-medium">
+              Inscription
+            </Button>
+          </Link>
         </nav>
 
         {/* Mobile Menu */}
@@ -77,12 +81,16 @@ export function Header() {
                 >
                   Tarifs
                 </Link>
-                <Button asChild variant="ghost" className="text-lg font-medium justify-start px-0">
-                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}><span>Connexion</span></Link>
-                </Button>
-                <Button asChild className="text-lg font-medium justify-start">
-                  <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}><span>Inscription</span></Link>
-                </Button>
+                <Link href="/login" passHref legacyBehavior>
+                  <Button variant="ghost" className="text-lg font-medium justify-start px-0" onClick={() => setIsMobileMenuOpen(false)}>
+                    Connexion
+                  </Button>
+                </Link>
+                <Link href="/signup" passHref legacyBehavior>
+                  <Button className="text-lg font-medium justify-start" onClick={() => setIsMobileMenuOpen(false)}>
+                    Inscription
+                  </Button>
+                </Link>
               </div>
             </SheetContent>
           </Sheet>

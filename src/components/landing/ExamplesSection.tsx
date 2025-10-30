@@ -17,8 +17,8 @@ const exampleSites = [
 
 export function ExamplesSection() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted px-4"> {/* Added px-4 */}
-      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted px-4">
+      <div className="container mx-auto text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12">
           Exemples de sites créés automatiquement
         </h2>
@@ -31,7 +31,7 @@ export function ExamplesSection() {
                 width={400}
                 height={300}
                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                priority={index === 0} // Add priority to the first image
+                priority={index === 0}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
                 <h3 className="text-white text-lg font-semibold">{site.name}</h3>
@@ -40,9 +40,11 @@ export function ExamplesSection() {
           ))}
         </div>
         <div className="mt-12">
-          <Button asChild size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto"> {/* Added w-full sm:w-auto */}
-            <Link href="/create-site/select-template"><span>Voir la démo en direct</span></Link>
-          </Button>
+          <Link href="/create-site/select-template" passHref legacyBehavior>
+            <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+              Voir la démo en direct
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -62,31 +62,31 @@ export function PricingSection() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background px-4" id="pricing"> {/* Added px-4 */}
-      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-background px-4" id="pricing">
+      <div className="container mx-auto text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
           Nos Plans d'Abonnement
         </h2>
-        <p className="text-base md:text-lg text-muted-foreground mb-12 max-w-2xl mx-auto"> {/* Adjusted text size for mobile */}
+        <p className="text-base md:text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
           Choisissez le plan qui correspond le mieux à vos besoins et faites passer votre business au niveau supérieur.
         </p>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"> {/* Adjusted gap and grid for mobile */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
             <Card key={index} className={cn(
               "flex flex-col p-6 text-left shadow-lg transition-all duration-300 hover:scale-[1.02]",
-              plan.name === "Standard" && "border-2 border-primary" // Highlight standard plan
+              plan.name === "Standard" && "border-2 border-primary"
             )}>
               <CardHeader className="pb-4 flex flex-col items-center text-center">
                 <div className="mb-4">{plan.icon}</div>
-                <CardTitle className="text-xl md:text-2xl font-bold mb-2">{plan.name}</CardTitle> {/* Adjusted text size for mobile */}
-                <CardDescription className="text-muted-foreground text-sm">{plan.description}</CardDescription> {/* Ensured text-sm for smaller screens */}
-                <p className="text-3xl md:text-4xl font-extrabold mt-4 mb-6"> {/* Adjusted text size for mobile */}
+                <CardTitle className="text-xl md:text-2xl font-bold mb-2">{plan.name}</CardTitle>
+                <CardDescription className="text-muted-foreground text-sm">{plan.description}</CardDescription>
+                <p className="text-3xl md:text-4xl font-extrabold mt-4 mb-6">
                   {plan.price}
-                  {plan.name !== "Gratuit" && <span className="text-base font-medium text-muted-foreground">/mois</span>} {/* Adjusted text size for mobile */}
+                  {plan.name !== "Gratuit" && <span className="text-base font-medium text-muted-foreground">/mois</span>}
                 </p>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-between p-0">
-                <ul className="space-y-3 mb-8 text-gray-700 text-sm"> {/* Ensured text-sm for smaller screens */}
+                <ul className="space-y-3 mb-8 text-gray-700 text-sm">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-2">
                       <CheckCircle className="h-5 w-5 text-green-500" />
@@ -94,11 +94,11 @@ export function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <Button asChild className="w-full mt-auto" variant={plan.buttonVariant as any}>
-                  <Link href={plan.link}>
-                    <span>{plan.buttonText}</span>
-                  </Link>
-                </Button>
+                <Link href={plan.link} passHref legacyBehavior>
+                  <Button className="w-full mt-auto" variant={plan.buttonVariant as any}>
+                    {plan.buttonText}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
