@@ -9,11 +9,10 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { CallToActionSection } from "@/components/landing/CallToActionSection";
 import { Footer } from "@/components/landing/Footer";
-import { PricingSection } from "@/components/landing/PricingSection"; // Import new PricingSection
-import { AboutSection } from "@/components/landing/AboutSection"; // Import new AboutSection
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { PricingSection } from "@/components/landing/PricingSection";
+import { useSearchParams } from "next/navigation";
 import React from "react";
-import { toast } from "sonner"; // Import toast
+import { toast } from "sonner";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -32,11 +31,11 @@ export default function Home() {
         <HeroSection />
         <StepsSection />
         <FeaturesSection />
-        <AboutSection /> {/* Replaced TrustSection with AboutSection */}
+        {/* AboutSection is now a dedicated page, removed from here */}
         <ExamplesSection />
         <TestimonialsSection />
         <FAQSection />
-        <PricingSection /> {/* Add the new Pricing Section here */}
+        <PricingSection />
         <CallToActionSection />
       </main>
       <Footer />

@@ -19,8 +19,9 @@ export function Header() {
           <span className="font-bold text-lg">Miabesite</span>
         </Link>
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
+          {/* Updated link */}
           <Link
-            href="#about"
+            href="/about"
             className="text-sm font-medium transition-colors hover:text-primary"
           >
             À propos
@@ -60,8 +61,9 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[250px] sm:w-[300px] p-4">
               <div className="flex flex-col gap-4 pt-6">
+                {/* Updated link */}
                 <Link
-                  href="#about"
+                  href="/about"
                   className="text-lg font-medium hover:text-primary"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

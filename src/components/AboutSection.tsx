@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles, Lightbulb, Users, Code, LayoutTemplate } from "lucide-react"; // Added icons
+import { Sparkles, Lightbulb, Users, User as UserIcon } from "lucide-react"; // Added UserIcon
 
 export function AboutSection() {
   const teamMembers = [
@@ -22,13 +22,13 @@ export function AboutSection() {
     {
       name: "Communication & Media Manager",
       role: "Un membre clé de notre équipe",
-      image: "/team-generic-1.png",
+      image: "/team-generic-1.png", // This image exists, so it will be used
       description: "Assure la visibilité de Miabesite et la connexion avec notre communauté.",
     },
     {
       name: "Développeur Back-end",
       role: "Un membre clé de notre équipe",
-      image: "/team-generic-2.png",
+      // image: "/team-generic-2.png", // Intentionally removed image for demonstration of icon fallback
       description: "Construit l'infrastructure robuste qui alimente nos sites web automatisés.",
     },
     {
@@ -85,13 +85,17 @@ export function AboutSection() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {teamMembers.map((member, index) => (
             <Card key={index} className="flex flex-col items-center p-6 text-center shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-blue-500">
-              <div className="relative h-32 w-32 rounded-full overflow-hidden mb-4 border-4 border-yellow-400">
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  layout="fill"
-                  objectFit="cover"
-                />
+              <div className="relative h-32 w-32 rounded-full overflow-hidden mb-4 border-4 border-yellow-400 flex items-center justify-center bg-gray-200">
+                {member.image ? (
+                  <Image
+                    src={member.image}
+                    alt={member.name}
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                ) : (
+                  <UserIcon className="h-16 w-16 text-gray-500" /> // Anonymous icon fallback
+                )}
               </div>
               <h4 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h4>
               <p className="text-blue-600 font-medium mb-3">{member.role}</p>

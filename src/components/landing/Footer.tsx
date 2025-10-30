@@ -6,8 +6,8 @@ import Image from "next/image"; // Import Image component
 
 export function Footer() {
   return (
-    <footer className="w-full py-8 bg-card text-card-foreground border-t px-4"> {/* Added px-4 */}
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
+    <footer className="w-full py-8 bg-card text-card-foreground border-t px-4">
+      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-center sm:text-left flex items-center gap-2">
           <Image src="/miabesite-logo.png" alt="Miabesite Logo" width={24} height={24} className="h-6 w-6" />
           <Link href="/" className="font-bold text-xl">Miabesite</Link>
@@ -16,7 +16,7 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm">
-          <Link href="#about" className="hover:text-primary transition-colors">
+          <Link href="/about" className="hover:text-primary transition-colors"> {/* Updated link */}
             À propos
           </Link>
           <Link href="#legal" className="hover:text-primary transition-colors">
@@ -27,7 +27,7 @@ export function Footer() {
           </Link>
         </nav>
       </div>
-      <div className="container mx-auto text-center text-xs text-muted-foreground mt-6"> {/* Removed px-4 md:px-6, using container mx-auto */}
+      <div className="container mx-auto text-center text-xs text-muted-foreground mt-6">
         © 2025 Miabesite. Tous droits réservés.
       </div>
     </footer>
