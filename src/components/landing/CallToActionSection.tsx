@@ -7,8 +7,11 @@ import Link from "next/link"; // Import Link
 
 export function CallToActionSection() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-600 to-primary text-primary-foreground px-4">
-      <div className="container mx-auto text-center flex flex-col lg:flex-row items-center justify-center gap-8">
+    <section
+      className="relative w-full py-12 md:py-24 lg:py-32 bg-cover bg-center text-primary-foreground px-4 overflow-hidden"
+      style={{ backgroundImage: `linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(var(--primary), 0.8)), url('/CTA-Image.jpeg')` }}
+    >
+      <div className="container mx-auto text-center relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8">
         <div className="lg:w-1/2 space-y-6 text-center lg:text-left">
           <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl leading-tight">
             Ne laisse pas ton idée dormir.
@@ -22,15 +25,7 @@ export function CallToActionSection() {
             </Button>
           </Link>
         </div>
-        <div className="lg:w-1/2 flex justify-center lg:justify-end">
-          <Image
-            src="/globe.svg"
-            width={400}
-            height={400}
-            alt="Smartphone affichant un site prêt"
-            className="max-w-full h-auto"
-          />
-        </div>
+        {/* L'icône du globe a été supprimée */}
       </div>
     </section>
   );
