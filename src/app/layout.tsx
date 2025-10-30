@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
-import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
+// Removed getSupabaseStorageUrl as it's no longer needed for these specific assets
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "Miabesite",
     images: [
       {
-        url: getSupabaseStorageUrl("miabesite-logo.png"), // Use Supabase URL
+        url: "/miabesite-logo.png", // ✅ Référence directe à l'asset local
         width: 1200,
         height: 630,
         alt: "Miabesite - Création de site web rapide",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     title: "Miabesite - Créez votre site web en 5 minutes",
     description: "Créez votre site web professionnel gratuitement et automatiquement en moins de 5 minutes avec Miabesite. Idéal pour les petites entreprises et artisans en Afrique.",
     creator: '@Miabesite', // Replace with your Twitter handle
-    images: [getSupabaseStorageUrl("miabesite-logo.png")], // Use Supabase URL
+    images: ["/miabesite-logo.png"], // ✅ Référence directe à l'asset local
   },
   icons: {
-    icon: getSupabaseStorageUrl("favicon.ico"), // Use Supabase URL
+    icon: "/favicon.ico", // ✅ Référence directe à l'asset local
   },
   metadataBase: new URL('https://www.miabesite.com'), // Replace with your actual domain
 };
