@@ -2,24 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { siteEditorFormSchema } from '@/lib/schemas/site-editor-form-schema'; // Import the schema
 
-// 1. Définissez le type des paramètres de route.
-// Next.js injecte ces types dans le second argument.
-interface RouteParams {
-  subdomain: string;
-}
-
-// 2. Définissez l'interface complète du contexte de route.
-// Utilisez 'Readonly' pour imiter la nature du contexte de Next.js.
-interface RouteContext {
-  params: RouteParams;
-}
-
 export async function PATCH(
   request: NextRequest,
-  context: Readonly<RouteContext> // <-- Utilisez le type défini ici, enveloppé dans Readonly
+  { params }: { params: { subdomain: string } } // Signature correcte pour Next.js 15
 ) {
-  // Déstructuration sécurisée
-  const { subdomain } = context.params; 
+  const { subdomain } = params; 
   const supabase = createClient();
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
