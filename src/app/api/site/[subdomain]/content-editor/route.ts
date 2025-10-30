@@ -4,9 +4,9 @@ import { siteEditorFormSchema } from '@/lib/schemas/site-editor-form-schema'; //
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { subdomain: string } } // Signature correcte pour Next.js 15
+  context: { params: { subdomain: string } } // Signature correcte pour Next.js 15
 ) {
-  const { subdomain } = params; 
+  const { subdomain } = context.params; // Accéder aux params via context
   const supabase = createClient();
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
