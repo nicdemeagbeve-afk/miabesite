@@ -1,38 +1,54 @@
-# Étape 1: Build de l'application
+# Étape 1: Build de l'application (stage 'builder')
+# Utilise une image Node.js 20 Alpine comme base pour la construction
 FROM node:20-alpine AS builder
+
+# Définit le répertoire de travail à l'intérieur du conteneur
 WORKDIR /app
 
-# Copie des fichiers de dépendances pour l'installation
+# Copie package.json et pnpm-lock.yaml en premier pour tirer parti du cache Docker.
+# Cette étape garantit que si seul le code source change, 'pnpm install' n'est pas réexécuté.
 COPY package.json pnpm-lock.yaml ./
 
-# Installation des dépendances avec pnpm
-RUN pnpm install --frozen-lockfile
+# Installe les dépendances.
+# Nous utilisons 'pnpm install' sans '--frozen-lockfile' dans cette étape
+# pour lui permettre de mettre à jour le lockfile si package.json a changé.
+# C'est une stratégie courante pour les environnements CI/CD lorsque les désalignements de lockfile sont fréquents.
+RUN pnpm install
 
-# Copie du reste du code source
+# Copie le reste du code source de l'application
 COPY . .
 
-# Build de l'application Next.js en mode standalone
+# Construit l'application Next.js pour la production.
+# L'option 'output: "standalone"' dans next.config.ts créera un build auto-contenu.
 RUN pnpm run build
 
-# Étape 2: Exécution de l'application
+# Étape 2: Exécution de l'application (stage 'runner')
+# Utilise une image Node.js 20 Alpine minimale pour l'image finale de production
 FROM node:20-alpine AS runner
+
+# Définit le répertoire de travail
 WORKDIR /app
 
-# Définition de l'environnement de production
+# Définit les variables d'environnement pour la production
 ENV NODE_ENV=production
 
-# Copie des fichiers nécessaires depuis l'étape de build
-# Le dossier .next/standalone contient le serveur et les dépendances
+# Copie la sortie 'standalone' de l'étape 'builder'.
+# Cela inclut l'application construite, node_modules, et server.js.
 COPY --from=builder /app/.next/standalone ./
+
+# Copie les assets publics séparément
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
 
-# Installation des dépendances de production uniquement avec pnpm
-RUN pnpm install --omit=dev
+# Copie package.json et pnpm-lock.yaml pour un débogage potentiel ou des outils futurs
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Expose le port sur lequel l'application Next.js s'exécute
+# Élimine les dépendances de développement pour maintenir l'image finale petite.
+# Cette commande supprimera les devDependencies des node_modules copiés dans le dossier standalone.
+RUN pnpm prune --prod
+
+# Expose le port sur lequel Next.js s'exécute
 EXPOSE 3000
 
-# Commande pour démarrer l'application
+# Commande pour démarrer le serveur de production Next.js
 CMD ["node", "server.js"]
