@@ -9,6 +9,7 @@ import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEco
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
 import type { Metadata } from 'next';
 import { TrackSiteVisit } from '@/components/TrackSiteVisit'; // Import the new component
+import { getSupabaseStorageUrl } from '@/lib/utils'; // Import getSupabaseStorageUrl
 
 // Removed the PageProps interface as it's now inlined
 // interface PageProps {
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       title: "Site non trouvé",
       description: "Le site que vous recherchez n'existe pas ou n'est pas accessible.",
       icons: {
-        icon: "/favicon.ico", // Fallback to SaaS favicon
+        icon: getSupabaseStorageUrl("favicon.ico"), // Fallback to SaaS favicon from Supabase
       },
     };
   }
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
 
   const title = siteData.publicName ? `${siteData.publicName} | ${siteData.heroSlogan || "Votre site professionnel"}` : `Site ${subdomain}`;
   const description = siteData.aboutStory || `Découvrez le site de ${siteData.publicName || subdomain}.`;
-  const siteLogoUrl = siteData.logoOrPhoto || '/favicon.ico'; // Use site logo or fallback to SaaS favicon
+  const siteLogoUrl = siteData.logoOrPhoto || getSupabaseStorageUrl("favicon.ico"); // Use site logo or fallback to SaaS favicon from Supabase
 
   return {
     title: title,
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       siteName: siteData.publicName || "Miabesite",
       images: [
         {
-          url: siteData.logoOrPhoto || '/miabesite-logo.png', // Fallback image for OG
+          url: siteData.logoOrPhoto || getSupabaseStorageUrl("miabesite-logo.png"), // Fallback image for OG from Supabase
           width: 800,
           height: 600,
           alt: siteData.publicName || "Logo du site",
@@ -67,7 +68,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       title: title,
       description: description,
       creator: '@Miabesite', // Replace with your Twitter handle
-      images: [siteData.logoOrPhoto || '/miabesite-logo.png'], // Fallback image for Twitter
+      images: [siteData.logoOrPhoto || getSupabaseStorageUrl("miabesite-logo.png")], // Fallback image for Twitter from Supabase
     },
     icons: {
       icon: siteLogoUrl, // Dynamic favicon for user's site

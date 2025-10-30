@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Lightbulb, Users, User as UserIcon } from "lucide-react";
+import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
 
 export function AboutSection() {
   const teamMembers = [
@@ -61,7 +62,7 @@ export function AboutSection() {
           </div>
           <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-xl">
             <Image
-              src="/about-miabesite-hero.png"
+              src={getSupabaseStorageUrl("about-miabesite-hero.png")} // Use Supabase URL
               alt="À propos de Miabesite"
               layout="fill"
               objectFit="cover"

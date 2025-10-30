@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link"; // Import Link
+import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
 
 export function HeroSection() {
   return (
@@ -11,7 +12,7 @@ export function HeroSection() {
       {/* Background Video */}
       <video
         className="absolute inset-0 w-full h-full object-cover z-0"
-        src="/hero-video.mp4" // Assurez-vous que ce chemin est correct pour votre vidéo
+        src={getSupabaseStorageUrl("hero-video.mp4")} // Use Supabase URL
         autoPlay
         loop
         muted
