@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'; // Import NextRequest
 import { createClient } from '@/lib/supabase/server';
 import { siteEditorFormSchema } from '@/lib/schemas/site-editor-form-schema'; // Import the schema
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { subdomain: string } } // Utilisation du typage en ligne pour les paramètres
+  request: NextRequest, // Use NextRequest for the request object
+  context: { params: { subdomain: string } } // Typage en ligne pour les paramètres
 ) {
-  const { subdomain } = params; // Accès direct à subdomain via la déstructuration
+  const { subdomain } = context.params; // Accès direct à subdomain via la déstructuration
   const supabase = createClient();
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
