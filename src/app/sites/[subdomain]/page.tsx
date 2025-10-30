@@ -8,6 +8,7 @@ import { ProfessionalPortfolioTemplate } from '@/components/site-templates/Profe
 import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
 import type { Metadata } from 'next';
+import { TrackSiteVisit } from '@/components/TrackSiteVisit'; // Import the new component
 
 interface PageProps {
   params: { subdomain: string };
@@ -102,16 +103,25 @@ export default async function DynamicSitePage({ params }: PageProps) {
   const templateType: string = site.template_type || 'default';
 
   // Dynamically render the correct template based on templateType
-  switch (templateType) {
-    case 'ecommerce':
-      return <EcommerceTemplate siteData={siteData} subdomain={subdomain} />;
-    case 'service-portfolio':
-      return <ServicePortfolioTemplate siteData={siteData} subdomain={subdomain} />;
-    case 'professional-portfolio':
-    case 'artisan-ecommerce': // ArtisanEcommerceTemplate also uses ProfessionalPortfolioTemplate's structure for some parts
-      return <ProfessionalPortfolioTemplate siteData={siteData} subdomain={subdomain} />;
-    case 'default':
-    default:
-      return <DefaultTemplate siteData={siteData} subdomain={subdomain} />;
-  }
+  const TemplateComponent = (() => {
+    switch (templateType) {
+      case 'ecommerce':
+        return EcommerceTemplate;
+      case 'service-portfolio':
+        return ServicePortfolioTemplate;
+      case 'professional-portfolio':
+      case 'artisan-ecommerce':
+        return ProfessionalPortfolioTemplate;
+      case 'default':
+      default:
+        return DefaultTemplate;
+    }
+  })();
+
+  return (
+    <>
+      <TemplateComponent siteData={siteData} subdomain={subdomain} />
+      <TrackSiteVisit subdomain={subdomain} /> {/* Track visit on page load */}
+    </>
+  );
 }

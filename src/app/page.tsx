@@ -7,7 +7,6 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { ExamplesSection } from "@/components/landing/ExamplesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { CallToActionSection } from "@/components/landing/CallToActionSection";
 import { Footer } from "@/components/landing/Footer";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { useSearchParams } from "next/navigation";
@@ -36,7 +35,7 @@ export default function Home() {
         <TestimonialsSection />
         <FAQSection />
         <PricingSection />
-        <CallToActionSection />
+        {/* CallToActionSection removed as requested */}
       </main>
       <Footer />
     </div>
