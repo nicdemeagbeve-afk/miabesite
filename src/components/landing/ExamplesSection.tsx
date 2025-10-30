@@ -7,12 +7,12 @@ import Link from "next/link"; // Import Link
 
 // Placeholder images - in a real app, these would be actual images or dynamic
 const exampleSites = [
-  { name: "Restaurant 'Le Gourmet'", image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Boutique 'Mode Chic'", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Salon de Coiffure 'Beauté Divine'", image: "https://images.unsplash.com/photo-1597655601841-f208977897b2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Startup 'InnovTech'", image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Association 'Aide aux Enfants'", image: "https://images.unsplash.com/photo-1532629345422-758c97517d2d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Artisan 'Créations Bois'", image: "https://images.unsplash.com/photo-1517999144091-3d98079698c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+  { name: "Restaurant 'Le Gourmet'", image: "https://picsum.photos/seed/restaurant/400/300" },
+  { name: "Boutique 'Mode Chic'", image: "https://picsum.photos/seed/fashion/400/300" },
+  { name: "Salon de Coiffure 'Beauté Divine'", image: "https://picsum.photos/seed/salon/400/300" },
+  { name: "Startup 'InnovTech'", image: "https://picsum.photos/seed/tech/400/300" },
+  { name: "Association 'Aide aux Enfants'", image: "https://picsum.photos/seed/charity/400/300" },
+  { name: "Artisan 'Créations Bois'", image: "https://picsum.photos/seed/craft/400/300" },
 ];
 
 export function ExamplesSection() {
