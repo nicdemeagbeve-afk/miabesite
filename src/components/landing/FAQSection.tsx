@@ -26,9 +26,9 @@ export function FAQSection() {
         "Absolument ! Une fois votre site créé, vous avez accès à un éditeur simple et intuitif qui vous permet de modifier les textes, les images, les couleurs et la structure de votre site à tout moment, sans risque de tout casser.",
     },
     {
-      question: "Comment payer les 1000 F ?",
+      question: "Comment démarrer gratuitement ?",
       answer:
-        "Le paiement de 1000 F CFA se fait via des méthodes de paiement mobile locales sécurisées (Orange Money, Moov Money, etc.) ou par carte bancaire, directement sur notre plateforme.",
+        "Le démarrage est gratuit pour un début. Des options payantes sont disponibles pour des fonctionnalités avancées, et le paiement se fait via des méthodes de paiement mobile locales sécurisées (Orange Money, Moov Money, etc.) ou par carte bancaire, directement sur notre plateforme.",
     },
     {
       question: "Que se passe-t-il si j’ai besoin d’aide ?",

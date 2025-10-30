@@ -50,7 +50,7 @@ export function AboutSection() {
               <Sparkles className="h-7 w-7 text-yellow-500" /> Notre Mission
             </h3>
             <p className="text-base text-gray-700 leading-relaxed">
-              Notre mission est de démocratiser la création de sites web grâce à une technologie d'intelligence artificielle avancée. En seulement 5 minutes et pour un coût unique de <span className="font-semibold text-blue-600">1000 F CFA</span>, nous transformons vos idées en une réalité numérique, vous permettant de vous concentrer sur ce qui compte le plus : votre business.
+              Notre mission est de démocratiser la création de sites web grâce à une technologie d'intelligence artificielle avancée. En seulement 5 minutes et pour un <span className="font-semibold text-blue-600">démarrage gratuit</span>, nous transformons vos idées en une réalité numérique, vous permettant de vous concentrer sur ce qui compte le plus : votre business.
             </p>
             <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
               <Lightbulb className="h-7 w-7 text-blue-600" /> Notre Vision
