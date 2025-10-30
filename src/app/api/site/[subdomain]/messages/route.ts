@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { messageSchema } from '@/lib/schemas/message-schema'; // Import the new schema
 
 export async function POST(
   request: Request,
@@ -10,12 +11,14 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { sender_name, sender_email, sender_phone, service_interested, message } = body;
+    const validationResult = messageSchema.safeParse(body);
 
-    // Basic validation
-    if (!message) {
-      return NextResponse.json({ error: 'Le message est requis.' }, { status: 400 });
+    if (!validationResult.success) {
+      console.error("Validation error:", validationResult.error);
+      return NextResponse.json({ error: 'Invalid message data provided', details: validationResult.error.flatten() }, { status: 400 });
     }
+
+    const { sender_name, sender_email, sender_phone, service_interested, message } = validationResult.data;
 
     // 1. Get site_id from subdomain
     const { data: siteData, error: siteError } = await supabase

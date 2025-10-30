@@ -16,13 +16,26 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Allow any hostname for now, or specify your Supabase URL
+        hostname: '**.supabase.co', // Domaine de stockage Supabase (à ajuster si différent)
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos', // Utilisé pour les exemples
+      },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me', // Utilisé pour les avatars de témoignages
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Utilisé pour les images de portfolio/services
       },
     ],
   },
   typescript: {
-    ignoreBuildErrors: true, // ✅ ignore les erreurs TS pendant le build
+    // ignoreBuildErrors: true, // ✅ Désactivé pour réactiver la vérification des types
   },
+  output: 'standalone', // ✅ Activé pour optimiser le déploiement Docker
 };
 
 export default nextConfig;
