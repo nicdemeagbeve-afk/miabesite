@@ -7,12 +7,12 @@ import Link from "next/link"; // Import Link
 
 // Placeholder images - in a real app, these would be actual images or dynamic
 const exampleSites = [
-  { name: "Restaurant 'Le Gourmet'", image: "https://picsum.photos/seed/restaurant/400/300" },
-  { name: "Boutique 'Mode Chic'", image: "https://picsum.photos/seed/fashion/400/300" },
-  { name: "Salon de Coiffure 'Beauté Divine'", image: "https://picsum.photos/seed/salon/400/300" },
-  { name: "Startup 'InnovTech'", image: "https://picsum.photos/seed/tech/400/300" },
-  { name: "Association 'Aide aux Enfants'", image: "https://picsum.photos/seed/charity/400/300" },
-  { name: "Artisan 'Créations Bois'", image: "https://picsum.photos/seed/craft/400/300" },
+  { name: "Boutique en ligne (E-commerce)", image: "https://picsum.photos/seed/ecommerce/400/300" },
+  { name: "Portfolio de Services (Artisan)", image: "https://picsum.photos/seed/artisan/400/300" },
+  { name: "Site Professionnel (Consultant)", image: "https://picsum.photos/seed/professional/400/300" },
+  { name: "Restaurant / Café", image: "https://picsum.photos/seed/restaurant/400/300" },
+  { name: "Galerie d'Art / Créateur", image: "https://picsum.photos/seed/artgallery/400/300" },
+  { name: "Entreprise de Rénovation", image: "https://picsum.photos/seed/renovation/400/300" },
 ];
 
 export function ExamplesSection() {
