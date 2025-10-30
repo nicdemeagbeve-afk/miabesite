@@ -17,7 +17,7 @@ export function CallToActionSection() {
             Mets ton business en ligne aujourd’hui <span className="font-semibold">gratuitement</span> !
           </p>
           <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto"> {/* Added w-full sm:w-auto */}
-            <Link href="/create-site/select-template">Je crée mon site maintenant</Link>
+            <Link href="/create-site/select-template"><span>Je crée mon site maintenant</span></Link>
           </Button>
         </div>
         <div className="lg:w-1/2 flex justify-center lg:justify-end">

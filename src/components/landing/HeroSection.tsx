@@ -17,7 +17,7 @@ export function HeroSection() {
             Ton business en ligne démarre aujourd’hui — <span className="font-semibold">Gratuitement</span> !
           </p>
           <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto"> {/* Added w-full sm:w-auto */}
-            <Link href="/create-site/select-template">Créer mon site maintenant</Link>
+            <Link href="/create-site/select-template"><span>Créer mon site maintenant</span></Link>
           </Button>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 text-base md:text-lg"> {/* Adjusted text size for mobile */}
             <div className="flex items-center justify-center gap-2"> {/* Added justify-center for mobile */}

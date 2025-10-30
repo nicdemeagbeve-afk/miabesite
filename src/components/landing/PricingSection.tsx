@@ -96,7 +96,7 @@ export function PricingSection() {
                 </ul>
                 <Button asChild className="w-full mt-auto" variant={plan.buttonVariant as any}>
                   <Link href={plan.link}>
-                    {plan.buttonText}
+                    <span>{plan.buttonText}</span>
                   </Link>
                 </Button>
               </CardContent>
