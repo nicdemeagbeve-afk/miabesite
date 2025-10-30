@@ -97,6 +97,30 @@ export function PricingSection() {
             </Card>
           ))}
         </div>
+
+        {/* Nouvelle section CTA */}
+        <div className="mt-16"> {/* Ajoute une marge supérieure pour séparer des cartes de prix */}
+          <section
+            className="relative w-full py-12 md:py-24 lg:py-32 bg-cover bg-center text-primary-foreground px-4 rounded-lg overflow-hidden"
+            style={{ backgroundImage: `linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(var(--primary), 0.8)), url('/cta-Image.png')` }}
+          >
+            <div className="container mx-auto text-center relative z-10 space-y-6">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl leading-tight">
+                Prêt à lancer votre site ?
+              </h2>
+              <p className="text-lg md:text-xl font-light max-w-2xl mx-auto">
+                Créez votre site professionnel gratuitement et mettez votre business en ligne en quelques minutes !
+              </p>
+              <Link href="/create-site/select-template" passHref>
+                <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+                  <div>
+                    Commencer maintenant
+                  </div>
+                </Button>
+              </Link>
+            </div>
+          </section>
+        </div>
       </div>
     </section>
   );
