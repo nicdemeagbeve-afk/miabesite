@@ -1,115 +1,81 @@
-"use client";
-
 import React from "react";
 import { SiteCreationWizard } from "@/components/site-creation/SiteCreationWizard";
-import { Toaster } from "@/components/ui/sonner"; // Import Toaster for notifications
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
-import { createClient } from "@/lib/supabase/client"; // Import Supabase client
-import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
+import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import the new comprehensive type
-import { useRouter } from "next/navigation"; // Ensure useRouter is imported
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema";
 
 // Interface for the data fetched directly from the 'sites' table
 interface FetchedSiteData {
   id: string;
   user_id: string;
   subdomain: string;
-  site_data: SiteEditorFormData; // Use the new comprehensive type
+  site_data: SiteEditorFormData;
   status: string;
   template_type: string;
   created_at: string;
 }
 
-export default function CreateSitePage() {
-  const searchParams = useSearchParams();
-  const subdomain = searchParams.get('subdomain');
-  const templateTypeFromUrl = searchParams.get('templateType'); // Get templateType from URL
+interface CreateSitePageProps {
+  searchParams: {
+    subdomain?: string;
+    templateType?: string;
+  };
+}
+
+export default async function CreateSitePage({ searchParams }: CreateSitePageProps) {
+  const subdomain = searchParams.subdomain;
+  const templateTypeFromUrl = searchParams.templateType;
   const supabase = createClient();
-  const router = useRouter(); // Initialize useRouter
 
-  // The state for initialSiteData should match what SiteCreationWizard expects
-  const [initialSiteData, setInitialSiteData] = React.useState<(SiteEditorFormData & { id?: string }) | undefined>(undefined);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null); // Track authentication status
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  React.useEffect(() => {
-    async function checkAuthAndFetchSiteData() {
-      setLoading(true);
-      setError(null);
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-      if (authError || !user) {
-        setIsAuthenticated(false);
-        toast.error("Veuillez vous connecter ou créer un compte pour créer un site.");
-        router.push("/signup"); // Redirect to signup if not authenticated
-        setLoading(false);
-        return;
-      }
-
-      setIsAuthenticated(true);
-
-      if (!subdomain) {
-        // If no subdomain, but templateType is provided, initialize with templateType
-        if (templateTypeFromUrl) {
-          setInitialSiteData(prev => ({
-            ...prev,
-            templateType: templateTypeFromUrl,
-            // Set default values for new fields if not provided by initialSiteData
-            productsAndServices: [], // Ensure it's an array
-            testimonials: [], // Ensure it's an array
-            skills: [], // Ensure it's an array
-            paymentMethods: [], // Ensure it's an array
-            sectionsVisibility: {
-              showHero: true,
-              showAbout: true,
-              showProductsServices: true,
-              showTestimonials: true,
-              showSkills: true,
-              showContact: true,
-            },
-          } as SiteEditorFormData & { id?: string }));
-        }
-        setLoading(false);
-        return;
-      }
-
-      const { data, error: fetchError } = await supabase
-        .from('sites')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('subdomain', subdomain)
-        .single();
-
-      if (fetchError) {
-        console.error("Error fetching site data for wizard:", fetchError);
-        setError("Erreur lors du chargement des données du site pour modification.");
-        toast.error("Erreur lors du chargement des données du site.");
-      } else if (data) {
-        const fetchedData = data as FetchedSiteData;
-        setInitialSiteData({ ...fetchedData.site_data, id: fetchedData.id });
-      } else {
-        setError("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
-        toast.error("Site non trouvé ou vous n'êtes pas autorisé à y accéder.");
-        router.push('/dashboard/sites');
-      }
-      setLoading(false);
-    }
-
-    checkAuthAndFetchSiteData();
-  }, [subdomain, templateTypeFromUrl, supabase, router]);
-
-  if (isAuthenticated === false) {
-    return null; // Or a simple loading spinner while redirecting
+  if (authError || !user) {
+    redirect("/signup?message=Veuillez vous connecter ou créer un compte pour créer un site.");
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-muted py-12">
-        <Skeleton className="w-full max-w-2xl h-[600px] p-6" />
-      </div>
-    );
+  let initialSiteData: (SiteEditorFormData & { id?: string }) | undefined = undefined;
+  let error: string | null = null;
+
+  if (subdomain) {
+    const { data, error: fetchError } = await supabase
+      .from('sites')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('subdomain', subdomain)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching site data for wizard:", fetchError);
+      error = "Erreur lors du chargement des données du site pour modification.";
+      redirect('/dashboard/sites?message=Site non trouvé ou non autorisé.');
+    } else if (data) {
+      const fetchedData = data as FetchedSiteData;
+      initialSiteData = { ...fetchedData.site_data, id: fetchedData.id };
+    } else {
+      error = "Site non trouvé ou vous n'êtes pas autorisé à y accéder.";
+      redirect('/dashboard/sites?message=Site non trouvé ou non autorisé.');
+    }
+  } else if (templateTypeFromUrl) {
+    // If no subdomain, but templateType is provided, initialize with templateType
+    initialSiteData = {
+      templateType: templateTypeFromUrl,
+      // Set default values for new fields if not provided by initialSiteData
+      publicName: "", whatsappNumber: "", secondaryPhoneNumber: "", email: "",
+      primaryColor: "blue", secondaryColor: "red", logoOrPhoto: undefined, businessLocation: "",
+      firstName: "", lastName: "", expertise: "", heroSlogan: "", aboutStory: "", heroBackgroundImage: undefined,
+      productsAndServices: [],
+      testimonials: [],
+      skills: [],
+      contactButtonAction: "whatsapp", showContactForm: true,
+      facebookLink: "", instagramLink: "", linkedinLink: "",
+      paymentMethods: [], deliveryOption: "", depositRequired: false,
+      sectionsVisibility: {
+        showHero: true, showAbout: true, showProductsServices: true,
+        showTestimonials: true, showSkills: true, showContact: true,
+      },
+    };
   }
 
   if (error) {

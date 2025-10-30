@@ -1,16 +1,73 @@
 import { createClient } from '@/lib/supabase/server';
-import { notFound, redirect } from 'next/navigation'; // Import redirect
+import { notFound, redirect } from 'next/navigation';
 import React from 'react';
 import { DefaultTemplate } from '@/components/site-templates/DefaultTemplate';
 import { EcommerceTemplate } from '@/components/site-templates/EcommerceTemplate';
 import { ServicePortfolioTemplate } from '@/components/site-templates/ServicePortfolioTemplate';
 import { ProfessionalPortfolioTemplate } from '@/components/site-templates/ProfessionalPortfolioTemplate';
 import { ArtisanEcommerceTemplate } from '@/components/site-templates/ArtisanEcommerceTemplate';
-import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import the new comprehensive schema type
+import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
+import type { Metadata } from 'next';
 
-// @ts-ignore: Next.js génère parfois des types incorrects pour les params de page dynamique (Promise<any> au lieu de l'objet direct).
-export default async function DynamicSitePage(props: any) {
-  const { subdomain } = props.params;
+interface PageProps {
+  params: { subdomain: string };
+}
+
+// Function to generate dynamic metadata
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { subdomain } = params;
+  const supabase = createClient();
+
+  const { data: site, error } = await supabase
+    .from('sites')
+    .select('site_data, template_type')
+    .eq('subdomain', subdomain)
+    .single();
+
+  if (error || !site) {
+    // If site not found, return generic metadata or indicate not found
+    return {
+      title: "Site non trouvé",
+      description: "Le site que vous recherchez n'existe pas ou n'est pas accessible.",
+    };
+  }
+
+  const siteData: SiteEditorFormData = site.site_data as SiteEditorFormData;
+
+  const title = siteData.publicName ? `${siteData.publicName} - ${siteData.heroSlogan || "Votre site professionnel"}` : `Site ${subdomain}`;
+  const description = siteData.aboutStory || `Découvrez le site de ${siteData.publicName || subdomain}.`;
+
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      url: `https://${subdomain}.ctcsite.com`, // Replace with your actual domain if applicable
+      siteName: siteData.publicName || "Miabesite",
+      images: [
+        {
+          url: siteData.logoOrPhoto || '/next.svg', // Fallback image
+          width: 800,
+          height: 600,
+          alt: siteData.publicName || "Logo du site",
+        },
+      ],
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: title,
+      description: description,
+      creator: '@Miabesite', // Replace with your Twitter handle
+      images: [siteData.logoOrPhoto || '/next.svg'],
+    },
+  };
+}
+
+export default async function DynamicSitePage({ params }: PageProps) {
+  const { subdomain } = params;
   const supabase = createClient();
 
   // Fetch site data and template_type from Supabase based on the subdomain
@@ -23,7 +80,6 @@ export default async function DynamicSitePage(props: any) {
   if (error || !site) {
     console.error('Error fetching site data:', error);
     notFound();
-    return; // Explicitly return after notFound() to satisfy TypeScript
   }
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -32,7 +88,6 @@ export default async function DynamicSitePage(props: any) {
   // If the site has a user_id and the current user is not the owner,
   // redirect to landing page with an unauthorized message.
   if (site.user_id && (!user || user.id !== site.user_id)) {
-    // Do not send any site-specific information in the redirect.
     redirect('/?message=unauthorized');
   }
 
@@ -48,7 +103,6 @@ export default async function DynamicSitePage(props: any) {
     case 'professional-portfolio':
       return <ProfessionalPortfolioTemplate siteData={siteData} subdomain={subdomain} />;
     case 'artisan-ecommerce':
-      // Assuming ArtisanEcommerceTemplate also uses SiteEditorFormData
       return <ArtisanEcommerceTemplate siteData={siteData} subdomain={subdomain} />;
     case 'default':
     default:
