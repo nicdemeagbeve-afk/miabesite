@@ -16,7 +16,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.supabase.co', // Domaine de stockage Supabase (à ajuster si différent)
+        hostname: '**.supabase.co', // Domaine de stockage Supabase générique
+      },
+      {
+        protocol: 'https',
+        hostname: 'supabase.miabesite.site', // ✅ Ajout du domaine personnalisé Supabase
       },
       {
         protocol: 'https',
