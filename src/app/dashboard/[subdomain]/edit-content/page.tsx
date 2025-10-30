@@ -20,11 +20,7 @@ interface SiteDataFromDB {
   created_at: string;
 }
 
-interface PageProps {
-  params: { subdomain: string };
-}
-
-export default async function DashboardEditContentPage({ params }: PageProps) {
+export default async function DashboardEditContentPage({ params }: { params: { subdomain: string } }) {
   const { subdomain } = params;
   const supabase = createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();

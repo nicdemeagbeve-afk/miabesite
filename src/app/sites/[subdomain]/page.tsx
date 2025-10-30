@@ -10,12 +10,13 @@ import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
 import type { Metadata } from 'next';
 import { TrackSiteVisit } from '@/components/TrackSiteVisit'; // Import the new component
 
-interface PageProps {
-  params: { subdomain: string };
-}
+// Removed the PageProps interface as it's now inlined
+// interface PageProps {
+//   params: { subdomain: string };
+// }
 
 // Function to generate dynamic metadata
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { subdomain: string } }): Promise<Metadata> {
   const { subdomain } = params;
   const supabase = createClient();
 
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function DynamicSitePage({ params }: PageProps) {
+export default async function DynamicSitePage({ params }: { params: { subdomain: string } }) {
   const { subdomain } = params;
   const supabase = createClient();
 
