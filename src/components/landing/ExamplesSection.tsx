@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link"; // Import Link
 
-// Placeholder images - in a real app, these would be actual images or dynamic
+// Images d'exemple qui cadrent avec les templates et montrent un aperçu du site
 const exampleSites = [
-  { name: "Boutique en ligne (E-commerce)", image: "https://picsum.photos/seed/ecommerce/400/300" },
-  { name: "Portfolio de Services (Artisan)", image: "https://picsum.photos/seed/artisan/400/300" },
-  { name: "Site Professionnel (Consultant)", image: "https://picsum.photos/seed/professional/400/300" },
-  { name: "Restaurant / Café", image: "https://picsum.photos/seed/restaurant/400/300" },
-  { name: "Galerie d'Art / Créateur", image: "https://picsum.photos/seed/artgallery/400/300" },
-  { name: "Entreprise de Rénovation", image: "https://picsum.photos/seed/renovation/400/300" },
+  { name: "Site Basique (Général)", image: "https://picsum.photos/seed/basic-website-preview/400/300" },
+  { name: "E-commerce (Boutique en ligne)", image: "https://picsum.photos/seed/ecommerce-shop-interior/400/300" },
+  { name: "Service & Portfolio (Artisan)", image: "https://picsum.photos/seed/service-portfolio-showcase/400/300" },
+  { name: "Portfolio Professionnel (Consultant)", image: "https://picsum.photos/seed/professional-portfolio-digital/400/300" },
+  { name: "E-commerce Artisanal (Créations)", image: "https://picsum.photos/seed/artisan-ecommerce-products/400/300" },
 ];
 
 export function ExamplesSection() {
