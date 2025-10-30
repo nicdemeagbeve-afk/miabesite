@@ -459,7 +459,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
             template_type: data.templateType, // Update template type
           })
           .eq('id', initialSiteData.id)
-          .eq('user_id', user.id);
+          .eq('user.id', user.id);
 
         if (updateError) {
           toast.error(`Erreur lors de la mise à jour du site: ${updateError.message}`);

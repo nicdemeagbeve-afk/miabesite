@@ -44,7 +44,7 @@ export function ProductsServicesStep() {
   // Add an empty product field if the list is empty
   React.useEffect(() => {
     if (fields.length === 0) {
-      append({ title: "", price: "", currency: "XOF", description: "", image: undefined, actionButton: "contact" });
+      append({ title: "", price: undefined, currency: "XOF", description: "", image: undefined, actionButton: "contact" });
     }
   }, [fields.length, append]);
 
@@ -52,7 +52,7 @@ export function ProductsServicesStep() {
   React.useEffect(() => {
     const lastProduct = watch(`productsAndServices.${fields.length - 1}`);
     if (fields.length > 0 && fields.length < maxProducts && lastProduct?.title !== "") {
-      append({ title: "", price: "", currency: "XOF", description: "", image: undefined, actionButton: "contact" });
+      append({ title: "", price: undefined, currency: "XOF", description: "", image: undefined, actionButton: "contact" });
     }
   }, [fields, watch, append, maxProducts]);
 
@@ -99,7 +99,12 @@ export function ProductsServicesStep() {
                   <FormItem>
                     <FormLabel>Prix/Tarif</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Ex: 5000" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Ex: 5000"
+                        {...field}
+                        value={field.value === null ? undefined : field.value} // Ensure null becomes undefined
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

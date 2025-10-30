@@ -523,7 +523,14 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                       render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `productsAndServices.${number}.price`> }) => (
                         <FormItem>
                           <FormLabel>Prix/Tarif</FormLabel>
-                          <FormControl><Input type="number" placeholder="Ex: 5000" {...field} /></FormControl>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Ex: 5000"
+                              {...field}
+                              value={field.value === null ? undefined : field.value} // Ensure null becomes undefined
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
