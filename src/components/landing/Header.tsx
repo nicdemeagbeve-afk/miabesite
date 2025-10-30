@@ -38,10 +38,10 @@ export function Header() {
             Tarifs
           </Link>
           <Button asChild variant="ghost" className="text-sm font-medium">
-            <Link href="/login">Connexion</Link>
+            <Link href="/login"><span>Connexion</span></Link>
           </Button>
           <Button asChild className="text-sm font-medium">
-            <Link href="/signup">Inscription</Link>
+            <Link href="/signup"><span>Inscription</span></Link>
           </Button>
         </nav>
 
@@ -78,10 +78,10 @@ export function Header() {
                   Tarifs
                 </Link>
                 <Button asChild variant="ghost" className="text-lg font-medium justify-start px-0">
-                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>Connexion</Link>
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}><span>Connexion</span></Link>
                 </Button>
                 <Button asChild className="text-lg font-medium justify-start">
-                  <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>Inscription</Link>
+                  <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}><span>Inscription</span></Link>
                 </Button>
               </div>
             </SheetContent>

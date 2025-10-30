@@ -41,7 +41,7 @@ export function ExamplesSection() {
         </div>
         <div className="mt-12">
           <Button asChild size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto"> {/* Added w-full sm:w-auto */}
-            <Link href="/create-site/select-template">Voir la démo en direct</Link>
+            <Link href="/create-site/select-template"><span>Voir la démo en direct</span></Link>
           </Button>
         </div>
       </div>
