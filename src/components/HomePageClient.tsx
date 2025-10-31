@@ -9,9 +9,9 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { Footer } from "@/components/landing/Footer";
 import { PricingSection } from "@/components/landing/PricingSection";
-import { useSearchParams } from "next/navigation";
-import React from "react"; // Pas besoin de Suspense ici, il est dans le composant parent
-import { toast, Toaster } from "sonner"; // N'oubliez pas Toaster si vous l'utilisez
+import { useSearchParams } from "next/navigation"; // Importez useSearchParams ici
+import React from "react"; // Importez React si vous utilisez React.useEffect
+import { toast, Toaster } from "sonner"; // Importez toast et Toaster si vous les utilisez
 
 export default function HomePageClient() {
   const searchParams = useSearchParams();
