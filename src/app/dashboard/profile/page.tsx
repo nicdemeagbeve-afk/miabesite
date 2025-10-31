@@ -12,29 +12,28 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare } from "lucide-react";
+import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare, CalendarIcon, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
-import type { Metadata } from 'next'; // Import Metadata type
-
-// Metadata for this client component page
-// Note: Client Components cannot export `metadata` directly.
-// This would typically be set in a parent Server Component layout or page.
-// For simplicity in this context, we'll assume a parent layout handles it or it's a client-only route.
-// If this were a standalone page, you'd define metadata in a `layout.tsx` or `page.tsx` in a parent folder.
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis.").optional().or(z.literal('')),
   email: z.string().email("Veuillez entrer une adresse email valide.").optional().or(z.literal('')),
   whatsappNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro WhatsApp valide.").optional().or(z.literal('')),
   secondaryPhoneNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro de téléphone valide.").optional().or(z.literal('')),
+  dateOfBirth: z.date().optional().nullable(), // Allow null for optional
   newPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères.").optional().or(z.literal('')),
   confirmNewPassword: z.string().optional().or(z.literal('')),
   profilePicture: z.any().optional(), // File object
   expertise: z.string().min(3, "Le domaine d'expertise est requis.").max(100, "Le domaine d'expertise ne peut pas dépasser 100 caractères.").optional().or(z.literal('')),
-}).refine((data) => { // Removed explicit type annotation here to break circular reference
+}).refine((data) => {
   if (data.newPassword && data.newPassword !== data.confirmNewPassword) {
     return false;
   }
@@ -52,6 +51,7 @@ const emptyDefaultValues: ProfileFormData = {
   email: "",
   whatsappNumber: "",
   secondaryPhoneNumber: "",
+  dateOfBirth: null,
   newPassword: "",
   confirmNewPassword: "",
   profilePicture: undefined,
@@ -65,11 +65,11 @@ export default function ProfilePage() {
   const [loading, setLoading] = React.useState(true);
   const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
 
-  const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482"; // Use env var or default
+  const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482";
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues: emptyDefaultValues, // Use emptyDefaultValues here
+    defaultValues: emptyDefaultValues,
   });
 
   React.useEffect(() => {
@@ -84,40 +84,43 @@ export default function ProfilePage() {
       }
       if (currentUser) {
         setUser(currentUser);
+        const userMetadata = currentUser.user_metadata;
         form.reset({
-          fullName: currentUser.user_metadata?.full_name || "",
+          fullName: userMetadata?.full_name || "",
           email: currentUser.email || "",
-          whatsappNumber: currentUser.user_metadata?.whatsapp_number || "",
-          secondaryPhoneNumber: currentUser.user_metadata?.secondary_phone_number || "",
+          whatsappNumber: userMetadata?.whatsapp_number || "",
+          secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
+          dateOfBirth: userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null,
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
-          expertise: currentUser.user_metadata?.expertise || "",
+          expertise: userMetadata?.expertise || "",
         });
-        setAvatarPreview(currentUser.user_metadata?.avatar_url || null);
+        setAvatarPreview(userMetadata?.avatar_url || null);
       }
       setLoading(false);
     }
     fetchUserProfile();
 
-    // Listen for auth state changes to update profile info
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        setUser(session?.user || null); // Update user state
-        form.reset({ // Reset form with new data
-          fullName: session?.user?.user_metadata?.full_name || "",
+        setUser(session?.user || null);
+        const userMetadata = session?.user?.user_metadata;
+        form.reset({
+          fullName: userMetadata?.full_name || "",
           email: session?.user?.email || "",
-          whatsappNumber: session?.user?.user_metadata?.whatsapp_number || "",
-          secondaryPhoneNumber: session?.user?.user_metadata?.secondary_phone_number || "",
+          whatsappNumber: userMetadata?.whatsapp_number || "",
+          secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
+          dateOfBirth: userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null,
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
-          expertise: session?.user?.user_metadata?.expertise || "",
+          expertise: userMetadata?.expertise || "",
         });
-        setAvatarPreview(session?.user?.user_metadata?.avatar_url || null);
+        setAvatarPreview(userMetadata?.avatar_url || null);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
-        form.reset(emptyDefaultValues); // Use emptyDefaultValues here
+        form.reset(emptyDefaultValues);
         setAvatarPreview(null);
       }
     });
@@ -125,7 +128,7 @@ export default function ProfilePage() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase, router, form]); // Added form to dependency array
+  }, [supabase, router, form]);
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -181,6 +184,11 @@ export default function ProfilePage() {
     if (values.secondaryPhoneNumber !== user.user_metadata?.secondary_phone_number) updates.secondary_phone_number = values.secondaryPhoneNumber;
     if (avatarUrl !== user.user_metadata?.avatar_url) updates.avatar_url = avatarUrl;
     if (values.expertise !== user.user_metadata?.expertise) updates.expertise = values.expertise;
+    if (values.dateOfBirth && values.dateOfBirth.toISOString().split('T')[0] !== user.user_metadata?.date_of_birth) {
+      updates.date_of_birth = values.dateOfBirth.toISOString().split('T')[0];
+    } else if (values.dateOfBirth === null && user.user_metadata?.date_of_birth) {
+      updates.date_of_birth = null; // Clear date of birth if set to null
+    }
 
 
     if (Object.keys(updates).length > 0) {
@@ -225,9 +233,9 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 md:p-8">
-        <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Chargement du Profil...</h1>
-        <p className="text-muted-foreground text-center">Veuillez patienter.</p>
+      <div className="container mx-auto p-4 md:p-8 flex items-center justify-center min-h-[calc(100vh-100px)]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-lg text-muted-foreground">Chargement du Profil...</p>
       </div>
     );
   }
@@ -307,6 +315,48 @@ export default function ProfilePage() {
                       <FormControl>
                         <Input placeholder="Ex: Développeur Web, Artisan Plombier" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }: { field: ControllerRenderProps<FieldValues, "dateOfBirth"> }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date de naissance</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: fr })
+                              ) : (
+                                <span>Sélectionnez une date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value || undefined}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                            locale={fr}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

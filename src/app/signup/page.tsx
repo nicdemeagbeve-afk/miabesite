@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SignupForm } from "@/components/auth/SignupForm";
+import SignupForm from "@/components/auth/SignupForm"; // Corrected import
 
 export default function SignupPage() {
     return (

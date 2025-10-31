@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { MailCheck } from "lucide-react";
 
-export default function ConfirmEmailPage() {
+export default function EmailSentPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted">
       <Card className="w-full max-w-md text-center">

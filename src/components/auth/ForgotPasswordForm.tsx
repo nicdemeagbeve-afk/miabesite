@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useForm, ControllerRenderProps } from "react-hook-form";
+import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -41,13 +41,13 @@ export function ForgotPasswordForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email } = values;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/reset-password`,
     });
 
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Un email de réinitialisation a été envoyé. Veuillez vérifier votre boîte de réception.");
+      toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé à votre adresse.");
       form.reset();
     }
   }
