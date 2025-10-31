@@ -39,13 +39,10 @@ COPY --from=builder /app/.next/standalone ./
 # Copie les assets publics séparément
 COPY --from=builder /app/public ./public
 
-# Copie package.json et pnpm-lock.yaml pour un débogage potentiel ou des outils futurs
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-
-# Élimine les dépendances de développement pour maintenir l'image finale petite.
-# Cette commande supprimera les devDependencies des node_modules copiés dans le dossier standalone.
-RUN pnpm prune --prod
+# Les fichiers package.json et pnpm-lock.yaml ne sont pas nécessaires dans l'image finale 'runner'
+# car l'application standalone est auto-contenue.
+# La commande pnpm prune --prod est également redondante car seules les dépendances de production
+# sont incluses dans le build standalone.
 
 # Expose le port sur lequel Next.js s'exécute
 EXPOSE 3000

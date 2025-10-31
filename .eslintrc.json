@@ -1,3 +1,13 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "root": true,
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": ["./tsconfig.json"]
+  },
+  "rules": {
+    // Ajoutez ou modifiez des règles ici si nécessaire pour ESLint v9
+    // Par exemple, si vous rencontrez des erreurs spécifiques après la mise à jour.
+  }
 }
