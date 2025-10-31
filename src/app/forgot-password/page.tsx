@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email } = values;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/auth/callback?next=/dashboard/profile`, // Redirect to a page to set new password
+      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback?next=/dashboard/profile`, // Redirect to a page to set new password
     });
 
     if (error) {

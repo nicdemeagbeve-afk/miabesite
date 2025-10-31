@@ -61,7 +61,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/confirm`, // Redirect to email confirmation page
+        emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/confirm`, // Redirect to email confirmation page
         data: {
           full_name: `${firstName} ${lastName}`,
           first_name: firstName,
@@ -85,7 +85,7 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback`,
       },
     });
 
