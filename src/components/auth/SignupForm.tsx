@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
+import { useForm, ControllerRenderProps, FieldValues, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -40,8 +40,8 @@ const formSchema = z.object({
   lastName: z.string().min(2, { message: "Le nom est requis." }).max(50, { message: "Le nom ne peut pas dépasser 50 caractères." }),
   dateOfBirth: z.date()
     .max(new Date(), "La date de naissance ne peut pas être dans le futur.")
-    .nullable() // Allow null
-    .refine((date) => date !== null, { // Refine to make it required
+    .nullable() // Allow null as a type
+    .refine((date) => date !== null, { // Make it logically required
       message: "La date de naissance est requise.",
     }),
   phoneNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro de téléphone valide."),
@@ -100,7 +100,7 @@ export default function SignupPage() {
     }
   };
 
-  async function onSubmit(values: SignupFormData) { // Use SignupFormData here
+  const onSubmit: SubmitHandler<SignupFormData> = async (values) => { // Explicitly type onSubmit
     const { email, password, firstName, lastName, dateOfBirth, phoneNumber, expertise } = values;
     const { error } = await supabase.auth.signUp({
       email,
@@ -111,7 +111,7 @@ export default function SignupPage() {
           full_name: `${firstName} ${lastName}`,
           first_name: firstName,
           last_name: lastName,
-          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Format YYYY-MM-DD, use optional chaining
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Format YYYY-MM-DD (dateOfBirth is guaranteed to be Date if validation passes)
           phone_number: phoneNumber,
           expertise: expertise,
         },
@@ -205,7 +205,7 @@ export default function SignupPage() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value || undefined}
+                          selected={field.value || undefined} // field.value is Date | null
                           onSelect={(date) => {
                             field.onChange(date);
                             if (date) {
