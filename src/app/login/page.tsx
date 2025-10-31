@@ -1,6 +1,4 @@
-"use client";
-
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +31,9 @@ const formSchema = z.object({
   password: z.string().min(1, { message: "Veuillez entrer votre mot de passe." }),
 });
 
-export default function LoginPage() {
+function LoginClientPage() {
+  "use client";
+
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams(); // Initialize useSearchParams
@@ -164,5 +164,13 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Chargement...</div>}>
+      <LoginClientPage />
+    </Suspense>
   );
 }

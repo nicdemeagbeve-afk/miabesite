@@ -1,8 +1,6 @@
-"use client";
-
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
-import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
+import { useForm, ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -23,14 +21,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
+import { createClient } from "@/lib/supabase/client";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
 });
 
-export default function ForgotPasswordPage() {
-  const supabase = createClient(); // Initialize Supabase client
+function ForgotPasswordClientPage() {
+  "use client";
+
+  const supabase = createClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,14 +41,14 @@ export default function ForgotPasswordPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email } = values;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback?next=/dashboard/profile`, // Redirect to a page to set new password
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     });
 
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé à votre adresse.");
-      form.reset(); // Clear the form on success
+      toast.success("Un email de réinitialisation a été envoyé. Veuillez vérifier votre boîte de réception.");
+      form.reset();
     }
   }
 
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Mot de passe oublié</CardTitle>
           <CardDescription>
-            Entrez votre email pour réinitialiser votre mot de passe.
+            Entrez votre email pour recevoir un lien de réinitialisation.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -78,11 +78,11 @@ export default function ForgotPasswordPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Envoi en cours..." : "Réinitialiser le mot de passe"}
+                {form.formState.isSubmitting ? "Envoi en cours..." : "Envoyer le lien"}
               </Button>
             </form>
           </Form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-4 text-center text-sm">
             <Link href="/login" className="text-primary hover:underline">
               Retour à la connexion
             </Link>
@@ -91,4 +91,12 @@ export default function ForgotPasswordPage() {
       </Card>
     </div>
   );
+}
+
+export default function ForgotPasswordPage() {
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Chargement...</div>}>
+        <ForgotPasswordClientPage />
+      </Suspense>
+    );
 }
