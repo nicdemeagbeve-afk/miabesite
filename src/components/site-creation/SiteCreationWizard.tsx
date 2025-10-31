@@ -354,6 +354,33 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
       return;
     }
 
+    // --- New: Site creation limits and template uniqueness checks ---
+    if (!initialSiteData?.id) { // Only apply these checks for new site creation
+      const { data: userSites, error: fetchSitesError } = await supabase
+        .from('sites')
+        .select('id, template_type')
+        .eq('user_id', user.id);
+
+      if (fetchSitesError) {
+        console.error("Error fetching user sites for limits:", fetchSitesError);
+        toast.error("Erreur lors de la vérification des limites de sites.");
+        return;
+      }
+
+      if (userSites && userSites.length >= 5) {
+        toast.error("Vous avez atteint la limite de 5 sites web par compte.");
+        return;
+      }
+
+      const hasSameTemplate = userSites?.some(site => site.template_type === data.templateType);
+      if (hasSameTemplate) {
+        toast.error(`Vous avez déjà un site avec le template "${data.templateType}". Veuillez choisir un template différent.`);
+        return;
+      }
+    }
+    // --- End New: Site creation limits and template uniqueness checks ---
+
+
     let siteIdentifier = initialSiteData?.subdomain; // Use existing identifier if editing
 
     // If creating a new site, generate a unique identifier
