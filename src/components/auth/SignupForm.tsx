@@ -27,10 +27,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa';
 import type { Provider } from '@supabase/supabase-js';
-import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
+import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -38,9 +38,12 @@ import { cn } from "@/lib/utils";
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "Le prénom est requis." }).max(50, { message: "Le prénom ne peut pas dépasser 50 caractères." }),
   lastName: z.string().min(2, { message: "Le nom est requis." }).max(50, { message: "Le nom ne peut pas dépasser 50 caractères." }),
-  dateOfBirth: z.date({
-    required_error: "La date de naissance est requise.",
-  }).max(new Date(), "La date de naissance ne peut pas être dans le futur."),
+  dateOfBirth: z.date()
+    .max(new Date(), "La date de naissance ne peut pas être dans le futur.")
+    .nullable() // Allow null
+    .refine((date) => date !== null, { // Refine to make it required
+      message: "La date de naissance est requise.",
+    }),
   phoneNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro de téléphone valide."),
   expertise: z.string().min(3, { message: "Le domaine d'expertise est requis." }).max(100, { message: "Le domaine d'expertise ne peut pas dépasser 100 caractères." }),
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
@@ -51,15 +54,17 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
+type SignupFormData = z.infer<typeof formSchema>; // Define type for form data
+
 export default function SignupPage() {
   const supabase = createClient();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<SignupFormData>({ // Use SignupFormData here
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
-      dateOfBirth: undefined,
+      dateOfBirth: null, // Changed to null
       phoneNumber: "",
       expertise: "",
       email: "",
@@ -68,7 +73,34 @@ export default function SignupPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const [dateInput, setDateInput] = React.useState<string>(
+    form.getValues("dateOfBirth") ? format(form.getValues("dateOfBirth")!, "yyyy/MM/dd") : ""
+  );
+
+  React.useEffect(() => {
+    const dob = form.getValues("dateOfBirth");
+    if (dob && isValid(dob)) {
+      setDateInput(format(dob, "yyyy/MM/dd"));
+    } else {
+      setDateInput("");
+    }
+  }, [form.watch("dateOfBirth")]); // Watch for changes in the form's dateOfBirth
+
+  const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateInput(value);
+
+    // Attempt to parse the date
+    const parsedDate = parse(value, "yyyy/MM/dd", new Date());
+
+    if (isValid(parsedDate) && value.length === 10) { // Only update form if valid and complete
+      form.setValue("dateOfBirth", parsedDate, { shouldValidate: true });
+    } else if (value === "") {
+      form.setValue("dateOfBirth", null, { shouldValidate: true }); // Changed to null
+    }
+  };
+
+  async function onSubmit(values: SignupFormData) { // Use SignupFormData here
     const { email, password, firstName, lastName, dateOfBirth, phoneNumber, expertise } = values;
     const { error } = await supabase.auth.signUp({
       email,
@@ -79,7 +111,7 @@ export default function SignupPage() {
           full_name: `${firstName} ${lastName}`,
           first_name: firstName,
           last_name: lastName,
-          date_of_birth: dateOfBirth.toISOString().split('T')[0], // Format YYYY-MM-DD
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Format YYYY-MM-DD, use optional chaining
           phone_number: phoneNumber,
           expertise: expertise,
         },
@@ -119,12 +151,12 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
+          <Form {...form}> {/* Explicitly pass the form object */}
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="firstName"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "firstName"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "firstName"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Prénom</FormLabel>
                     <FormControl>
@@ -137,7 +169,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="lastName"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "lastName"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "lastName"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
                     <FormControl>
@@ -150,33 +182,38 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="dateOfBirth"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "dateOfBirth"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "dateOfBirth"> }) => ( // Use SignupFormData
                   <FormItem className="flex flex-col">
                     <FormLabel>Date de naissance</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: fr })
-                            ) : (
-                              <span>Sélectionnez une date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
+                          <div className="relative flex items-center">
+                            <Input
+                              placeholder="AAAA/MM/JJ"
+                              value={dateInput}
+                              onChange={handleDateInputChange}
+                              className={cn(
+                                "w-full pl-3 pr-10 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            />
+                            <CalendarIcon className="absolute right-3 h-4 w-4 opacity-50 pointer-events-none" />
+                          </div>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
+                          selected={field.value || undefined}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            if (date) {
+                              setDateInput(format(date, "yyyy/MM/dd"));
+                            } else {
+                              setDateInput("");
+                            }
+                          }}
                           disabled={(date) =>
                             date > new Date() || date < new Date("1900-01-01")
                           }
@@ -192,7 +229,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="phoneNumber"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "phoneNumber"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "phoneNumber"> }) => ( // Use SignupFormData
                   <PhoneInputWithCountryCode
                     name={field.name}
                     label="Numéro de Téléphone"
@@ -204,7 +241,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="expertise"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "expertise"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "expertise"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Domaine d'expertise / Travail</FormLabel>
                     <FormControl>
@@ -217,7 +254,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "email"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "email"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
@@ -230,7 +267,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "password"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "password"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Mot de passe</FormLabel>
                     <FormControl>
@@ -243,7 +280,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="confirmPassword"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "confirmPassword"> }) => (
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "confirmPassword"> }) => ( // Use SignupFormData
                   <FormItem>
                     <FormLabel>Confirmer le mot de passe</FormLabel>
                     <FormControl>

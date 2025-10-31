@@ -16,9 +16,9 @@ import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare, Cale
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
-import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
+import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, parse, isValid } from "date-fns"; // Added parse and isValid
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -72,6 +72,11 @@ export default function ProfilePage() {
     defaultValues: emptyDefaultValues,
   });
 
+  const [dateInput, setDateInput] = React.useState<string>(() => {
+    const dob = form.getValues("dateOfBirth");
+    return dob && isValid(dob) ? format(dob, "yyyy/MM/dd") : "";
+  });
+
   React.useEffect(() => {
     async function fetchUserProfile() {
       setLoading(true);
@@ -85,18 +90,24 @@ export default function ProfilePage() {
       if (currentUser) {
         setUser(currentUser);
         const userMetadata = currentUser.user_metadata;
+        const fetchedDateOfBirth = userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null;
         form.reset({
           fullName: userMetadata?.full_name || "",
           email: currentUser.email || "",
           whatsappNumber: userMetadata?.whatsapp_number || "",
           secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
-          dateOfBirth: userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null,
+          dateOfBirth: fetchedDateOfBirth,
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
           expertise: userMetadata?.expertise || "",
         });
         setAvatarPreview(userMetadata?.avatar_url || null);
+        if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
+          setDateInput(format(fetchedDateOfBirth, "yyyy/MM/dd"));
+        } else {
+          setDateInput("");
+        }
       }
       setLoading(false);
     }
@@ -106,22 +117,29 @@ export default function ProfilePage() {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setUser(session?.user || null);
         const userMetadata = session?.user?.user_metadata;
+        const sessionDateOfBirth = userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null;
         form.reset({
           fullName: userMetadata?.full_name || "",
           email: session?.user?.email || "",
           whatsappNumber: userMetadata?.whatsapp_number || "",
           secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
-          dateOfBirth: userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null,
+          dateOfBirth: sessionDateOfBirth,
           newPassword: "",
           confirmNewPassword: "",
           profilePicture: undefined,
           expertise: userMetadata?.expertise || "",
         });
         setAvatarPreview(userMetadata?.avatar_url || null);
+        if (sessionDateOfBirth && isValid(sessionDateOfBirth)) {
+          setDateInput(format(sessionDateOfBirth, "yyyy/MM/dd"));
+        } else {
+          setDateInput("");
+        }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         form.reset(emptyDefaultValues);
         setAvatarPreview(null);
+        setDateInput("");
       }
     });
 
@@ -129,6 +147,29 @@ export default function ProfilePage() {
       authListener?.subscription.unsubscribe();
     };
   }, [supabase, router, form]);
+
+  // Synchronize dateInput with form.watch("dateOfBirth")
+  React.useEffect(() => {
+    const dob = form.watch("dateOfBirth");
+    if (dob && isValid(dob)) {
+      setDateInput(format(dob, "yyyy/MM/dd"));
+    } else {
+      setDateInput("");
+    }
+  }, [form.watch("dateOfBirth")]);
+
+  const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDateInput(value);
+
+    const parsedDate = parse(value, "yyyy/MM/dd", new Date());
+
+    if (isValid(parsedDate) && value.length === 10) {
+      form.setValue("dateOfBirth", parsedDate, { shouldValidate: true });
+    } else if (value === "") {
+      form.setValue("dateOfBirth", null, { shouldValidate: true }); // Set to null if cleared
+    }
+  };
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -328,27 +369,32 @@ export default function ProfilePage() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP", { locale: fr })
-                              ) : (
-                                <span>Sélectionnez une date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
+                            <div className="relative flex items-center">
+                              <Input
+                                placeholder="AAAA/MM/JJ"
+                                value={dateInput}
+                                onChange={handleDateInputChange}
+                                className={cn(
+                                  "w-full pl-3 pr-10 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              />
+                              <CalendarIcon className="absolute right-3 h-4 w-4 opacity-50 pointer-events-none" />
+                            </div>
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value || undefined}
-                            onSelect={field.onChange}
+                            selected={field.value || undefined} // Handle null
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              if (date) {
+                                setDateInput(format(date, "yyyy/MM/dd"));
+                              } else {
+                                setDateInput("");
+                              }
+                            }}
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }
