@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen } from "lucide-react"; // Added BookOpen icon
 import { UserProfileButton } from "./UserProfileButton"; // Import UserProfileButton
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Import Tooltip components
 
 interface DashboardSidebarProps {
   subdomain?: string; // Make subdomain optional
@@ -36,12 +37,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       label: "Messages",
       requiresSubdomain: true,
     },
-    {
-      href: `/dashboard/${subdomain}/content`,
-      icon: <Pencil className="h-5 w-5" />,
-      label: "Modifier le Contenu (Wizard)",
-      requiresSubdomain: true,
-    },
+    // Removed "Modifier le Contenu (Wizard)" link as requested
     {
       href: `/dashboard/${subdomain}/edit-content`, // New link for advanced editor
       icon: <Edit className="h-5 w-5" />,
@@ -64,30 +60,48 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       </div>
 
       <nav className="space-y-2 flex-1">
-        {navItems.map((item) => {
-          // Only render items that don't require a subdomain if no subdomain is selected,
-          // or items that do require a subdomain if one is selected.
-          if (item.requiresSubdomain && !subdomain) {
-            return null;
-          }
-          const isActive = pathname === item.href || (item.requiresSubdomain && pathname.startsWith(`/dashboard/${subdomain}/`) && pathname.includes(item.label.toLowerCase().replace(/\s/g, '').replace('(wizard)', '')));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground"
-              )}
-              onClick={onLinkClick}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          );
-        })}
+        <TooltipProvider>
+          {navItems.map((item) => {
+            const isDisabled = item.requiresSubdomain && !subdomain;
+            const isActive = !isDisabled && (pathname === item.href || (item.requiresSubdomain && pathname.startsWith(`/dashboard/${subdomain}/`) && pathname.includes(item.label.toLowerCase().replace(/\s/g, ''))));
+
+            const linkContent = (
+              <div
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isDisabled
+                    ? "text-muted-foreground cursor-not-allowed opacity-60"
+                    : isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                )}
+                onClick={isDisabled ? undefined : onLinkClick}
+              >
+                {item.icon}
+                {item.label}
+              </div>
+            );
+
+            return (
+              <React.Fragment key={item.href}>
+                {isDisabled ? (
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      {linkContent}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Veuillez sélectionner un site pour accéder à cette section.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Link href={item.href} passHref>
+                    {linkContent}
+                  </Link>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </TooltipProvider>
         {/* Always visible Profile & Settings link */}
         <Link
           href="/dashboard/profile"

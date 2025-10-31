@@ -3,6 +3,7 @@ import { AdvancedManagementAndHelp } from "@/components/dashboard/AdvancedManage
 import { createClient } from "@/lib/supabase/server"; // Use server-side Supabase client
 import { redirect } from "next/navigation";
 import type { Metadata } from 'next';
+import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // Import SiteEditorFormData
 
 export const metadata: Metadata = {
   title: "Gestion Avancée du Site",
@@ -13,7 +14,7 @@ interface SiteData {
   id: string;
   user_id: string;
   subdomain: string;
-  site_data: any;
+  site_data: SiteEditorFormData; // Use SiteEditorFormData type
   status: string;
   template_type: string;
   created_at: string;
@@ -54,12 +55,28 @@ export default async function DashboardAdvancedPage({ params }: PageProps) {
   }
 
   const currentSite: SiteData = site;
+  const initialSiteData = currentSite.site_data;
+
+  // Extract design-related data
+  const initialTemplateType = currentSite.template_type;
+  const initialPrimaryColor = initialSiteData.primaryColor;
+  const initialSecondaryColor = initialSiteData.secondaryColor;
+  const initialShowTestimonials = typeof initialSiteData.sectionsVisibility?.showTestimonials === 'boolean' ? initialSiteData.sectionsVisibility.showTestimonials : true;
+  const initialShowSkills = typeof initialSiteData.sectionsVisibility?.showSkills === 'boolean' ? initialSiteData.sectionsVisibility.showSkills : true;
+
 
   return (
     <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Gestion Avancée et Aide</h1>
       <div className="max-w-3xl mx-auto lg:mx-0 space-y-8">
-        <AdvancedManagementAndHelp subdomain={currentSite.subdomain} />
+        <AdvancedManagementAndHelp
+          subdomain={currentSite.subdomain}
+          initialTemplateType={initialTemplateType}
+          initialPrimaryColor={initialPrimaryColor}
+          initialSecondaryColor={initialSecondaryColor}
+          initialShowTestimonials={initialShowTestimonials}
+          initialShowSkills={initialShowSkills}
+        />
       </div>
     </div>
   );

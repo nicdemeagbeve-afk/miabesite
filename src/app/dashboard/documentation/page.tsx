@@ -4,102 +4,71 @@ import { Separator } from "@/components/ui/separator";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Documentation du Wizard",
-  description: "Comprenez chaque champ du formulaire de création de site web.",
+  title: "Documentation du Tableau de Bord",
+  description: "Comprenez chaque fonctionnalité de votre tableau de bord Miabesite.",
 };
 
 export default function DocumentationPage() {
-  const wizardFields = [
+  const dashboardSections = [
     {
-      section: "Infos Essentielles & Design",
+      section: "Navigation du Tableau de Bord",
       fields: [
-        { name: "Prénom", description: "Votre prénom, pour personnaliser votre profil." },
-        { name: "Nom", description: "Votre nom de famille, pour compléter votre profil." },
-        { name: "Domaine d'expertise / Travail", description: "Décrivez votre métier ou votre domaine d'activité (ex: Développeur Web, Artisan Plombier)." },
-        { name: "Nom Public & Activité", description: "Le nom de votre entreprise ou votre nom d'artiste, et ce que vous faites (ex: Mamadou Couture, Aïsha Délices). C'est ce qui apparaîtra en grand sur votre site." },
-        { name: "Numéro WhatsApp (Obligatoire)", description: "Le numéro de téléphone où vos clients peuvent vous joindre facilement via WhatsApp." },
-        { name: "Numéro de Téléphone Secondaire (Optionnel)", description: "Un autre numéro de téléphone si vous en avez un, pour plus d'options de contact." },
-        { name: "E-mail (Optionnel)", description: "Votre adresse e-mail pour les contacts professionnels." },
-        { name: "Couleur Principale du Site", description: "La couleur dominante de votre site. Choisissez celle qui représente le mieux votre marque." },
-        { name: "Couleur Secondaire du Site", description: "Une deuxième couleur pour compléter le design de votre site." },
-        { name: "Logo ou Photo de Profil (Optionnel)", description: "Votre logo d'entreprise ou une photo de vous. Elle apparaîtra en haut de votre site." },
-        { name: "Localisation de l'Entreprise", description: "L'adresse principale ou la zone où vous proposez vos services (ex: Dakar, Sénégal)." },
+        { name: "Mes Sites", description: "Affiche la liste de tous vos sites web. C'est le point de départ pour gérer vos projets." },
+        { name: "Vue d'Ensemble", description: "Un aperçu rapide des statistiques et des actions clés pour le site sélectionné." },
+        { name: "Messages", description: "Consultez et gérez les messages envoyés via le formulaire de contact de votre site." },
+        { name: "Éditeur Avancé", description: "Accédez à un formulaire détaillé pour personnaliser tous les aspects de votre site (textes, images, produits, témoignages, compétences, etc.)." },
+        { name: "Gestion Avancée", description: "Gérez les options techniques comme la liaison de domaine personnalisé, le téléchargement du code source, et les options de design avancées." },
+        { name: "Profil & Paramètres", description: "Mettez à jour vos informations personnelles, votre mot de passe et d'autres paramètres de votre compte." },
+        { name: "Documentation", description: "La page que vous lisez actuellement, expliquant les fonctionnalités du tableau de bord." },
+        { name: "Support WhatsApp", description: "Un lien direct pour contacter notre équipe de support via WhatsApp." },
+        { name: "Créer un site", description: "Lancez l'assistant de création pour démarrer un nouveau site web." },
       ],
     },
     {
-      section: "Contenu (Les Pages Clés)",
+      section: "Fonctionnement des Menus Spécifiques au Site",
       fields: [
-        { name: "Slogan Accrocheur (Bannière d'Accueil)", description: "Une phrase courte et percutante qui apparaît en grand sur la page d'accueil de votre site. Elle doit donner envie aux visiteurs d'en savoir plus." },
-        { name: "Mon Histoire / Ma Mission (Page 'À Propos')", description: "Racontez votre parcours, vos valeurs, ou ce qui vous motive. Cela aide les visiteurs à vous faire confiance et à comprendre votre vision." },
-        { name: "Image de Fond du Héro (Optionnel)", description: "Une belle image pour décorer la bannière principale de votre site. Elle donne le ton visuel." },
+        { name: "Accès aux sections spécifiques", description: "Pour accéder aux sections 'Vue d'Ensemble', 'Messages', 'Éditeur Avancé' et 'Gestion Avancée', vous devez d'abord cliquer sur 'Gérer le site' depuis la page 'Mes Sites' pour sélectionner un site spécifique. Ces options ne sont actives que lorsqu'un site est en cours de gestion." },
+        { name: "Indicateur visuel", description: "Les liens de menu qui nécessitent la sélection d'un site seront grisés et afficheront une info-bulle si aucun site n'est sélectionné, vous guidant sur la marche à suivre." },
       ],
     },
     {
-      section: "Compétences / Expertise (Optionnel)",
+      section: "Options de Design Avancées (dans 'Gestion Avancée')",
       fields: [
-        { name: "Titre de la Compétence", description: "Le nom d'une de vos compétences ou d'un domaine où vous excellez (ex: Plomberie, Développement Web)." },
-        { name: "Description", description: "Expliquez brièvement ce que cette compétence implique ou ce que vous proposez dans ce domaine." },
-        { name: "Icône (Nom Lucide React)", description: "Choisissez une petite image (icône) pour illustrer visuellement cette compétence. (Ex: Wrench, Hammer). Jusqu'à 10 compétences." },
+        { name: "Changer de Template", description: "Sélectionnez un nouveau modèle de design pour votre site. Cela peut modifier l'agencement et le style général." },
+        { name: "Couleur Principale", description: "Définissez la couleur dominante de votre site, utilisée pour les titres, boutons principaux, etc." },
+        { name: "Couleur Secondaire", description: "Choisissez une couleur complémentaire pour les accents, les arrière-plans secondaires, etc." },
+        { name: "Police de Caractères", description: "Sélectionnez la police de texte de votre site. (Fonctionnalité en cours de développement)." },
+        { name: "Afficher la section Témoignages", description: "Activez ou désactivez la visibilité de la section où les avis de vos clients sont affichés." },
+        { name: "Afficher la section Compétences", description: "Activez ou désactivez la visibilité de la section présentant vos compétences et expertises." },
       ],
     },
     {
-      section: "Produits & Services",
+      section: "Éditeur Avancé (page dédiée)",
       fields: [
-        { name: "Titre du Produit/Service", description: "Le nom de ce que vous vendez ou proposez (ex: Formation Digitale Débutant, Réparation de Téléphone)." },
-        { name: "Prix/Tarif", description: "Le coût de votre offre. Laissez vide si c'est sur devis." },
-        { name: "Devise", description: "L'unité monétaire de votre prix (ex: XOF, USD, EUR)." },
-        { name: "Description Détaillée", description: "Expliquez ce qui est inclus dans votre offre, sa durée, ou ses avantages. Soyez clair et concis." },
-        { name: "Image du Produit/Service (Optionnel)", description: "Une photo qui met en valeur votre produit ou service." },
-        { name: "Bouton d'Action", description: "Ce que le visiteur peut faire : acheter, demander un devis, réserver, ou simplement vous contacter." },
-      ],
-    },
-    {
-      section: "Témoignages (Optionnel)",
-      fields: [
-        { name: "Auteur", description: "Le nom de la personne qui a laissé le témoignage." },
-        { name: "Témoignage", description: "Le message de satisfaction de votre client. C'est une preuve de votre bon travail." },
-        { name: "Localisation", description: "D'où vient le client qui a laissé le témoignage." },
-        { name: "Avatar de l'auteur (Optionnel)", description: "Une photo de profil du client pour rendre le témoignage plus authentique." },
-      ],
-    },
-    {
-      section: "Configuration et Réseaux",
-      fields: [
-        { name: "Action du Bouton 'Contact/Commander'", description: "Où voulez-vous que vos clients soient dirigés quand ils cliquent sur le bouton principal de contact ? (WhatsApp, formulaire, téléphone)." },
-        { name: "Afficher un formulaire de contact ?", description: "Cochez cette case si vous voulez que les visiteurs puissent vous envoyer un message directement depuis votre site." },
-        { name: "Lien Facebook (Optionnel)", description: "L'adresse de votre page Facebook pour que les visiteurs puissent vous suivre." },
-        { name: "Lien Instagram (Optionnel)", description: "L'adresse de votre profil Instagram pour partager vos visuels." },
-        { name: "Lien LinkedIn (Optionnel)", description: "L'adresse de votre profil LinkedIn pour les contacts professionnels." },
-        { name: "Modes de Paiement Acceptés", description: "Les différentes façons dont vos clients peuvent vous payer (cash, mobile money, virement bancaire, etc.)." },
-        { name: "Livraison / Déplacement", description: "Comment vos produits sont livrés ou si vous vous déplacez pour vos services (local, national, international, etc.)." },
-        { name: "Acompte requis ?", description: "Cochez si vous demandez un acompte avant de commencer un service ou d'envoyer une commande." },
-      ],
-    },
-    {
-      section: "Visibilité des Sections (Optionnel)",
-      fields: [
-        { name: "Afficher la Section Héro", description: "Contrôle si la grande bannière d'accueil de votre site est visible." },
-        { name: "Afficher la Section 'À Propos'", description: "Contrôle si la section qui raconte votre histoire ou votre mission est visible." },
-        { name: "Afficher la Section 'Produits & Services'", description: "Contrôle si la liste de vos offres est visible." },
-        { name: "Afficher la Section 'Témoignages'", description: "Contrôle si les avis de vos clients sont visibles." },
-        { name: "Afficher la Section 'Compétences'", description: "Contrôle si la section de vos compétences est visible." },
-        { name: "Afficher la Section 'Contact'", description: "Contrôle si la section de contact est visible." },
+        { name: "Informations de Base & Branding", description: "Mettez à jour le nom public, les numéros de contact, l'e-mail, les couleurs, le logo et la localisation de votre entreprise." },
+        { name: "Section Héro", description: "Personnalisez le slogan accrocheur, votre histoire/mission et l'image de fond de la bannière principale." },
+        { name: "Compétences / Expertise", description: "Ajoutez, modifiez ou supprimez jusqu'à 10 compétences avec titre, description et icône." },
+        { name: "Produits & Services", description: "Gérez jusqu'à 5 de vos offres avec titre, prix, devise, description, image et bouton d'action." },
+        { name: "Témoignages", description: "Ajoutez, modifiez ou supprimez jusqu'à 5 témoignages de clients avec auteur, localisation, citation et avatar." },
+        { name: "Réseaux Sociaux & Contact", description: "Configurez l'action du bouton de contact principal, la visibilité du formulaire de contact et vos liens Facebook, Instagram, LinkedIn." },
+        { name: "Conditions de Paiement & Livraison", description: "Définissez les modes de paiement acceptés, les options de livraison/déplacement et si un acompte est requis." },
+        { name: "Visibilité des Sections", description: "Contrôlez la visibilité de chaque section majeure de votre site (Héro, À Propos, Produits & Services, Témoignages, Compétences, Contact)." },
       ],
     },
   ];
 
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Documentation du Wizard de Création de Site</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Documentation du Tableau de Bord</h1>
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Le Wizard de Création de Site</CardTitle>
+          <CardTitle className="text-2xl font-bold">Comprendre votre Tableau de Bord Miabesite</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Notre assistant de création de site vous guide pas à pas pour mettre votre business en ligne. Remplissez simplement les informations demandées, et notre système générera un site web professionnel et adapté à votre activité en quelques minutes.
+            Ce guide vous aidera à naviguer et à utiliser toutes les fonctionnalités de votre tableau de bord pour gérer vos sites web efficacement.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-          {wizardFields.map((section, sectionIndex) => (
+          {dashboardSections.map((section, sectionIndex) => (
             <div key={sectionIndex}>
               <h2 className="text-xl font-semibold mb-4 text-primary">{section.section}</h2>
               <div className="space-y-4">
@@ -110,7 +79,7 @@ export default function DocumentationPage() {
                   </div>
                 ))}
               </div>
-              {sectionIndex < wizardFields.length - 1 && <Separator className="my-8" />}
+              {sectionIndex < dashboardSections.length - 1 && <Separator className="my-8" />}
             </div>
           ))}
         </CardContent>
