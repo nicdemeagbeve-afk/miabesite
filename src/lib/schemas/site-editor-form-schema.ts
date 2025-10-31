@@ -24,7 +24,10 @@ export const siteEditorFormSchema = z.object({
   // Products & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().min(0, "Le prix ne peut pas être négatif.").optional()),
+    price: z.preprocess(
+      (val: unknown) => (val === '' ? undefined : val),
+      z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional()
+    ),
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().min(10, "La description est requise.").max(300, "La description ne peut pas dépasser 300 caractères."),
     image: z.any().optional(), // File object or URL string

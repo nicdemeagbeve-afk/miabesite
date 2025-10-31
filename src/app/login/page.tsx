@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase client
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // Import useSearchParams
 import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa'; // Import social icons from react-icons
 import type { Provider } from '@supabase/supabase-js'; // Import Provider type
 
@@ -36,6 +36,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams(); // Initialize useSearchParams
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,6 +44,14 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  // Display messages from URL parameters (e.g., from unauthorized redirects)
+  React.useEffect(() => {
+    const message = searchParams.get('message');
+    if (message) {
+      toast.error(message);
+    }
+  }, [searchParams]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email, password } = values;
@@ -53,6 +62,7 @@ export default function LoginPage() {
 
     if (error) {
       toast.error(error.message);
+      form.setValue("password", ""); // Clear password field on error
     } else {
       toast.success("Connexion réussie ! Redirection vers le tableau de bord...");
       router.push("/dashboard/sites"); // Redirect to the new sites listing page

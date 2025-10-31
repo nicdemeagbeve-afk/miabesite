@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
       toast.error(error.message);
     } else {
       toast.success("Si votre email est enregistré, un lien de réinitialisation a été envoyé à votre adresse.");
-      form.reset(); // Clear the form
+      form.reset(); // Clear the form on success
     }
   }
 

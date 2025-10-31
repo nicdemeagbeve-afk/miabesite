@@ -67,7 +67,10 @@ const wizardFormSchema = z.object({
   // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    price: z.preprocess((val: unknown) => (val === '' ? undefined : val), z.number().min(0, "Le prix ne peut pas être négatif.").optional()),
+    price: z.preprocess(
+      (val: unknown) => (val === '' ? undefined : val),
+      z.coerce.number().min(0, "Le prix ne peut pas être négatif.").optional()
+    ),
     currency: z.string().min(1, "La devise est requise."),
     description: z.string().min(10, "La description est requise et doit contenir au moins 10 caractères.").max(300, "La description ne peut pas dépasser 300 caractères."),
     image: z.any().optional(), // File object or URL string
@@ -200,8 +203,8 @@ const sanitizeFileNameForStorage = (fileName: string): string => {
     .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
     .replace(/[^a-zA-Z0-9-.]/g, '-') // Replace non-alphanumeric (except dot and hyphen) with hyphen
     .replace(/--+/g, '-') // Replace multiple hyphens with a single one
-    .replace(/^-+|-+$/g, '') // Trim hyphens from start/end
-    .toLowerCase();
+    .replace(/^-+/, '') // Trim hyphens from start/end
+    .replace(/-+$/, ''); // Trim - from end of text
 
   // Ensure file extension is preserved if present
   const parts = sanitized.split('.');

@@ -73,6 +73,8 @@ export default function SignupPage() {
 
     if (error) {
       toast.error(error.message);
+      form.setValue("password", ""); // Clear password field on error
+      form.setValue("confirmPassword", ""); // Clear confirm password field on error
     } else {
       toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
       router.push("/auth/confirm"); // Redirect to the new email confirmation page

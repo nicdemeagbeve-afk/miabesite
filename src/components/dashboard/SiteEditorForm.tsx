@@ -610,6 +610,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                           <FormControl>
                             <Input
                               type="number"
+                              step="any" // Allow decimal numbers
                               placeholder="Ex: 5000"
                               {...field}
                               value={field.value === null ? undefined : field.value} // Ensure null becomes undefined
