@@ -14,10 +14,6 @@ export default function DocumentationPage() {
       section: "Navigation du Tableau de Bord",
       fields: [
         { name: "Mes Sites", description: "Affiche la liste de tous vos sites web. C'est le point de départ pour gérer vos projets." },
-        { name: "Vue d'Ensemble", description: "Un aperçu rapide des statistiques et des actions clés pour le site sélectionné." },
-        { name: "Messages", description: "Consultez et gérez les messages envoyés via le formulaire de contact de votre site." },
-        { name: "Éditeur Avancé", description: "Accédez à un formulaire détaillé pour personnaliser tous les aspects de votre site (textes, images, produits, témoignages, compétences, etc.)." },
-        { name: "Gestion Avancée", description: "Gérez les options techniques comme la liaison de domaine personnalisé, le téléchargement du code source, et les options de design avancées." },
         { name: "Profil & Paramètres", description: "Mettez à jour vos informations personnelles, votre mot de passe et d'autres paramètres de votre compte." },
         { name: "Documentation", description: "La page que vous lisez actuellement, expliquant les fonctionnalités du tableau de bord." },
         { name: "Support WhatsApp", description: "Un lien direct pour contacter notre équipe de support via WhatsApp." },
@@ -27,8 +23,9 @@ export default function DocumentationPage() {
     {
       section: "Fonctionnement des Menus Spécifiques au Site",
       fields: [
-        { name: "Accès aux sections spécifiques", description: "Pour accéder aux sections 'Vue d'Ensemble', 'Messages', 'Éditeur Avancé' et 'Gestion Avancée', vous devez d'abord cliquer sur 'Gérer le site' depuis la page 'Mes Sites' pour sélectionner un site spécifique. Ces options ne sont actives que lorsqu'un site est en cours de gestion." },
-        { name: "Indicateur visuel", description: "Les liens de menu qui nécessitent la sélection d'un site seront grisés et afficheront une info-bulle si aucun site n'est sélectionné, vous guidant sur la marche à suivre." },
+        { name: "Accès aux sections spécifiques", description: "Les sections 'Vue d'Ensemble', 'Messages', 'Éditeur Avancé' et 'Gestion Avancée' sont des outils de gestion pour un site spécifique. Pour y accéder, vous devez d'abord sélectionner un site en cliquant sur 'Gérer le site' depuis la page 'Mes Sites'." },
+        { name: "Indicateur visuel", description: "Lorsque vous n'avez pas encore sélectionné de site, ces liens de menu seront grisés et inactifs. Une info-bulle apparaîtra au survol pour vous indiquer qu'une sélection de site est nécessaire." },
+        { name: "Activation", description: "Une fois que vous avez cliqué sur 'Gérer le site' pour un de vos sites, les liens de gestion du site deviendront actifs et vous pourrez naviguer entre eux." },
       ],
     },
     {
