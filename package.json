@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.0.1",
+    "@hookform/resolvers": "^3.6.2",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -45,11 +45,11 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.511.0",
-    "next": "15.3.4",
+    "next": "14.2.5",
     "next-themes": "^0.4.6",
-    "react": "^19.0.0",
+    "react": "18.3.1",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^19.0.0",
+    "react-dom": "18.3.1",
     "react-hook-form": "^7.56.4",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^3.0.2",
@@ -62,13 +62,13 @@
   },
   "devDependencies": {
     "@dyad-sh/nextjs-webpack-component-tagger": "latest",
-    "@types/node": "latest",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "20.14.10",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.3.4"
+    "eslint-config-next": "14.2.5"
   }
 }

@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
     ],
   },
   typescript: {
-    // ignoreBuildErrors: true, // ✅ Désactivé pour réactiver la vérification des types
+    ignoreBuildErrors: false, // ✅ Réactivé pour réactiver la vérification des types
   },
   output: 'standalone', // ✅ Activé pour optimiser le déploiement Docker
 };
