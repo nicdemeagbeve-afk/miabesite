@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"; // Import Button for mobile tog
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
 import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile hook
 import { usePathname } from "next/navigation"; // Import usePathname
+import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -49,6 +50,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* You can add a dashboard title or logo here */}
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle /> {/* Add ThemeToggle here */}
             {/* Removed SupabaseStatusIndicator from here */}
           </div>
         </header>

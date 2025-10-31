@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react"; // Import Menu and X icons for mobile toggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
 import Image from "next/image"; // Import Image component
+import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -52,10 +53,12 @@ export function Header() {
               </div>
             </Button>
           </Link>
+          <ThemeToggle /> {/* Add ThemeToggle here */}
         </nav>
 
         {/* Mobile Menu */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2"> {/* Added flex and gap for mobile */}
+          <ThemeToggle /> {/* Add ThemeToggle here for mobile */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">

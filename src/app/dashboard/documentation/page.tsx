@@ -55,6 +55,13 @@ export default function DocumentationPage() {
         { name: "Visibilité des Sections", description: "Contrôlez la visibilité de chaque section majeure de votre site (Héro, À Propos, Produits & Services, Témoignages, Compétences, Contact)." },
       ],
     },
+    {
+      section: "Changement de Thème (Clair/Sombre)",
+      fields: [
+        { name: "Bouton de bascule de thème", description: "Un bouton (icône soleil/lune) est disponible dans l'en-tête de la page d'accueil et du tableau de bord. Cliquez dessus pour changer le thème de l'application entre le mode clair, le mode sombre ou le thème du système d'exploitation." },
+        { name: "Palette de couleurs", description: "La palette de couleurs de l'application a été mise à jour pour utiliser des nuances de bleu, de gris, de blanc et de violet, s'adaptant automatiquement au thème choisi." },
+      ],
+    },
   ];
 
   return (
