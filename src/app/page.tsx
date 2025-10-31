@@ -10,8 +10,14 @@ import { FAQSection } from "@/components/landing/FAQSection";
 import { Footer } from "@/components/landing/Footer";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 import { toast } from "sonner";
+import HomePageClient from "@/components/HomePageClient";
+
+// Ce composant s'affichera pendant que le contenu principal charge
+function LoadingFallback() {
+  return <div>Chargement de la page, veuillez patienter un peu...</div>;
+}
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -24,20 +30,22 @@ export default function Home() {
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1">
-        <HeroSection />
-        <StepsSection />
-        <FeaturesSection />
-        {/* AboutSection is now a dedicated page, removed from here */}
-        <ExamplesSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <PricingSection />
-        {/* CallToActionSection removed as requested */}
-      </main>
-      <Footer />
-    </div>
+    <Suspense fallback={<LoadingFallback />}>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">
+          <HeroSection />
+          <StepsSection />
+          <FeaturesSection />
+          {/* AboutSection is now a dedicated page, removed from here */}
+          <ExamplesSection />
+          <TestimonialsSection />
+          <FAQSection />
+          <PricingSection />
+          {/* CallToActionSection removed as requested */}
+        </main>
+        <Footer />
+      </div>
+    </Suspense>
   );
 }
