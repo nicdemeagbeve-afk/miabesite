@@ -10,7 +10,7 @@ export function CallToActionSection() {
   return (
     <section
       className="relative w-full py-12 md:py-24 lg:py-32 bg-cover bg-center text-primary-foreground px-4 overflow-hidden"
-      style={{ backgroundImage: `linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(var(--primary), 0.8)), url('https://picsum.photos/seed/cta-image/1200/800')` }}
+      style={{ backgroundImage: `linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(var(--primary), 0.8)), url('${getSupabaseStorageUrl("cta-image.png")}')` }}
     >
       <div className="container mx-auto text-center relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8">
         <div className="lg:w-1/2 space-y-6 text-center lg:text-left">

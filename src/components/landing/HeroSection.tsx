@@ -12,7 +12,7 @@ export function HeroSection() {
       {/* Background Video */}
       <video
         className="absolute inset-0 w-full h-full object-cover z-0"
-        src="https://assets.mixkit.co/videos/preview/mixkit-man-working-on-a-laptop-in-a-cafe-1241-large.mp4" // Utilisation d'une vidéo de placeholder plus fiable
+        src={getSupabaseStorageUrl("hero-video.mp4")} // Using Supabase storage URL
         autoPlay
         loop
         muted

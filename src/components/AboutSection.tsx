@@ -67,7 +67,7 @@ export function AboutSection() {
           </div>
           <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-xl">
             <Image
-              src="https://picsum.photos/seed/about-miabesite-hero/500/300" // Utilisation de picsum.photos
+              src={getSupabaseStorageUrl("about-miabesite-hero.png")} // Using Supabase storage URL
               alt="À propos de Miabesite"
               layout="fill"
               objectFit="cover"

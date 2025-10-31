@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Light Theme: Blue, Gray, White, Violet */
+    /* Light Theme: Futuristic Blue, Gray, White, Violet */
     --background: 0 0% 100%; /* White */
     --foreground: 210 10% 20%; /* Dark Grayish Blue */
 
@@ -16,13 +16,13 @@
     --popover: 0 0% 100%; /* White */
     --popover-foreground: 210 10% 20%; /* Dark Grayish Blue */
 
-    --primary: 210 90% 50%; /* Vibrant Blue */
+    --primary: 220 80% 55%; /* Futuristic Blue */
     --primary-foreground: 0 0% 98%; /* Off-white */
 
-    --secondary: 210 10% 90%; /* Light Grayish Blue */
+    --secondary: 210 15% 90%; /* Light Grayish Blue */
     --secondary-foreground: 210 10% 20%; /* Dark Grayish Blue */
 
-    --muted: 210 10% 95%; /* Very Light Grayish Blue */
+    --muted: 210 15% 95%; /* Very Light Grayish Blue */
     --muted-foreground: 210 10% 45%; /* Medium Grayish Blue */
 
     --accent: 270 70% 60%; /* Medium Violet */
@@ -31,11 +31,11 @@
     --destructive: 0 84.2% 60.2%; /* Red */
     --destructive-foreground: 0 0% 98%; /* Off-white */
 
-    --border: 210 10% 80%; /* Light Grayish Blue Border */
-    --input: 210 10% 80%; /* Light Grayish Blue Input */
-    --ring: 210 90% 50%; /* Vibrant Blue Ring */
+    --border: 210 15% 80%; /* Light Grayish Blue Border */
+    --input: 210 15% 80%; /* Light Grayish Blue Input */
+    --ring: 220 80% 55%; /* Futuristic Blue Ring */
 
-    --chart-1: 210 90% 50%; /* Blue */
+    --chart-1: 220 80% 55%; /* Blue */
     --chart-2: 270 70% 60%; /* Violet */
     --chart-3: 120 60% 40%; /* Green */
     --chart-4: 40 90% 60%; /* Orange */
@@ -45,16 +45,16 @@
 
     --sidebar-background: 0 0% 98%; /* Off-white */
     --sidebar-foreground: 210 10% 20%; /* Dark Grayish Blue */
-    --sidebar-primary: 210 90% 50%; /* Vibrant Blue */
+    --sidebar-primary: 220 80% 55%; /* Futuristic Blue */
     --sidebar-primary-foreground: 0 0% 98%; /* Off-white */
-    --sidebar-accent: 210 10% 90%; /* Light Grayish Blue */
+    --sidebar-accent: 210 15% 90%; /* Light Grayish Blue */
     --sidebar-accent-foreground: 210 10% 20%; /* Dark Grayish Blue */
-    --sidebar-border: 210 10% 80%; /* Light Grayish Blue Border */
-    --sidebar-ring: 210 90% 50%; /* Vibrant Blue Ring */
+    --sidebar-border: 210 15% 80%; /* Light Grayish Blue Border */
+    --sidebar-ring: 220 80% 55%; /* Futuristic Blue Ring */
   }
 
   .dark {
-    /* Dark Theme: Blue, Gray, White, Violet */
+    /* Dark Theme: Futuristic Blue, Gray, White, Violet */
     --background: 210 10% 10%; /* Very Dark Grayish Blue */
     --foreground: 0 0% 98%; /* Off-white */
 
@@ -64,13 +64,13 @@
     --popover: 210 10% 10%; /* Very Dark Grayish Blue */
     --popover-foreground: 0 0% 98%; /* Off-white */
 
-    --primary: 210 90% 60%; /* Lighter Vibrant Blue */
+    --primary: 220 80% 65%; /* Lighter Futuristic Blue */
     --primary-foreground: 210 10% 10%; /* Very Dark Grayish Blue */
 
-    --secondary: 210 10% 20%; /* Dark Grayish Blue */
+    --secondary: 210 15% 20%; /* Dark Grayish Blue */
     --secondary-foreground: 0 0% 98%; /* Off-white */
 
-    --muted: 210 10% 25%; /* Slightly Lighter Dark Grayish Blue */
+    --muted: 210 15% 25%; /* Slightly Lighter Dark Grayish Blue */
     --muted-foreground: 210 10% 70%; /* Light Grayish Blue */
 
     --accent: 270 70% 70%; /* Lighter Medium Violet */
@@ -79,11 +79,11 @@
     --destructive: 0 62.8% 30.6%; /* Dark Red */
     --destructive-foreground: 0 0% 98%; /* Off-white */
 
-    --border: 210 10% 25%; /* Dark Grayish Blue Border */
-    --input: 210 10% 25%; /* Dark Grayish Blue Input */
-    --ring: 210 90% 60%; /* Lighter Vibrant Blue Ring */
+    --border: 210 15% 25%; /* Dark Grayish Blue Border */
+    --input: 210 15% 25%; /* Dark Grayish Blue Input */
+    --ring: 220 80% 65%; /* Lighter Futuristic Blue Ring */
 
-    --chart-1: 210 90% 60%; /* Blue */
+    --chart-1: 220 80% 65%; /* Blue */
     --chart-2: 270 70% 70%; /* Violet */
     --chart-3: 120 60% 50%; /* Green */
     --chart-4: 40 90% 70%; /* Orange */
@@ -91,12 +91,12 @@
 
     --sidebar-background: 210 10% 10%; /* Very Dark Grayish Blue */
     --sidebar-foreground: 0 0% 98%; /* Off-white */
-    --sidebar-primary: 210 90% 60%; /* Lighter Vibrant Blue */
+    --sidebar-primary: 220 80% 65%; /* Lighter Futuristic Blue */
     --sidebar-primary-foreground: 210 10% 10%; /* Very Dark Grayish Blue */
-    --sidebar-accent: 210 10% 20%; /* Dark Grayish Blue */
+    --sidebar-accent: 210 15% 20%; /* Dark Grayish Blue */
     --sidebar-accent-foreground: 0 0% 98%; /* Off-white */
-    --sidebar-border: 210 10% 25%; /* Dark Grayish Blue Border */
-    --sidebar-ring: 210 90% 60%; /* Lighter Vibrant Blue Ring */
+    --sidebar-border: 210 15% 25%; /* Dark Grayish Blue Border */
+    --sidebar-ring: 220 80% 65%; /* Lighter Futuristic Blue Ring */
   }
 }
 
