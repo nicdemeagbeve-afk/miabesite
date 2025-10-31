@@ -1,56 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner"; // Import Toaster
-// Removed getSupabaseStorageUrl as it's no longer needed for these specific assets
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
-  title: {
-    default: "Miabesite - Créez votre site web en 5 minutes",
-    template: "%s | Miabesite",
-  },
-  description: "Créez votre site web professionnel gratuitement et automatiquement en moins de 5 minutes avec Miabesite. Idéal pour les petites entreprises et artisans en Afrique.",
-  keywords: ["création site web", "site internet gratuit", "site web Afrique", "e-commerce Afrique", "portfolio professionnel", "site artisan", "Miabesite"],
-  authors: [{ name: "Miabesite" }],
-  creator: "Miabesite",
-  publisher: "Miabesite",
-  openGraph: {
-    title: "Miabesite - Créez votre site web en 5 minutes",
-    description: "Créez votre site web professionnel gratuitement et automatiquement en moins de 5 minutes avec Miabesite. Idéal pour les petites entreprises et artisans en Afrique.",
-    url: "https://www.miabesite.com", // Replace with your actual domain
-    siteName: "Miabesite",
-    images: [
-      {
-        url: "/miabesite-logo.png", // ✅ Référence directe à l'asset local
-        width: 1200,
-        height: 630,
-        alt: "Miabesite - Création de site web rapide",
-      },
-    ],
-    locale: 'fr_FR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: "Miabesite - Créez votre site web en 5 minutes",
-    description: "Créez votre site web professionnel gratuitement et automatiquement en moins de 5 minutes avec Miabesite. Idéal pour les petites entreprises et artisans en Afrique.",
-    creator: '@Miabesite', // Replace with your Twitter handle
-    images: ["/miabesite-logo.png"], // ✅ Référence directe à l'asset local
-  },
-  icons: {
-    icon: "/favicon.ico", // ✅ Référence directe à l'asset local
-  },
-  metadataBase: new URL('https://www.miabesite.com'), // Replace with your actual domain
+  title: "Glowing Fox Scurry",
+  description: "An application built with Next.js",
 };
 
 export default function RootLayout({
@@ -59,15 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="relative min-h-screen">
-          {children}
-          <Toaster /> {/* Add Toaster here for global notifications */}
-        </div>
-      </body>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
     darkMode: ["class"],
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -87,10 +87,14 @@ export default {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
+  		},
+      fontFamily: {
+        sans: ["var(--font-geist-sans)"],
+        mono: ["var(--font-geist-mono)"],
+      },
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
   // Add safelist to ensure dynamic color classes are generated
   safelist: [
     {
@@ -107,4 +111,5 @@ export default {
       pattern: /border-(red|blue|green|yellow|black|purple|orange|gray)-(600|700|800|900)/,
     },
   ],
-} satisfies Config;
+};
+export default config;

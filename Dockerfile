@@ -9,11 +9,10 @@ WORKDIR /app
 # Cette étape garantit que si seul le code source change, 'pnpm install' n'est pas réexécuté.
 COPY package.json pnpm-lock.yaml ./
 
-# Installe les dépendances.
-# Nous utilisons 'pnpm install' sans '--frozen-lockfile' dans cette étape
-# pour lui permettre de mettre à jour le lockfile si package.json a changé.
-# C'est une stratégie courante pour les environnements CI/CD lorsque les désalignements de lockfile sont fréquents.
-RUN pnpm install
+# Installe les dépendances de manière déterministe en utilisant le lockfile.
+# Si package.json et pnpm-lock.yaml sont désynchronisés, cette commande échouera,
+# vous forçant à mettre à jour le lockfile localement.
+RUN pnpm install --frozen-lockfile
 
 # Copie le reste du code source de l'application
 COPY . .
