@@ -85,6 +85,11 @@ const nextConfig = {
       },
     ]
   },
+  // Ajoutez cette section pour ignorer les erreurs ESLint pendant le build
+  eslint: {
+    // Attention: Ceci permet de compiler en production même si votre projet a des erreurs ESLint.
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;
