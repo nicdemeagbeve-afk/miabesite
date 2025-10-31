@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useForm, ControllerRenderProps, FieldValues, SubmitHandler } from "react-hook-form";
+import { useForm, ControllerRenderProps, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -156,7 +156,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="firstName"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "firstName"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "firstName"> }) => (
                   <FormItem>
                     <FormLabel>Prénom</FormLabel>
                     <FormControl>
@@ -169,7 +169,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="lastName"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "lastName"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "lastName"> }) => (
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
                     <FormControl>
@@ -182,7 +182,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="dateOfBirth"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "dateOfBirth"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "dateOfBirth"> }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Date de naissance</FormLabel>
                     <Popover>
@@ -229,7 +229,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="phoneNumber"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "phoneNumber"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "phoneNumber"> }) => (
                   <PhoneInputWithCountryCode
                     name={field.name}
                     label="Numéro de Téléphone"
@@ -241,7 +241,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="expertise"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "expertise"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "expertise"> }) => (
                   <FormItem>
                     <FormLabel>Domaine d'expertise / Travail</FormLabel>
                     <FormControl>
@@ -254,7 +254,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "email"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "email"> }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
@@ -267,7 +267,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "password"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "password"> }) => (
                   <FormItem>
                     <FormLabel>Mot de passe</FormLabel>
                     <FormControl>
@@ -280,7 +280,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="confirmPassword"
-                render={({ field }: { field: ControllerRenderProps<SignupFormData, "confirmPassword"> }) => ( // Use SignupFormData
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "confirmPassword"> }) => (
                   <FormItem>
                     <FormLabel>Confirmer le mot de passe</FormLabel>
                     <FormControl>
