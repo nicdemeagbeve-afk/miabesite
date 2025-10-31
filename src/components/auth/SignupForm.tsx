@@ -40,8 +40,8 @@ const formSchema = z.object({
   lastName: z.string().min(2, { message: "Le nom est requis." }).max(50, { message: "Le nom ne peut pas dépasser 50 caractères." }),
   dateOfBirth: z.date()
     .max(new Date(), "La date de naissance ne peut pas être dans le futur.")
-    .nullable() // Allow null as a type
-    .refine((date) => date !== null, { // Make it logically required
+    .optional() // Allow undefined as a type
+    .refine((date) => date, { // Make it logically required
       message: "La date de naissance est requise.",
     }),
   phoneNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro de téléphone valide."),
@@ -64,7 +64,7 @@ export default function SignupPage() {
     defaultValues: {
       firstName: "",
       lastName: "",
-      dateOfBirth: null, // Changed to null
+      dateOfBirth: undefined, // Changed from null
       phoneNumber: "",
       expertise: "",
       email: "",
@@ -96,7 +96,7 @@ export default function SignupPage() {
     if (isValid(parsedDate) && value.length === 10) { // Only update form if valid and complete
       form.setValue("dateOfBirth", parsedDate, { shouldValidate: true });
     } else if (value === "") {
-      form.setValue("dateOfBirth", null, { shouldValidate: true }); // Changed to null
+      form.setValue("dateOfBirth", undefined, { shouldValidate: true });
     }
   };
 
@@ -205,7 +205,7 @@ export default function SignupPage() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value || undefined} // field.value is Date | null
+                          selected={field.value} // field.value is Date | undefined
                           onSelect={(date) => {
                             field.onChange(date);
                             if (date) {
