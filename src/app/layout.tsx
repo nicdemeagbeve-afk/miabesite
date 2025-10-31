@@ -4,8 +4,8 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Glowing Fox Scurry",
-  description: "An application built with Next.js",
+  title: "Miabesite | le site pour tous",
+  description: "Votre site web tout en main, en seulement 15 min, et 10 reponses, pour 0Fcfa",
 };
 
 export default function RootLayout({
