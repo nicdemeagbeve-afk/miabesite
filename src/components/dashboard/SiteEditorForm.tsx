@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { PlusCircle, XCircle, Image as ImageIcon, User, Quote, Briefcase, Globe, DollarSign, CheckCircle, LayoutTemplate, EyeOff, Phone, Mail, Facebook, Instagram, Linkedin, MapPin, Wrench, Star } from "lucide-react";
+import { PlusCircle, XCircle, Image as ImageIcon, User, Quote, Briefcase, Globe, DollarSign, CheckCircle, LayoutTemplate, EyeOff, Phone, Mail, Facebook, Instagram, Linkedin, MapPin, Wrench, Star, Hammer, PaintRoller, Palette, PencilRuler, StarHalf } from "lucide-react"; // Added all Lucide icons
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { SiteEditorFormData, siteEditorFormSchema } from "@/lib/schemas/site-editor-form-schema"; // Import schema and type
@@ -90,7 +90,18 @@ const skillIcons = [ // Example icons, can be expanded
   { value: "Briefcase", label: "Mallette" },
   { value: "Star", label: "Étoile" },
   { value: "CheckCircle", label: "Coche" },
+  { value: "Palette", label: "Palette (Art)" },
+  { value: "PencilRuler", label: "Règle et Crayon" },
+  { value: "StarHalf", label: "Demi-étoile" },
 ];
+
+// Helper to get Lucide icon component by name
+const getLucideIcon = (iconName: string) => {
+  const icons: { [key: string]: React.ElementType } = {
+    Wrench, Hammer, PaintRoller, Briefcase, Star, CheckCircle, Palette, PencilRuler, StarHalf
+  };
+  return icons[iconName] || Wrench; // Default to Wrench if not found
+};
 
 export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEditorFormProps) {
   const supabase = createClient();
@@ -486,6 +497,79 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
             </CardContent>
           </Card>
 
+          {/* Section: Compétences / Expertise */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Wrench className="h-5 w-5" /> Compétences / Expertise</CardTitle>
+              <CardDescription>Listez vos compétences ou domaines d'expertise (max 10).</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {skillFields.map((item: any, index: number) => (
+                <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
+                  <h4 className="text-lg font-semibold">Compétence {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeSkill(index)}
+                    className="absolute top-2 right-2 text-destructive hover:text-destructive/80"
+                  >
+                    <XCircle className="h-5 w-5" />
+                  </Button>
+                  <FormField
+                    control={control}
+                    name={`skills.${index}.title`}
+                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.title`> }) => (
+                      <FormItem>
+                        <FormLabel>Titre de la Compétence</FormLabel>
+                        <FormControl><Input placeholder="Ex: Plomberie, Développement Web" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`skills.${index}.description`}
+                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.description`> }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl><Textarea placeholder="Détaillez cette compétence." className="resize-y min-h-[60px]" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`skills.${index}.icon`}
+                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.icon`> }) => (
+                      <FormItem>
+                        <FormLabel>Icône (Nom Lucide React)</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Sélectionnez une icône" /></SelectTrigger></FormControl>
+                          <SelectContent>{skillIcons.map((icon) => (<SelectItem key={icon.value} value={icon.value}>{icon.label}</SelectItem>))}</SelectContent>
+                        </Select>
+                        <FormMessage />
+                        <p className="text-sm text-muted-foreground">
+                          Ex: Wrench, Hammer, PaintRoller. (Les icônes seront affichées si le template les supporte)
+                        </p>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
+              {skillFields.length < 10 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => appendSkill({ title: "", description: "", icon: undefined })}
+                  className="w-full"
+                >
+                  <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une compétence
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Section: Produits & Services */}
           <Card>
             <CardHeader>
@@ -706,79 +790,6 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                   className="w-full"
                 >
                   <PlusCircle className="mr-2 h-5 w-5" /> Ajouter un témoignage
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Section: Compétences / Expertise */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Wrench className="h-5 w-5" /> Compétences / Expertise</CardTitle>
-              <CardDescription>Listez vos compétences ou domaines d'expertise (max 6).</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {skillFields.map((item: any, index: number) => (
-                <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
-                  <h4 className="text-lg font-semibold">Compétence {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeSkill(index)}
-                    className="absolute top-2 right-2 text-destructive hover:text-destructive/80"
-                  >
-                    <XCircle className="h-5 w-5" />
-                  </Button>
-                  <FormField
-                    control={control}
-                    name={`skills.${index}.title`}
-                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.title`> }) => (
-                      <FormItem>
-                        <FormLabel>Titre de la Compétence</FormLabel>
-                        <FormControl><Input placeholder="Ex: Plomberie, Développement Web" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name={`skills.${index}.description`}
-                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.description`> }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="Détaillez cette compétence." className="resize-y min-h-[60px]" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name={`skills.${index}.icon`}
-                    render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.icon`> }) => (
-                      <FormItem>
-                        <FormLabel>Icône (Nom Lucide React)</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Sélectionnez une icône" /></SelectTrigger></FormControl>
-                          <SelectContent>{skillIcons.map((icon) => (<SelectItem key={icon.value} value={icon.value}>{icon.label}</SelectItem>))}</SelectContent>
-                        </Select>
-                        <FormMessage />
-                        <p className="text-sm text-muted-foreground">
-                          Ex: Wrench, Hammer, PaintRoller. (Les icônes seront affichées si le template les supporte)
-                        </p>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              ))}
-              {skillFields.length < 6 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => appendSkill({ title: "", description: "", icon: undefined })}
-                  className="w-full"
-                >
-                  <PlusCircle className="mr-2 h-5 w-5" /> Ajouter une compétence
                 </Button>
               )}
             </CardContent>

@@ -16,6 +16,7 @@ import { SiteEditorFormData } from "@/lib/schemas/site-editor-form-schema"; // I
 // Import new step components
 import { EssentialDesignStep } from "./steps/EssentialDesignStep";
 import { ContentStep } from "./steps/ContentStep";
+import { SkillsStep } from "./steps/SkillsStep"; // New step import
 import { ProductsServicesStep } from "./steps/ProductsServicesStep"; // New step import
 import { ConfigurationNetworkStep } from "./steps/ConfigurationNetworkStep";
 
@@ -56,6 +57,13 @@ const wizardFormSchema = z.object({
   aboutStory: z.string().min(50, { message: "Votre histoire/mission est requise et doit contenir au moins 50 caractères." }).max(500, { message: "Votre histoire/mission ne peut pas dépasser 500 caractères." }),
   heroBackgroundImage: z.any().optional(), // File object or URL string
 
+  // Nouvelle Étape: Compétences / Expertise
+  skills: z.array(z.object({
+    title: z.string().min(3, "Le titre de la compétence est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
+    description: z.string().min(10, "La description est requise.").max(200, "La description ne peut pas dépasser 200 caractères."),
+    icon: z.string().optional(), // Lucide icon name or similar
+  })).max(10, "Vous ne pouvez ajouter que 10 compétences maximum.").optional(), // Optional for wizard, updated max to 10
+
   // Nouvelle Étape: Produits & Services
   productsAndServices: z.array(z.object({
     title: z.string().min(3, "Le titre du produit/service est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
@@ -74,14 +82,7 @@ const wizardFormSchema = z.object({
     avatar: z.any().optional(), // File object or URL string
   })).max(5, "Vous ne pouvez ajouter que 5 témoignages maximum.").optional(), // Optional for wizard
 
-  // Skills/Expertise (New for wizard, but optional)
-  skills: z.array(z.object({
-    title: z.string().min(3, "Le titre de la compétence est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
-    description: z.string().min(10, "La description est requise.").max(200, "La description ne peut pas dépasser 200 caractères."),
-    icon: z.string().optional(), // Lucide icon name or similar
-  })).max(6, "Vous ne pouvez ajouter que 6 compétences maximum.").optional(), // Optional for wizard
-
-  // Étape 3 (maintenant Étape 4): Configuration et Réseaux
+  // Étape 3 (maintenant Étape 5): Configuration et Réseaux
   contactButtonAction: z.string().min(1, { message: "Veuillez sélectionner une action pour le bouton de contact." }),
   facebookLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
   instagramLink: z.string().url({ message: "Veuillez entrer un lien URL valide." }).optional().or(z.literal('')),
@@ -131,6 +132,10 @@ const contentStepSchema = z.object({
   heroBackgroundImage: wizardFormSchema.shape.heroBackgroundImage,
 });
 
+const skillsStepSchema = z.object({
+  skills: wizardFormSchema.shape.skills,
+});
+
 const productsServicesStepSchema = z.object({
   productsAndServices: wizardFormSchema.shape.productsAndServices,
 });
@@ -164,6 +169,12 @@ const steps: {
     title: "Contenu (Pages Clés)",
     component: ContentStep,
     schema: contentStepSchema,
+  },
+  {
+    id: "skills",
+    title: "Compétences / Expertise",
+    component: SkillsStep,
+    schema: skillsStepSchema,
   },
   {
     id: "productsServices",
@@ -236,10 +247,11 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     aboutStory: initialSiteData?.aboutStory || "",
     heroBackgroundImage: initialSiteData?.heroBackgroundImage || undefined,
 
+    skills: initialSiteData?.skills || [], // Initialize with an empty array
     productsAndServices: initialSiteData?.productsAndServices || [], // Initialize with an empty array, ProductsServicesStep will add one if needed
 
     testimonials: initialSiteData?.testimonials || [], // New field
-    skills: initialSiteData?.skills || [], // New field
+    
 
     contactButtonAction: initialSiteData?.contactButtonAction || "whatsapp", // Default to WhatsApp
     facebookLink: initialSiteData?.facebookLink || "",
@@ -459,7 +471,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
             template_type: data.templateType, // Update template type
           })
           .eq('id', initialSiteData.id)
-          .eq('user.id', user.id);
+          .eq('user_id', user.id); // Corrected to user_id
 
         if (updateError) {
           toast.error(`Erreur lors de la mise à jour du site: ${updateError.message}`);

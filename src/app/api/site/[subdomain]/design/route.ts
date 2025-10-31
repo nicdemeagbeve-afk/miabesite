@@ -14,9 +14,9 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { primaryColor, secondaryColor, showTestimonials } = await request.json();
+  const { primaryColor, secondaryColor, showTestimonials, showSkills } = await request.json();
 
-  if (!primaryColor && !secondaryColor && typeof showTestimonials !== 'boolean') {
+  if (!primaryColor && !secondaryColor && typeof showTestimonials !== 'boolean' && typeof showSkills !== 'boolean') {
     return NextResponse.json({ error: 'No design parameters provided for update.' }, { status: 400 });
   }
 
@@ -39,7 +39,13 @@ export async function PATCH(
 
     if (primaryColor) updatedSiteData.primaryColor = primaryColor;
     if (secondaryColor) updatedSiteData.secondaryColor = secondaryColor;
-    if (typeof showTestimonials === 'boolean') updatedSiteData.showTestimonials = showTestimonials;
+    
+    // Ensure sectionsVisibility object exists
+    updatedSiteData.sectionsVisibility = updatedSiteData.sectionsVisibility || {};
+
+    if (typeof showTestimonials === 'boolean') updatedSiteData.sectionsVisibility.showTestimonials = showTestimonials;
+    if (typeof showSkills === 'boolean') updatedSiteData.sectionsVisibility.showSkills = showSkills;
+
 
     const { data, error: updateError } = await supabase
       .from('sites')

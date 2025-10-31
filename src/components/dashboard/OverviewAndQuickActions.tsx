@@ -26,7 +26,7 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
   const siteStatus = siteData.status;
   // Construct dynamic URL using the new path-based routing
   const siteUrl = `${window.location.origin}/sites/${siteData.subdomain}`;
-  const recentViews = 37; // Placeholder for recent views
+  // Removed recentViews variable as requested.
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(siteUrl);
@@ -74,11 +74,7 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
           </div>
         </div>
 
-        {/* Vues Récentes (Optionnel) */}
-        <div>
-          <p className="text-lg font-semibold">Vues Récentes (7 derniers jours) :</p>
-          <p className="text-2xl font-bold text-primary">{recentViews} visites</p>
-        </div>
+        {/* Removed Vues Récentes (Optionnel) section as requested */}
 
         {/* Bouton d'Action Primaire */}
         <Button size="lg" className="w-full" onClick={handleViewSite}>

@@ -44,7 +44,7 @@ export const siteEditorFormSchema = z.object({
     title: z.string().min(3, "Le titre de la compétence est requis.").max(50, "Le titre ne peut pas dépasser 50 caractères."),
     description: z.string().min(10, "La description est requise.").max(200, "La description ne peut pas dépasser 200 caractères."),
     icon: z.string().optional(), // Lucide icon name or similar
-  })).max(6, "Vous ne pouvez ajouter que 6 compétences maximum."), // Max 6 skills
+  })).max(10, "Vous ne pouvez ajouter que 10 compétences maximum."), // Max 10 skills
 
   // Social Media & Contact
   contactButtonAction: z.string().min(1, "Veuillez sélectionner une action pour le bouton de contact."),

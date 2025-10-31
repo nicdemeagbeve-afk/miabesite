@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch"; // Import Switch
 
 export function ConfigurationNetworkStep() {
   const { control } = useFormContext();
@@ -240,6 +241,70 @@ export function ConfigurationNetworkStep() {
                 Cochez si un acompte est nécessaire pour les commandes/services.
               </p>
             </div>
+          </FormItem>
+        )}
+      />
+
+      <Separator className="my-8" />
+
+      <h4 className="text-xl font-semibold text-center">Visibilité des Sections</h4>
+      <FormField
+        control={control}
+        name="sectionsVisibility.showHero"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showHero"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section Héro</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="sectionsVisibility.showAbout"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showAbout"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section "À Propos"</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="sectionsVisibility.showProductsServices"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showProductsServices"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section "Produits & Services"</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="sectionsVisibility.showTestimonials"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showTestimonials"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section "Témoignages"</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="sectionsVisibility.showSkills"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showSkills"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section "Compétences"</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="sectionsVisibility.showContact"
+        render={({ field }: { field: ControllerRenderProps<FieldValues, "sectionsVisibility.showContact"> }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <FormLabel>Afficher la Section "Contact"</FormLabel>
+            <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
           </FormItem>
         )}
       />

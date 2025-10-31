@@ -35,6 +35,14 @@ export default function DocumentationPage() {
       ],
     },
     {
+      section: "Compétences / Expertise (Optionnel)",
+      fields: [
+        { name: "Titre de la Compétence", description: "Le nom d'une de vos compétences ou d'un domaine où vous excellez (ex: Plomberie, Développement Web)." },
+        { name: "Description", description: "Expliquez brièvement ce que cette compétence implique ou ce que vous proposez dans ce domaine." },
+        { name: "Icône (Nom Lucide React)", description: "Choisissez une petite image (icône) pour illustrer visuellement cette compétence. (Ex: Wrench, Hammer). Jusqu'à 10 compétences." },
+      ],
+    },
+    {
       section: "Produits & Services",
       fields: [
         { name: "Titre du Produit/Service", description: "Le nom de ce que vous vendez ou proposez (ex: Formation Digitale Débutant, Réparation de Téléphone)." },
@@ -43,6 +51,15 @@ export default function DocumentationPage() {
         { name: "Description Détaillée", description: "Expliquez ce qui est inclus dans votre offre, sa durée, ou ses avantages. Soyez clair et concis." },
         { name: "Image du Produit/Service (Optionnel)", description: "Une photo qui met en valeur votre produit ou service." },
         { name: "Bouton d'Action", description: "Ce que le visiteur peut faire : acheter, demander un devis, réserver, ou simplement vous contacter." },
+      ],
+    },
+    {
+      section: "Témoignages (Optionnel)",
+      fields: [
+        { name: "Auteur", description: "Le nom de la personne qui a laissé le témoignage." },
+        { name: "Témoignage", description: "Le message de satisfaction de votre client. C'est une preuve de votre bon travail." },
+        { name: "Localisation", description: "D'où vient le client qui a laissé le témoignage." },
+        { name: "Avatar de l'auteur (Optionnel)", description: "Une photo de profil du client pour rendre le témoignage plus authentique." },
       ],
     },
     {
@@ -56,23 +73,6 @@ export default function DocumentationPage() {
         { name: "Modes de Paiement Acceptés", description: "Les différentes façons dont vos clients peuvent vous payer (cash, mobile money, virement bancaire, etc.)." },
         { name: "Livraison / Déplacement", description: "Comment vos produits sont livrés ou si vous vous déplacez pour vos services (local, national, international, etc.)." },
         { name: "Acompte requis ?", description: "Cochez si vous demandez un acompte avant de commencer un service ou d'envoyer une commande." },
-      ],
-    },
-    {
-      section: "Témoignages (Optionnel)",
-      fields: [
-        { name: "Auteur", description: "Le nom de la personne qui a laissé le témoignage." },
-        { name: "Témoignage", description: "Le message de satisfaction de votre client. C'est une preuve de votre bon travail." },
-        { name: "Localisation", description: "D'où vient le client qui a laissé le témoignage." },
-        { name: "Avatar de l'auteur (Optionnel)", description: "Une photo de profil du client pour rendre le témoignage plus authentique." },
-      ],
-    },
-    {
-      section: "Compétences / Expertise (Optionnel)",
-      fields: [
-        { name: "Titre de la Compétence", description: "Le nom d'une de vos compétences ou d'un domaine où vous excellez (ex: Plomberie, Développement Web)." },
-        { name: "Description", description: "Expliquez brièvement ce que cette compétence implique ou ce que vous proposez dans ce domaine." },
-        { name: "Icône (Nom Lucide React)", description: "Choisissez une petite image (icône) pour illustrer visuellement cette compétence. (Ex: Wrench, Hammer)." },
       ],
     },
     {

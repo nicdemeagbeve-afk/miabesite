@@ -30,6 +30,7 @@ interface ContentModificationProps {
   initialPrimaryColor: string;
   initialSecondaryColor: string;
   initialShowTestimonials: boolean;
+  initialShowSkills: boolean; // New prop
 }
 
 export function ContentModification({
@@ -38,6 +39,7 @@ export function ContentModification({
   initialPrimaryColor,
   initialSecondaryColor,
   initialShowTestimonials,
+  initialShowSkills, // Use new prop
 }: ContentModificationProps) {
   const supabase = createClient();
   const router = useRouter();
@@ -47,6 +49,7 @@ export function ContentModification({
   const [secondaryColor, setSecondaryColor] = React.useState(initialSecondaryColor);
   const [fontFamily, setFontFamily] = React.useState("sans"); // This is a placeholder, not yet connected to backend
   const [showTestimonials, setShowTestimonials] = React.useState(initialShowTestimonials);
+  const [showSkills, setShowSkills] = React.useState(initialShowSkills); // New state for skills visibility
   const [isUpdating, setIsUpdating] = React.useState(false);
 
   const predefinedColors = [
@@ -95,7 +98,7 @@ export function ContentModification({
       }
       toast.success("Template mis à jour avec succès !");
 
-      // Update other design settings (colors, showTestimonials)
+      // Update other design settings (colors, showTestimonials, showSkills)
       const designResponse = await fetch(`/api/site/${subdomain}/design`, {
         method: 'PATCH',
         headers: {
@@ -105,6 +108,7 @@ export function ContentModification({
           primaryColor: primaryColor,
           secondaryColor: secondaryColor,
           showTestimonials: showTestimonials,
+          showSkills: showSkills, // Include new state
           // fontFamily: fontFamily, // Placeholder, not implemented in backend yet
         }),
       });
@@ -275,6 +279,19 @@ export function ContentModification({
                       id="show-testimonials"
                       checked={showTestimonials}
                       onCheckedChange={setShowTestimonials}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="show-skills">Afficher la section Compétences</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Contrôlez la visibilité de la section des compétences.
+                      </p>
+                    </div>
+                    <Switch
+                      id="show-skills"
+                      checked={showSkills}
+                      onCheckedChange={setShowSkills}
                     />
                   </div>
                 </div>

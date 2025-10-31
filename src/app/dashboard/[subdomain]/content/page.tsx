@@ -61,6 +61,7 @@ export default async function DashboardContentPage({ params }: PageProps) {
   const initialPrimaryColor = initialSiteData.primaryColor;
   const initialSecondaryColor = initialSiteData.secondaryColor;
   const initialShowTestimonials = typeof initialSiteData.sectionsVisibility?.showTestimonials === 'boolean' ? initialSiteData.sectionsVisibility.showTestimonials : true;
+  const initialShowSkills = typeof initialSiteData.sectionsVisibility?.showSkills === 'boolean' ? initialSiteData.sectionsVisibility.showSkills : true;
 
 
   return (
@@ -73,6 +74,7 @@ export default async function DashboardContentPage({ params }: PageProps) {
           initialPrimaryColor={initialPrimaryColor}
           initialSecondaryColor={initialSecondaryColor}
           initialShowTestimonials={initialShowTestimonials}
+          initialShowSkills={initialShowSkills}
         />
       </div>
     </div>

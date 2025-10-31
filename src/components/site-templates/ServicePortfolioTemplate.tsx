@@ -162,6 +162,8 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         { quote: "Intervention rapide et efficace pour réparer une fuite d'eau. Prix raisonnable et travail soigné. Je ne vais plus chercher ailleurs pour mes travaux de réparation.", author: "Fatou Sarr", location: siteData.businessLocation || "Guédiawaye", avatar: "https://randomuser.me/api/portraits/women/67.jpg" },
       ];
 
+  const skillsToDisplay = siteData.skills || [];
+
   const paymentMethods = siteData.paymentMethods && siteData.paymentMethods.length > 0
     ? siteData.paymentMethods
     : ["Mobile Money", "Cash", "Virement", "Wave"];
@@ -202,7 +204,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Compétences</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors text-sm">Contact</a>} {/* Adjusted text size for mobile */}
             </div>
             <button className="md:hidden text-xl text-gray-700" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}> {/* Adjusted text size for mobile */}
@@ -221,7 +223,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
               {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
                 <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Témoignages</a>
               )}
-              {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>} {/* Adjusted text size for mobile */}
+              {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#skills" onClick={(e) => handleSmoothScroll(e, '#skills')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>} {/* Adjusted text size for mobile */}
               {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Contact</a>} {/* Adjusted text size for mobile */}
             </nav>
           </div>
@@ -340,12 +342,12 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         </section>
       )}
 
-      {sectionsVisibility.showSkills && siteData.skills && siteData.skills.length > 0 && (
+      {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && (
         <section id="skills" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted grid and gap for mobile */}
-              {siteData.skills.map((skill, index) => {
+              {skillsToDisplay.map((skill, index) => {
                 const IconComponent = skill.icon ? getLucideIcon(skill.icon) : Wrench;
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3"> {/* Adjusted padding for mobile */}
@@ -485,84 +487,30 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
 
       {/* Footer */}
       <footer id="contact" className={cn("py-12 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
-        <div className="container mx-auto"> {/* Removed px-4 md:px-6, using container mx-auto */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-12"> {/* Adjusted gap and mb for mobile */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
-                {siteData.publicName}
-              </h3>
-              <p className="text-gray-300 text-sm">Artisan passionné avec plus de 10 ans d'expérience dans la rénovation, la réparation et les finitions. Engagement qualité et satisfaction client garantis.</p> {/* Adjusted text size for mobile */}
-              <div className="flex gap-3 mt-4"> {/* Adjusted gap for mobile */}
-                {siteData.facebookLink && (
-                  <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
-                    <Facebook className="h-5 w-5" /> {/* Adjusted size for mobile */}
-                  </a>
-                )}
-                {siteData.instagramLink && (
-                  <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
-                    <Instagram className="h-5 w-5" /> {/* Adjusted size for mobile */}
-                  </a>
-                )}
-                {siteData.whatsappNumber && (
-                  <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
-                    <MessageSquare className="h-5 w-5" /> {/* Adjusted size for mobile */}
-                  </a>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
-                Contact
-              </h3>
-              <div className="space-y-3 text-gray-300 text-sm"> {/* Adjusted space-y and text size for mobile */}
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
-                    <Phone className="h-4 w-4" /> {/* Adjusted size for mobile */}
-                  </div>
-                  <p>{siteData.secondaryPhoneNumber || siteData.whatsappNumber}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
-                    <MessageSquare className="h-4 w-4" /> {/* Adjusted size for mobile */}
-                  </div>
-                  <p>{siteData.whatsappNumber}</p>
-                </div>
-                {siteData.email && (
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
-                      <Mail className="h-4 w-4" /> {/* Adjusted size for mobile */}
-                    </div>
-                    <p>{siteData.email || `contact@${subdomain}.com`}</p>
-                  </div>
-                )}
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"> {/* Adjusted size for mobile */}
-                    <MapPin className="h-4 w-4" /> {/* Adjusted size for mobile */}
-                  </div>
-                  <p>{siteData.businessLocation || "Dakar, Sénégal"}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold mb-4 relative pb-2 after:absolute after:bottom-0 after:left-0 after:w-10 after:h-0.5 after:rounded-full after:bg-blue-500"> {/* Adjusted width for mobile */}
-                Modes de paiement
-              </h3>
-              <p className="text-gray-300 text-sm">Nous acceptons les paiements suivants :</p> {/* Adjusted text size for mobile */}
-              <div className="flex flex-wrap gap-2 mt-4"> {/* Adjusted gap for mobile */}
-                {paymentMethods.map((method: string, index: number) => (
-                  <span key={index} className="bg-white text-gray-800 px-2.5 py-1 rounded-md text-xs font-semibold"> {/* Adjusted padding and text size for mobile */}
-                    {method}
-                  </span>
-                ))}
-              </div>
-            </div>
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
+          <div className="text-center sm:text-left">
+            <Link href="/" className="font-bold text-lg"> {/* Adjusted text size for mobile */}
+              {siteData.publicName}
+            </Link>
+            <p className="text-xs text-gray-300 mt-2"> {/* Ensured text-xs for smaller screens */}
+              {siteData.heroSlogan}
+            </p>
           </div>
-
-          <div className="text-center pt-6 border-t border-white/10 opacity-70"> {/* Adjusted padding for mobile */}
-            <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.</p> {/* Adjusted text size for mobile */}
+          <div className="flex gap-4">
+            {siteData.facebookLink && (
+              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
+                <Facebook className="h-5 w-5" /> {/* Adjusted size for mobile */}
+              </a>
+            )}
+            {siteData.instagramLink && (
+              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
+                <Instagram className="h-5 w-5" /> {/* Adjusted size for mobile */}
+              </a>
+            )}
           </div>
+        </div>
+        <div className="container px-4 md:px-6 text-center text-xs text-gray-400 mt-6">
+          © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
         </div>
       </footer>
 
