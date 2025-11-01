@@ -34,6 +34,7 @@ import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
+import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "Le prénom est requis." }).max(50, { message: "Le prénom ne peut pas dépasser 50 caractères." }),
@@ -49,6 +50,9 @@ const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "Vous devez accepter les conditions générales d'utilisation et la politique de confidentialité.",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
   path: ["confirmPassword"],
@@ -70,6 +74,7 @@ export default function SignupPage() {
       email: "",
       password: "",
       confirmPassword: "",
+      termsAccepted: false, // Default to false
     },
   });
 
@@ -328,6 +333,34 @@ export default function SignupPage() {
                       <Input type="password" placeholder="********" {...field} />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="termsAccepted"
+                render={({ field }: { field: ControllerRenderProps<SignupFormData, "termsAccepted"> }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        J'accepte les{" "}
+                        <Link href="/legal" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                          Conditions Générales d'Utilisation
+                        </Link>{" "}
+                        et la{" "}
+                        <Link href="/legal" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                          Politique de Confidentialité
+                        </Link>
+                        .
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />

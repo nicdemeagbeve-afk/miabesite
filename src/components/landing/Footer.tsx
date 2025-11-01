@@ -20,11 +20,8 @@ export function Footer() {
           <Link href="/about" className="hover:text-primary transition-colors">
             À propos
           </Link>
-          <Link href="#legal" className="hover:text-primary transition-colors">
-            Mentions légales
-          </Link>
-          <Link href="#privacy" className="hover:text-primary transition-colors">
-            Politique de confidentialité
+          <Link href="/legal" className="hover:text-primary transition-colors">
+            Légal & Confidentialité
           </Link>
         </nav>
       </div>
