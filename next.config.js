@@ -92,11 +92,12 @@ const nextConfig = {
   },
 };
 
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development', // Disable PWA in development
-});
+// const withPWA = require('next-pwa')({
+//   dest: 'public',
+//   register: true,
+//   skipWaiting: true,
+//   disable: process.env.NODE_ENV === 'development', // Disable PWA in development
+// });
 
-module.exports = withPWA(nextConfig);
+// module.exports = withPWA(nextConfig);
+module.exports = nextConfig; // Export nextConfig directly
