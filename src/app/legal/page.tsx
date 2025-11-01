@@ -30,13 +30,13 @@ export default function LegalPage() {
               <p><strong>Fondateur :</strong> Nicodème Ayao AGBEVE</p>
               <p><strong>Statut :</strong> Étudiant Autodidacte en Développement Web et Gestion de Projet</p>
               <p><strong>Nationalité :</strong> Togolais</p>
-              <p><strong>Contact :</strong> contact@miabesite.com</p>
+              <p><strong>Contact :</strong> contact@miabesite.site</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">2. Hébergement</h3>
-              <p><strong>Hébergeur :</strong> Vercel Inc.</p>
-              <p><strong>Adresse :</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
-              <p><strong>Site Web :</strong> <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://vercel.com</a></p>
+              <p><strong>Hébergeur :</strong> Cooliy (Contabo VPS)</p>
+              <p><strong>Adresse :</strong> [Votre adresse physique ou celle de Cooliy si applicable]</p>
+              <p><strong>Site Web :</strong> <a href="https://cooliy.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://cooliy.com</a></p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">3. Propriété Intellectuelle</h3>
@@ -94,7 +94,7 @@ export default function LegalPage() {
               <p>Vos données peuvent être partagées avec :</p>
               <ul className="list-disc list-inside ml-4 space-y-1">
                 <li>Les équipes internes de Miabesite.</li>
-                <li>Nos sous-traitants techniques (ex: Supabase pour la base de données et l'authentification, Vercel pour l'hébergement).</li>
+                <li>Nos sous-traitants techniques (ex: Supabase pour la base de données et l'authentification, Cooliy pour l'hébergement).</li>
                 <li>Des outils d'analyse d'audience (si utilisés, avec anonymisation).</li>
               </ul>
               <p>Nous nous assurons que nos partenaires respectent le RGPD.</p>
@@ -111,7 +111,7 @@ export default function LegalPage() {
                 <li><strong>Droit à la portabilité :</strong> Recevoir vos données dans un format structuré et les transmettre à un autre responsable de traitement.</li>
                 <li><strong>Droit de retirer votre consentement :</strong> À tout moment, sans affecter la licéité du traitement basé sur le consentement effectué avant ce retrait.</li>
               </ul>
-              <p>Pour exercer ces droits, veuillez nous contacter à contact@miabesite.com.</p>
+              <p>Pour exercer ces droits, veuillez nous contacter à contact@miabesite.site.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">6. Durée de Conservation</h3>
@@ -125,7 +125,7 @@ export default function LegalPage() {
               <h3 className="text-lg font-semibold text-foreground">8. Contact DPO</h3>
               <p>Pour toute question relative à la protection de vos données, vous pouvez contacter notre Délégué à la Protection des Données (DPO) :</p>
               <p><strong>Nicodème Ayao AGBEVE</strong></p>
-              <p><strong>Email :</strong> contact@miabesite.com</p>
+              <p><strong>Email :</strong> contact@miabesite.site</p>
             </div>
           </CardContent>
         </Card>
