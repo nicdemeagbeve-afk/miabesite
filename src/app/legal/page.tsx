@@ -35,7 +35,7 @@ export default function LegalPage() {
             <div>
               <h3 className="text-lg font-semibold text-foreground">2. Hébergement</h3>
               <p><strong>Hébergeur :</strong> Cooliy (Contabo VPS)</p>
-              <p><strong>Adresse :</strong> [Votre adresse physique ou celle de Cooliy si applicable]</p>
+              <p><strong>Adresse :</strong> coolify.miabesite.site</p>
               <p><strong>Site Web :</strong> <a href="https://cooliy.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://cooliy.com</a></p>
             </div>
             <div>
