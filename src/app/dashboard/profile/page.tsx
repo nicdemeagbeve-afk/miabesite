@@ -18,7 +18,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, parse, isValid } from "date-fns"; // Added parse and isValid
+import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -62,6 +62,7 @@ export default function ProfilePage() {
   const supabase = createClient();
   const router = useRouter();
   const [user, setUser] = React.useState<any>(null);
+  const [profileData, setProfileData] = React.useState<any>(null); // State for profile table data
   const [loading, setLoading] = React.useState(true);
   const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
 
@@ -77,66 +78,65 @@ export default function ProfilePage() {
     return dob && isValid(dob) ? format(dob, "yyyy/MM/dd") : "";
   });
 
-  React.useEffect(() => {
-    async function fetchUserProfile() {
-      setLoading(true);
-      const { data: { user: currentUser }, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error fetching user:", error);
-        toast.error("Erreur lors du chargement du profil.");
-        router.push("/login");
+  const fetchUserProfile = React.useCallback(async () => {
+    setLoading(true);
+    const { data: { user: currentUser }, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+      toast.error("Erreur lors du chargement du profil.");
+      router.push("/login");
+      return;
+    }
+    if (currentUser) {
+      setUser(currentUser);
+
+      // Fetch data from the new 'profiles' table
+      const { data: fetchedProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profileError) {
+        console.error("Error fetching profile data:", profileError);
+        toast.error("Erreur lors du chargement des données du profil.");
+        setLoading(false);
         return;
       }
-      if (currentUser) {
-        setUser(currentUser);
-        const userMetadata = currentUser.user_metadata;
-        const fetchedDateOfBirth = userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null;
-        form.reset({
-          fullName: userMetadata?.full_name || "",
-          email: currentUser.email || "",
-          whatsappNumber: userMetadata?.whatsapp_number || "",
-          secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
-          dateOfBirth: fetchedDateOfBirth,
-          newPassword: "",
-          confirmNewPassword: "",
-          profilePicture: undefined,
-          expertise: userMetadata?.expertise || "",
-        });
-        setAvatarPreview(userMetadata?.avatar_url || null);
-        if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
-          setDateInput(format(fetchedDateOfBirth, "yyyy/MM/dd"));
-        } else {
-          setDateInput("");
-        }
+
+      setProfileData(fetchedProfile);
+
+      const fetchedDateOfBirth = fetchedProfile?.date_of_birth ? new Date(fetchedProfile.date_of_birth) : null;
+      form.reset({
+        fullName: fetchedProfile?.full_name || "",
+        email: currentUser.email || "",
+        whatsappNumber: fetchedProfile?.whatsapp_number || "",
+        secondaryPhoneNumber: fetchedProfile?.secondary_phone_number || "",
+        dateOfBirth: fetchedDateOfBirth,
+        newPassword: "",
+        confirmNewPassword: "",
+        profilePicture: undefined,
+        expertise: fetchedProfile?.expertise || "",
+      });
+      setAvatarPreview(fetchedProfile?.avatar_url || null);
+      if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
+        setDateInput(format(fetchedDateOfBirth, "yyyy/MM/dd"));
+      } else {
+        setDateInput("");
       }
-      setLoading(false);
     }
+    setLoading(false);
+  }, [supabase, router, form]);
+
+  React.useEffect(() => {
     fetchUserProfile();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        setUser(session?.user || null);
-        const userMetadata = session?.user?.user_metadata;
-        const sessionDateOfBirth = userMetadata?.date_of_birth ? new Date(userMetadata.date_of_birth) : null;
-        form.reset({
-          fullName: userMetadata?.full_name || "",
-          email: session?.user?.email || "",
-          whatsappNumber: userMetadata?.whatsapp_number || "",
-          secondaryPhoneNumber: userMetadata?.secondary_phone_number || "",
-          dateOfBirth: sessionDateOfBirth,
-          newPassword: "",
-          confirmNewPassword: "",
-          profilePicture: undefined,
-          expertise: userMetadata?.expertise || "",
-        });
-        setAvatarPreview(userMetadata?.avatar_url || null);
-        if (sessionDateOfBirth && isValid(sessionDateOfBirth)) {
-          setDateInput(format(sessionDateOfBirth, "yyyy/MM/dd"));
-        } else {
-          setDateInput("");
-        }
+        fetchUserProfile();
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
+        setProfileData(null);
         form.reset(emptyDefaultValues);
         setAvatarPreview(null);
         setDateInput("");
@@ -146,7 +146,7 @@ export default function ProfilePage() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase, router, form]);
+  }, [supabase, router, form, fetchUserProfile]);
 
   // Synchronize dateInput with form.watch("dateOfBirth")
   React.useEffect(() => {
@@ -177,24 +177,24 @@ export default function ProfilePage() {
       if (file.size > 2 * 1024 * 1024) { // Max 2MB
         toast.error("La photo de profil est trop grande (max 2MB).");
         form.setValue("profilePicture", undefined);
-        setAvatarPreview(user?.user_metadata?.avatar_url || null);
+        setAvatarPreview(profileData?.avatar_url || null);
         return;
       }
       form.setValue("profilePicture", file);
       setAvatarPreview(URL.createObjectURL(file));
     } else {
       form.setValue("profilePicture", undefined);
-      setAvatarPreview(user?.user_metadata?.avatar_url || null);
+      setAvatarPreview(profileData?.avatar_url || null);
     }
   };
 
   const onSubmit = async (values: ProfileFormData) => {
-    if (!user) {
-      toast.error("Utilisateur non authentifié.");
+    if (!user || !profileData) {
+      toast.error("Utilisateur non authentifié ou données de profil manquantes.");
       return;
     }
 
-    let avatarUrl = user.user_metadata?.avatar_url || null;
+    let avatarUrl = profileData.avatar_url || null;
 
     // 1. Handle profile picture upload
     if (values.profilePicture instanceof File) {
@@ -218,31 +218,32 @@ export default function ProfilePage() {
       avatarUrl = publicUrlData.publicUrl;
     }
 
-    // 2. Update user metadata
-    const updates: { [key: string]: any } = {};
-    if (values.fullName !== user.user_metadata?.full_name) updates.full_name = values.fullName;
-    if (values.whatsappNumber !== user.user_metadata?.whatsapp_number) updates.whatsapp_number = values.whatsappNumber;
-    if (values.secondaryPhoneNumber !== user.user_metadata?.secondary_phone_number) updates.secondary_phone_number = values.secondaryPhoneNumber;
-    if (avatarUrl !== user.user_metadata?.avatar_url) updates.avatar_url = avatarUrl;
-    if (values.expertise !== user.user_metadata?.expertise) updates.expertise = values.expertise;
-    if (values.dateOfBirth && values.dateOfBirth.toISOString().split('T')[0] !== user.user_metadata?.date_of_birth) {
-      updates.date_of_birth = values.dateOfBirth.toISOString().split('T')[0];
-    } else if (values.dateOfBirth === null && user.user_metadata?.date_of_birth) {
-      updates.date_of_birth = null; // Clear date of birth if set to null
+    // 2. Update 'profiles' table
+    const profileUpdates: { [key: string]: any } = {};
+    if (values.fullName !== profileData.full_name) profileUpdates.full_name = values.fullName;
+    if (values.whatsappNumber !== profileData.whatsapp_number) profileUpdates.whatsapp_number = values.whatsappNumber;
+    if (values.secondaryPhoneNumber !== profileData.secondary_phone_number) profileUpdates.secondary_phone_number = values.secondaryPhoneNumber;
+    if (avatarUrl !== profileData.avatar_url) profileUpdates.avatar_url = avatarUrl;
+    if (values.expertise !== profileData.expertise) profileUpdates.expertise = values.expertise;
+    if (values.dateOfBirth && values.dateOfBirth.toISOString().split('T')[0] !== profileData.date_of_birth) {
+      profileUpdates.date_of_birth = values.dateOfBirth.toISOString().split('T')[0];
+    } else if (values.dateOfBirth === null && profileData.date_of_birth) {
+      profileUpdates.date_of_birth = null; // Clear date of birth if set to null
     }
 
+    if (Object.keys(profileUpdates).length > 0) {
+      const { error: updateProfileError } = await supabase
+        .from('profiles')
+        .update(profileUpdates)
+        .eq('id', user.id);
 
-    if (Object.keys(updates).length > 0) {
-      const { error: updateMetadataError } = await supabase.auth.updateUser({
-        data: updates,
-      });
-      if (updateMetadataError) {
-        toast.error(`Erreur lors de la mise à jour du profil: ${updateMetadataError.message}`);
+      if (updateProfileError) {
+        toast.error(`Erreur lors de la mise à jour du profil: ${updateProfileError.message}`);
         return;
       }
     }
 
-    // 3. Update email
+    // 3. Update email (in auth.users table)
     if (values.email && values.email !== user.email) {
       const { error: updateEmailError } = await supabase.auth.updateUser({
         email: values.email,
@@ -254,7 +255,7 @@ export default function ProfilePage() {
       toast.info("Un email de confirmation a été envoyé à votre nouvelle adresse.");
     }
 
-    // 4. Update password
+    // 4. Update password (in auth.users table)
     if (values.newPassword) {
       const { error: updatePasswordError } = await supabase.auth.updateUser({
         password: values.newPassword,
@@ -308,7 +309,7 @@ export default function ProfilePage() {
                       <AvatarImage src={avatarPreview} alt="Profile Picture" />
                     ) : (
                       <AvatarFallback className="text-4xl">
-                        {getInitials(user?.user_metadata?.full_name || user?.email)}
+                        {getInitials(profileData?.full_name || user?.email)}
                       </AvatarFallback>
                     )}
                   </Avatar>
@@ -497,12 +498,12 @@ export default function ProfilePage() {
             <h3 className="text-xl font-semibold mb-4">Gestion des Sites</h3>
             <div className="space-y-4">
               <Button asChild variant="outline" className="w-full justify-start">
-                <Link href={`/dashboard/${user?.user_metadata?.subdomain || 'sites'}/advanced`}>
+                <Link href={`/dashboard/${profileData?.subdomain || 'sites'}/advanced`}>
                   <Globe className="mr-2 h-5 w-5" /> Gérer les domaines personnalisés
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-start">
-                <Link href={`/dashboard/${user?.user_metadata?.subdomain || 'sites'}/advanced`}>
+                <Link href={`/dashboard/${profileData?.subdomain || 'sites'}/advanced`}>
                   <Upload className="mr-2 h-5 w-5" /> Exporter le code source (ZIP)
                 </Link>
               </Button>

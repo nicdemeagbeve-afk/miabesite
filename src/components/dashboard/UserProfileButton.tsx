@@ -17,32 +17,48 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
   const [userEmail, setUserEmail] = React.useState<string | null>(null);
   const [userAvatarUrl, setUserAvatarUrl] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    async function fetchUserProfile() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error fetching user:", error);
-        // No toast here, as it might be expected if not logged in
-        return;
-      }
-      if (user) {
-        setUserName(user.user_metadata?.full_name || user.email || null);
-        setUserEmail(user.email || null);
-        setUserAvatarUrl(user.user_metadata?.avatar_url || null);
-      } else {
-        setUserName(null);
-        setUserEmail(null);
-        setUserAvatarUrl(null);
-      }
+  const fetchUserProfile = React.useCallback(async () => {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+      setUserName(null);
+      setUserEmail(null);
+      setUserAvatarUrl(null);
+      return;
     }
+    if (user) {
+      // Fetch additional profile data from the 'profiles' table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error("Error fetching profile data:", profileError);
+        // Fallback to auth.user.email if profile data is not available
+        setUserName(user.email || null);
+        setUserEmail(user.email || null);
+        setUserAvatarUrl(null);
+      } else {
+        setUserName(profile?.full_name || user.email || null);
+        setUserEmail(user.email || null);
+        setUserAvatarUrl(profile?.avatar_url || null);
+      }
+    } else {
+      setUserName(null);
+      setUserEmail(null);
+      setUserAvatarUrl(null);
+    }
+  }, [supabase]);
+
+  React.useEffect(() => {
     fetchUserProfile();
 
     // Listen for auth state changes to update profile info
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        setUserName(session?.user?.user_metadata?.full_name || session?.user?.email || null);
-        setUserEmail(session?.user?.email || null);
-        setUserAvatarUrl(session?.user?.user_metadata?.avatar_url || null);
+        fetchUserProfile();
       } else if (event === 'SIGNED_OUT') {
         setUserName(null);
         setUserEmail(null);
@@ -53,7 +69,7 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, fetchUserProfile]);
 
   const getInitials = (nameOrEmail: string | null) => {
     if (!nameOrEmail) return "U";

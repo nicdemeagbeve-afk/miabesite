@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { createClient } from "./supabase/client"; // Import client-side Supabase for utility
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -26,3 +27,31 @@ export const getSupabaseStorageUrl = (path: string) => {
   // Pour les assets statiques globaux, on suppose 'static-assets'
   return `${baseUrl}/storage/v1/object/public/static-assets/${path}`;
 };
+
+/**
+ * Génère un code de parrainage unique à 5 chiffres.
+ * @param supabase L'instance du client Supabase.
+ * @returns Une promesse qui se résout avec un code de parrainage unique.
+ */
+export async function generateUniqueReferralCode(supabase: ReturnType<typeof createClient>): Promise<string> {
+  let code: string = ''; // Initialized to prevent TS2454 error
+  let isUnique = false;
+  while (!isUnique) {
+    code = Math.floor(10000 + Math.random() * 90000).toString(); // 5-digit number
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('referral_code')
+      .eq('referral_code', code)
+      .single();
+
+    if (error && error.code === 'PGRST116') { // No rows found, code is unique
+      isUnique = true;
+    } else if (data) {
+      // Code exists, regenerate
+    } else if (error) {
+      console.error("Error checking referral code uniqueness:", error);
+      throw new Error("Failed to generate unique referral code.");
+    }
+  }
+  return code;
+}

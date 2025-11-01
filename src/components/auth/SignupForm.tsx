@@ -33,7 +33,7 @@ import { CalendarIcon } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "Le prénom est requis." }).max(50, { message: "Le prénom ne peut pas dépasser 50 caractères." }),
@@ -102,27 +102,68 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<SignupFormData> = async (values) => { // Explicitly type onSubmit
     const { email, password, firstName, lastName, dateOfBirth, phoneNumber, expertise } = values;
-    const { error } = await supabase.auth.signUp({
+    
+    // 1. Sign up the user with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback`,
+        // We will store profile data in the new 'profiles' table, not user_metadata directly
+        // Keeping these for backward compatibility if other parts of the app still rely on them
         data: {
           full_name: `${firstName} ${lastName}`,
           first_name: firstName,
           last_name: lastName,
-          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Format YYYY-MM-DD (dateOfBirth is guaranteed to be Date if validation passes)
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0],
           phone_number: phoneNumber,
           expertise: expertise,
         },
       },
     });
 
-    if (error) {
-      toast.error(error.message);
+    if (authError) {
+      toast.error(authError.message);
       form.setValue("password", "");
       form.setValue("confirmPassword", "");
-    } else {
+      return;
+    }
+
+    if (authData.user) {
+      // 2. Generate a unique referral code
+      let referralCode: string | null = null;
+      try {
+        referralCode = await generateUniqueReferralCode(supabase);
+      } catch (codeError: any) {
+        console.error("Failed to generate referral code:", codeError);
+        toast.error(`Erreur lors de la génération du code de parrainage: ${codeError.message}`);
+        // Continue without referral code if generation fails, or handle as critical error
+      }
+
+      // 3. Insert user profile into the new 'profiles' table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          full_name: `${firstName} ${lastName}`,
+          first_name: firstName,
+          last_name: lastName,
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0],
+          phone_number: phoneNumber,
+          whatsapp_number: phoneNumber, // Assuming primary phone is whatsapp for now
+          expertise: expertise,
+          referral_code: referralCode,
+          coin_points: 0,
+          referral_count: 0,
+        });
+
+      if (profileError) {
+        console.error("Error inserting profile:", profileError);
+        toast.error(`Erreur lors de la création du profil: ${profileError.message}`);
+        // Consider rolling back auth.signUp if profile creation is critical
+        return;
+      }
+
       toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
       router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     }

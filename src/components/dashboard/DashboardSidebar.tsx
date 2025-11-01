@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen } from "lucide-react";
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift } from "lucide-react"; // Import Gift icon
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -28,6 +28,11 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       href: "/dashboard/profile",
       icon: <User className="h-5 w-5" />,
       label: "Profil & Paramètres",
+    },
+    {
+      href: "/dashboard/referral", // New referral page link
+      icon: <Gift className="h-5 w-5" />,
+      label: "Parrainage",
     },
     {
       href: "/dashboard/documentation",
