@@ -76,3 +76,6 @@ export const siteEditorFormSchema = z.object({
 });
 
 export type SiteEditorFormData = z.infer<typeof siteEditorFormSchema>;
+export type ProductAndService = z.infer<typeof siteEditorFormSchema>['productsAndServices'][number];
+export type Testimonial = z.infer<typeof siteEditorFormSchema>['testimonials'][number];
+export type Skill = z.infer<typeof siteEditorFormSchema>['skills'][number];

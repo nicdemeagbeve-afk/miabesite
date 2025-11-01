@@ -20,16 +20,16 @@ import {
   DialogTrigger,
   DialogFooter
 } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
+import { useForm, ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
-  Form, // Added import
-  FormControl, // Added import
-  FormField, // Added import
-  FormItem, // Added import
-  FormLabel, // Added import
-  FormMessage, // Added import
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 
 
@@ -243,12 +243,12 @@ export default function CommunitiesPage() {
                           </DialogDescription>
                         </DialogHeader>
                         <Form {...joinForm}>
-                          <form onSubmit={joinForm.handleSubmit((data) => handleJoinCommunity(community.id, community.is_public, data.joinCode))}>
+                          <form onSubmit={joinForm.handleSubmit((data: z.infer<typeof joinCommunitySchema>) => handleJoinCommunity(community.id, community.is_public, data.joinCode))}>
                             {!community.is_public && (
                               <FormField
                                 control={joinForm.control}
                                 name="joinCode"
-                                render={({ field }) => (
+                                render={({ field }: { field: ControllerRenderProps<z.infer<typeof joinCommunitySchema>, "joinCode"> }) => (
                                   <FormItem className="mb-4">
                                     <FormLabel>Code de Jointure</FormLabel>
                                     <FormControl>

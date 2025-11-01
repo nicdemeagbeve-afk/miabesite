@@ -100,7 +100,7 @@ export default function VerifyEmailClient() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-center">
-                <InputOTP maxLength={6} value={code} onChange={(value) => setCode(value)}>
+                <InputOTP maxLength={6} value={code} onChange={(value: string) => setCode(value)}>
                     <InputOTPGroup>
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />

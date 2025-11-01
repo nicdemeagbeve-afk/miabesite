@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { PlusCircle, XCircle, Image as ImageIcon, User, Quote, Briefcase, Globe, DollarSign, CheckCircle, LayoutTemplate, EyeOff, Phone, Mail, Facebook, Instagram, Linkedin, MapPin, Wrench, Star, Hammer, PaintRoller, Palette, PencilRuler, StarHalf } from "lucide-react"; // Added all Lucide icons
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { SiteEditorFormData, siteEditorFormSchema } from "@/lib/schemas/site-editor-form-schema"; // Import schema and type
+import { SiteEditorFormData, siteEditorFormSchema, ProductAndService, Testimonial, Skill } from "@/lib/schemas/site-editor-form-schema"; // Import schema and type, and new types
 import Image from "next/image"; // Import Next.js Image component
 
 interface SiteEditorFormProps {
@@ -137,19 +137,19 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
     formState: { isSubmitting, errors },
   } = form;
 
+  const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({
+    control: control as any,
+    name: "skills",
+  });
+
   const { fields: productFields, append: appendProduct, remove: removeProduct } = useFieldArray({
-    control: control as any, // Cast to any to resolve TS2322
+    control: control as any,
     name: "productsAndServices",
   });
 
   const { fields: testimonialFields, append: appendTestimonial, remove: removeTestimonial } = useFieldArray({
-    control: control as any, // Cast to any to resolve TS2322
+    control: control as any,
     name: "testimonials",
-  });
-
-  const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({
-    control: control as any, // Cast to any to resolve TS2322
-    name: "skills",
   });
 
   const maxFileSizeMB = 2; // Max 2MB for images
@@ -245,11 +245,11 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
         ...data,
         logoOrPhoto: updatedLogoOrPhotoUrl,
         heroBackgroundImage: updatedHeroBackgroundImageUrl,
-        productsAndServices: data.productsAndServices.map((product, index) => ({
+        productsAndServices: data.productsAndServices.map((product, index) => ({ // Removed explicit type here
           ...product,
           image: updatedProductImages[index] !== undefined ? updatedProductImages[index] : product.image,
         })),
-        testimonials: data.testimonials.map((testimonial, index) => ({
+        testimonials: data.testimonials.map((testimonial, index) => ({ // Removed explicit type here
           ...testimonial,
           avatar: updatedTestimonialAvatars[index] !== undefined ? updatedTestimonialAvatars[index] : testimonial.avatar,
         })),
@@ -286,7 +286,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
           {/* Section: Informations de Base & Branding */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Informations de Base & Branding</CardTitle>
+              <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Informations Personnelles</CardTitle>
               <CardDescription>Mettez à jour les informations essentielles de votre entreprise et son identité visuelle.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -504,7 +504,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Listez vos compétences ou domaines d'expertise (max 10).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {skillFields.map((item: any, index: number) => (
+              {skillFields.map((item, index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Compétence {index + 1}</h4>
                   <Button
@@ -577,7 +577,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Gérez les produits ou services que vous proposez (max 5).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {productFields.map((item: any, index: number) => (
+              {productFields.map((item, index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Offre {index + 1}</h4>
                   <Button
@@ -709,7 +709,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
               <CardDescription>Ajoutez les témoignages de vos clients (max 5).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {testimonialFields.map((item: any, index: number) => (
+              {testimonialFields.map((item, index: number) => (
                 <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
                   <h4 className="text-lg font-semibold">Témoignage {index + 1}</h4>
                   <Button
@@ -893,7 +893,7 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                                 <FormControl>
                                   <Switch
                                     checked={field.value?.includes(method.id)}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={(checked: boolean) => {
                                       const currentMethods = field.value || [];
                                       if (checked && currentMethods.length >= 5) {
                                         toast.error("Vous ne pouvez sélectionner que 5 modes de paiement maximum.");

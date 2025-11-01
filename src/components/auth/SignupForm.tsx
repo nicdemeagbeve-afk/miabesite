@@ -247,7 +247,7 @@ export default function SignupPage() {
                         <Calendar
                           mode="single"
                           selected={field.value} // field.value is Date | undefined
-                          onSelect={(date) => {
+                          onSelect={(date: Date | undefined) => {
                             field.onChange(date);
                             if (date) {
                               setDateInput(format(date, "yyyy/MM/dd"));
@@ -255,7 +255,7 @@ export default function SignupPage() {
                               setDateInput("");
                             }
                           }}
-                          disabled={(date) =>
+                          disabled={(date: Date) =>
                             date > new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
