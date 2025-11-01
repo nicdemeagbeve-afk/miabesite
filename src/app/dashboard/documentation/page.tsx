@@ -14,7 +14,10 @@ export default function DocumentationPage() {
       section: "Navigation du Tableau de Bord",
       fields: [
         { name: "Mes Sites", description: "Affiche la liste de tous vos sites web. C'est le point de départ pour gérer vos projets." },
-        { name: "Profil & Paramètres", description: "Mettez à jour vos informations personnelles, votre mot de passe et d'autres paramètres de votre compte." },
+        { name: "Profil & Paramètres", description: "Mettez à jour vos informations personnelles (nom, prénom, date de naissance, expertise), votre mot de passe, votre photo de profil et d'autres paramètres de votre compte." },
+        { name: "Parrainage", description: "Accédez à votre code de parrainage unique, suivez le nombre d'amis parrainés, gérez vos pièces et appliquez des codes de parrainage." },
+        { name: "Toutes les Communautés", description: "Découvrez et rejoignez des communautés d'utilisateurs, ou explorez celles que vous avez créées." },
+        { name: "Créer une Communauté", description: "Lancez l'assistant de création pour démarrer votre propre communauté (nécessite 1000 pièces)." },
         { name: "Documentation", description: "La page que vous lisez actuellement, expliquant les fonctionnalités du tableau de bord." },
         { name: "Support WhatsApp", description: "Un lien direct pour contacter notre équipe de support via WhatsApp." },
         { name: "Créer un site", description: "Lancez l'assistant de création pour démarrer un nouveau site web." },
@@ -31,7 +34,7 @@ export default function DocumentationPage() {
     {
       section: "Options de Design Avancées (dans 'Gestion Avancée')",
       fields: [
-        { name: "Changer de Template", description: "Sélectionnez un nouveau modèle de design pour votre site. Cela peut modifier l'agencement et le style général." },
+        { name: "Changer de Template", description: "Sélectionnez un nouveau modèle de design pour votre site. Cela peut modifier l'agencement et le style général. Notez que le template ne peut être changé qu'une seule fois après la création initiale." },
         { name: "Couleur Principale", description: "Définissez la couleur dominante de votre site, utilisée pour les titres, boutons principaux, etc." },
         { name: "Couleur Secondaire", description: "Choisissez une couleur complémentaire pour les accents, les arrière-plans secondaires, etc." },
         { name: "Police de Caractères", description: "Sélectionnez la police de texte de votre site. (Fonctionnalité en cours de développement)." },
@@ -42,14 +45,53 @@ export default function DocumentationPage() {
     {
       section: "Éditeur Avancé (page dédiée)",
       fields: [
-        { name: "Informations de Base & Branding", description: "Mettez à jour le nom public, les numéros de contact, l'e-mail, les couleurs, le logo et la localisation de votre entreprise." },
+        { name: "Informations Personnelles", description: "Mettez à jour votre prénom, nom, domaine d'expertise, nom public, numéros de contact, e-mail, couleurs, logo et localisation de votre entreprise." },
         { name: "Section Héro", description: "Personnalisez le slogan accrocheur, votre histoire/mission et l'image de fond de la bannière principale." },
         { name: "Compétences / Expertise", description: "Ajoutez, modifiez ou supprimez jusqu'à 10 compétences avec titre, description et icône." },
         { name: "Produits & Services", description: "Gérez jusqu'à 5 de vos offres avec titre, prix, devise, description, image et bouton d'action." },
         { name: "Témoignages", description: "Ajoutez, modifiez ou supprimez jusqu'à 5 témoignages de clients avec auteur, localisation, citation et avatar." },
         { name: "Réseaux Sociaux & Contact", description: "Configurez l'action du bouton de contact principal, la visibilité du formulaire de contact et vos liens Facebook, Instagram, LinkedIn." },
-        { name: "Conditions de Paiement & Livraison", description: "Définissez les modes de paiement acceptés, les options de livraison/déplacement et si un acompte est requis." },
+        { name: "Conditions de Paiement & Livraison", description: "Définissez les modes de paiement acceptés (jusqu'à 5), les options de livraison/déplacement et si un acompte est requis." },
         { name: "Visibilité des Sections", description: "Contrôlez la visibilité de chaque section majeure de votre site (Héro, À Propos, Produits & Services, Témoignages, Compétences, Contact)." },
+      ],
+    },
+    {
+      section: "Programme de Parrainage",
+      fields: [
+        { name: "Votre Code de Parrainage", description: "Un code unique à 5 chiffres que vous pouvez partager avec vos amis. Chaque parrainage réussi vous rapporte des pièces." },
+        { name: "Amis Parrainés", description: "Suivez le nombre d'utilisateurs qui se sont inscrits en utilisant votre code." },
+        { name: "Vos Pièces", description: "Accumulez des pièces en parrainant des amis. Vous gagnez 10 pièces pour chaque tranche de 2 parrainages. Ces pièces pourront être utilisées pour des fonctionnalités premium ou retirées à l'avenir." },
+        { name: "Appliquer un Code de Parrainage", description: "Si un ami vous a parrainé, entrez son code pour lier vos comptes. Vous ne pouvez être parrainé qu'une seule fois." },
+        { name: "Transférer des Pièces", description: "Envoyez vos pièces à un autre utilisateur en utilisant son code de parrainage." },
+        { name: "Créer votre Communauté", description: "Atteignez 1000 pièces pour débloquer la possibilité de créer votre propre communauté." },
+      ],
+    },
+    {
+      section: "Gestion des Communautés",
+      fields: [
+        { name: "Créer une Communauté", description: "Définissez le nom, les objectifs, la catégorie et choisissez deux templates premium que les membres pourront utiliser. Vous pouvez la rendre publique ou privée (avec un code de jointure)." },
+        { name: "Rejoindre une Communauté", description: "Rejoignez des communautés publiques directement ou des communautés privées avec un code de jointure. Chaque communauté a une limite de 100 membres." },
+        { name: "Toutes les Communautés", description: "Parcourez les communautés existantes, recherchez par nom ou filtrez par catégorie." },
+      ],
+    },
+    {
+      section: "Tableau de Bord Administrateur (Accès Restreint)",
+      fields: [
+        { name: "Vue d'Ensemble", description: "Accédez à des statistiques globales sur les utilisateurs, les communautés (publiques/privées) et l'utilisation des templates sur la plateforme." },
+        { name: "Gérer les Admins", description: "En tant que Super Admin, vous pouvez ajouter de nouveaux administrateurs en utilisant leur code de parrainage et rétrograder les administrateurs existants." },
+        { name: "Gestion des Pièces", description: "Transférez des pièces aux utilisateurs (les administrateurs ont un solde illimité) et consultez l'historique détaillé de toutes les transactions de pièces." },
+      ],
+    },
+    {
+      section: "Notifications Push",
+      fields: [
+        { name: "Activer/Désactiver les Notifications", description: "Un bouton (icône de cloche) est disponible en bas à gauche de la page d'accueil. Cliquez dessus pour activer ou désactiver les notifications push et recevoir des mises à jour importantes de Miabesite." },
+      ],
+    },
+    {
+      section: "Bannière de Consentement aux Cookies",
+      fields: [
+        { name: "Gestion des Cookies", description: "Une bannière apparaît en bas de l'écran lors de votre première visite pour vous informer de l'utilisation des cookies. Vous pouvez accepter ou refuser, conformément à notre Politique de Confidentialité." },
       ],
     },
     {
@@ -68,7 +110,7 @@ export default function DocumentationPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Comprendre votre Tableau de Bord Miabesite</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Ce guide vous aidera à naviguer et à utiliser toutes les fonctionnalités de votre tableau de bord pour gérer vos sites web efficacement.
+            Ce guide vous aidera à naviguer et à utiliser toutes les fonctionnalités de votre tableau de bord pour gérer vos sites web et interagir avec la plateforme efficacement.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
