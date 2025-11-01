@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Header } from "@/components/landing/Header"; // Import Header
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
 import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Import CookieConsentBanner
+import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
 
 export const metadata: Metadata = {
   title: "Miabesite | le site pour tous",
@@ -34,6 +35,9 @@ export default function RootLayout({
           {children}
           <Toaster /> {/* Render Toaster globally */}
           <CookieConsentBanner /> {/* Render CookieConsentBanner globally */}
+          <div className="fixed bottom-6 left-6 z-50">
+            <PushNotificationInitializer /> {/* Add the initializer here */}
+          </div>
         </ThemeProvider>
       </body>
     </html>
