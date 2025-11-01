@@ -55,3 +55,31 @@ export async function generateUniqueReferralCode(supabase: ReturnType<typeof cre
   }
   return code;
 }
+
+/**
+ * Génère un code de jointure unique à 6 chiffres pour une communauté.
+ * @param supabase L'instance du client Supabase.
+ * @returns Une promesse qui se résout avec un code de jointure unique.
+ */
+export async function generateUniqueCommunityJoinCode(supabase: ReturnType<typeof createClient>): Promise<string> {
+  let code: string = '';
+  let isUnique = false;
+  while (!isUnique) {
+    code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit number
+    const { data, error } = await supabase
+      .from('communities')
+      .select('join_code')
+      .eq('join_code', code)
+      .single();
+
+    if (error && error.code === 'PGRST116') { // No rows found, code is unique
+      isUnique = true;
+    } else if (data) {
+      // Code exists, regenerate
+    } else if (error) {
+      console.error("Error checking community join code uniqueness:", error);
+      throw new Error("Failed to generate unique community join code.");
+    }
+  }
+  return code;
+}

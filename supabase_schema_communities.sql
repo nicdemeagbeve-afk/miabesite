@@ -6,13 +6,20 @@ CREATE TABLE public.communities (
   objectives text,
   template_1 text NOT NULL,
   template_2 text NOT NULL,
-  category text NOT NULL
+  category text NOT NULL,
+  is_public boolean DEFAULT TRUE NOT NULL, -- New: true for public, false for private
+  join_code character varying(6) UNIQUE -- New: 6-digit code for private communities
 );
 
 ALTER TABLE public.communities ENABLE ROW LEVEL SECURITY;
 
+-- Policy for community owners to manage their communities
 CREATE POLICY "Community owners can view and manage their communities." ON public.communities
   FOR ALL USING (auth.uid() = owner_id) WITH CHECK (auth.uid() = owner_id);
 
-CREATE POLICY "Authenticated users can view all communities (optional, adjust as needed)." ON public.communities
-  FOR SELECT USING (auth.role() = 'authenticated');
+-- Policy for authenticated users to view public communities
+CREATE POLICY "Authenticated users can view public communities." ON public.communities
+  FOR SELECT USING (is_public = TRUE);
+
+-- Policy for authenticated users to view communities they are members of (will be handled by community_members table)
+-- This policy will be refined once community_members is in place.

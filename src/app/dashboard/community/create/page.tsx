@@ -13,8 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Loader2, Users, LayoutTemplate, Tag } from "lucide-react";
+import { Loader2, Users, LayoutTemplate, Tag, Lock, Globe } from "lucide-react"; // Added Lock and Globe icons
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch"; // Import Switch component
+import { generateUniqueCommunityJoinCode } from "@/lib/utils"; // Import new utility
 
 const COMMUNITY_UNLOCK_POINTS = 1000;
 
@@ -25,6 +27,7 @@ const communityFormSchema = z.object({
   template_1: z.string().min(1, "Veuillez choisir le premier template premium."),
   template_2: z.string().min(1, "Veuillez choisir le deuxième template premium."),
   category: z.string().min(1, "Veuillez choisir une catégorie pour votre communauté."),
+  is_public: z.boolean().default(true), // New: Public/Private toggle
 }).refine(data => data.template_1 !== data.template_2, {
   message: "Les deux templates choisis doivent être différents.",
   path: ["template_2"],
@@ -59,6 +62,7 @@ export default function CreateCommunityPage() {
   const [loading, setLoading] = React.useState(true);
   const [hasEnoughPoints, setHasEnoughPoints] = React.useState(false);
   const [userCoinPoints, setUserCoinPoints] = React.useState(0);
+  const [generatedJoinCode, setGeneratedJoinCode] = React.useState<string | null>(null);
 
   const form = useForm<CommunityFormData>({
     resolver: zodResolver(communityFormSchema),
@@ -68,8 +72,11 @@ export default function CreateCommunityPage() {
       template_1: "",
       template_2: "",
       category: "",
+      is_public: true, // Default to public
     },
   });
+
+  const isPublic = form.watch("is_public");
 
   const fetchUserPoints = React.useCallback(async () => {
     setLoading(true);
@@ -110,11 +117,24 @@ export default function CreateCommunityPage() {
       return;
     }
 
+    let finalJoinCode: string | null = null;
+    if (!values.is_public) {
+      // Generate join code only if community is private
+      try {
+        finalJoinCode = await generateUniqueCommunityJoinCode(supabase);
+        setGeneratedJoinCode(finalJoinCode); // Store for display after creation
+      } catch (codeError: any) {
+        console.error("Failed to generate community join code:", codeError);
+        toast.error(`Erreur lors de la génération du code de jointure: ${codeError.message}`);
+        return;
+      }
+    }
+
     try {
       const response = await fetch('/api/community/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, join_code: finalJoinCode }), // Pass join_code to API
       });
       const result = await response.json();
 
@@ -285,6 +305,30 @@ export default function CreateCommunityPage() {
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="is_public"
+                render={({ field }: { field: ControllerRenderProps<CommunityFormData, "is_public"> }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel className="flex items-center gap-1">
+                        {field.value ? <Globe className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                        Communauté Publique
+                      </FormLabel>
+                      <CardDescription>
+                        Si activé, tout le monde peut la voir et la rejoindre. Sinon, un code de jointure sera requis.
+                      </CardDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

@@ -11,6 +11,8 @@ const communityFormSchema = z.object({
   template_1: z.string().min(1, "Veuillez choisir le premier template premium."),
   template_2: z.string().min(1, "Veuillez choisir le deuxième template premium."),
   category: z.string().min(1, "Veuillez choisir une catégorie pour votre communauté."),
+  is_public: z.boolean().default(true), // New: Public/Private toggle
+  join_code: z.string().length(6, "Le code de jointure doit contenir 6 chiffres.").optional().nullable(), // New: Optional join code
 }).refine(data => data.template_1 !== data.template_2, {
   message: "Les deux templates choisis doivent être différents.",
   path: ["template_2"],
@@ -61,6 +63,8 @@ export async function POST(request: Request) {
         template_1: communityData.template_1,
         template_2: communityData.template_2,
         category: communityData.category,
+        is_public: communityData.is_public,
+        join_code: communityData.join_code, // Insert the generated join code
       })
       .select()
       .single();
@@ -68,6 +72,20 @@ export async function POST(request: Request) {
     if (insertError) {
       console.error("Error inserting new community:", insertError);
       return NextResponse.json({ error: insertError.message || 'Erreur lors de la création de la communauté.' }, { status: 500 });
+    }
+
+    // 3. Add the owner as the first member of the community
+    const { error: memberInsertError } = await supabase
+      .from('community_members')
+      .insert({
+        community_id: newCommunity.id,
+        user_id: user.id,
+      });
+
+    if (memberInsertError) {
+      console.error("Error adding owner as community member:", memberInsertError);
+      // This is a critical error, consider rolling back community creation or logging for manual fix
+      return NextResponse.json({ error: memberInsertError.message || 'Erreur lors de l\'ajout du propriétaire comme membre de la communauté.' }, { status: 500 });
     }
 
     return NextResponse.json({ message: 'Communauté créée avec succès !', communityId: newCommunity.id }, { status: 201 });
