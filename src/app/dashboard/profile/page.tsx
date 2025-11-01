@@ -85,12 +85,15 @@ export default function ProfilePage() {
       console.error("Error fetching user:", error);
       toast.error("Erreur lors du chargement du profil.");
       router.push("/login");
+      setLoading(false); // Ensure loading is set to false on error
       return;
     }
     if (currentUser) {
       setUser(currentUser);
 
-      // Try to fetch data from the new 'profiles' table
+      let currentProfile = null;
+
+      // Try to fetch data from the 'profiles' table
       const { data: fetchedProfile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -133,7 +136,7 @@ export default function ProfilePage() {
           setLoading(false);
           return;
         }
-        setProfileData(newProfile);
+        currentProfile = newProfile;
         toast.success("Votre profil a été créé avec succès !");
       } else if (profileError) {
         console.error("Error fetching profile data:", profileError);
@@ -141,10 +144,12 @@ export default function ProfilePage() {
         setLoading(false);
         return;
       } else {
-        setProfileData(fetchedProfile);
+        currentProfile = fetchedProfile;
       }
 
-      const currentProfile = fetchedProfile || profileData; // Use fetched or newly created profile
+      setProfileData(currentProfile); // Set the state with the fetched or newly created profile
+      setAvatarPreview(currentProfile?.avatar_url || null);
+
       const fetchedDateOfBirth = currentProfile?.date_of_birth ? new Date(currentProfile.date_of_birth) : null;
       form.reset({
         fullName: currentProfile?.full_name || "",
@@ -157,15 +162,22 @@ export default function ProfilePage() {
         profilePicture: undefined,
         expertise: currentProfile?.expertise || "",
       });
-      setAvatarPreview(currentProfile?.avatar_url || null);
+      
       if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
         setDateInput(format(fetchedDateOfBirth, "yyyy/MM/dd"));
       } else {
         setDateInput("");
       }
+    } else {
+      // If no user, reset everything
+      setUser(null);
+      setProfileData(null);
+      form.reset(emptyDefaultValues);
+      setAvatarPreview(null);
+      setDateInput("");
     }
     setLoading(false);
-  }, [supabase, router, form, profileData]); // Added profileData to dependencies
+  }, [supabase, router, form]); // Removed profileData from dependencies
 
   React.useEffect(() => {
     fetchUserProfile();
@@ -174,6 +186,8 @@ export default function ProfilePage() {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         fetchUserProfile();
       } else if (event === 'SIGNED_OUT') {
+        // This case is now handled within fetchUserProfile if currentUser is null
+        // but keeping it here for explicit clarity if needed elsewhere.
         setUser(null);
         setProfileData(null);
         form.reset(emptyDefaultValues);
@@ -185,7 +199,7 @@ export default function ProfilePage() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase, router, form, fetchUserProfile]);
+  }, [supabase, fetchUserProfile]); // Removed profileData from dependencies
 
   // Synchronize dateInput with form.watch("dateOfBirth")
   React.useEffect(() => {
@@ -242,7 +256,7 @@ export default function ProfilePage() {
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('profile-pictures')
         .upload(filePath, file, {
           cacheControl: '3600',
