@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis.").optional().or(z.literal('')),
@@ -90,35 +90,74 @@ export default function ProfilePage() {
     if (currentUser) {
       setUser(currentUser);
 
-      // Fetch data from the new 'profiles' table
+      // Try to fetch data from the new 'profiles' table
       const { data: fetchedProfile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', currentUser.id)
         .single();
 
-      if (profileError) {
+      if (profileError && profileError.code === 'PGRST116') { // PGRST116 means "no rows found"
+        console.warn("No profile found for user, creating one...");
+        // If no profile exists, create one
+        let referralCode: string | null = null;
+        try {
+          referralCode = await generateUniqueReferralCode(supabase);
+        } catch (codeError: any) {
+          console.error("Failed to generate referral code for existing user:", codeError);
+          toast.error(`Erreur lors de la génération du code de parrainage: ${codeError.message}`);
+        }
+
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: currentUser.id,
+            full_name: currentUser.user_metadata?.full_name || currentUser.email,
+            first_name: currentUser.user_metadata?.first_name || '',
+            last_name: currentUser.user_metadata?.last_name || '',
+            date_of_birth: currentUser.user_metadata?.date_of_birth || null,
+            phone_number: currentUser.user_metadata?.phone_number || '',
+            whatsapp_number: currentUser.user_metadata?.phone_number || '', // Default to phone_number
+            expertise: currentUser.user_metadata?.expertise || '',
+            avatar_url: currentUser.user_metadata?.avatar_url || null,
+            referral_code: referralCode,
+            coin_points: 0,
+            referral_count: 0,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error creating new profile for existing user:", insertError);
+          toast.error(`Erreur lors de la création du profil: ${insertError.message}`);
+          setLoading(false);
+          return;
+        }
+        setProfileData(newProfile);
+        toast.success("Votre profil a été créé avec succès !");
+      } else if (profileError) {
         console.error("Error fetching profile data:", profileError);
         toast.error("Erreur lors du chargement des données du profil.");
         setLoading(false);
         return;
+      } else {
+        setProfileData(fetchedProfile);
       }
 
-      setProfileData(fetchedProfile);
-
-      const fetchedDateOfBirth = fetchedProfile?.date_of_birth ? new Date(fetchedProfile.date_of_birth) : null;
+      const currentProfile = fetchedProfile || profileData; // Use fetched or newly created profile
+      const fetchedDateOfBirth = currentProfile?.date_of_birth ? new Date(currentProfile.date_of_birth) : null;
       form.reset({
-        fullName: fetchedProfile?.full_name || "",
+        fullName: currentProfile?.full_name || "",
         email: currentUser.email || "",
-        whatsappNumber: fetchedProfile?.whatsapp_number || "",
-        secondaryPhoneNumber: fetchedProfile?.secondary_phone_number || "",
+        whatsappNumber: currentProfile?.whatsapp_number || "",
+        secondaryPhoneNumber: currentProfile?.secondary_phone_number || "",
         dateOfBirth: fetchedDateOfBirth,
         newPassword: "",
         confirmNewPassword: "",
         profilePicture: undefined,
-        expertise: fetchedProfile?.expertise || "",
+        expertise: currentProfile?.expertise || "",
       });
-      setAvatarPreview(fetchedProfile?.avatar_url || null);
+      setAvatarPreview(currentProfile?.avatar_url || null);
       if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
         setDateInput(format(fetchedDateOfBirth, "yyyy/MM/dd"));
       } else {
@@ -126,7 +165,7 @@ export default function ProfilePage() {
       }
     }
     setLoading(false);
-  }, [supabase, router, form]);
+  }, [supabase, router, form, profileData]); // Added profileData to dependencies
 
   React.useEffect(() => {
     fetchUserProfile();
