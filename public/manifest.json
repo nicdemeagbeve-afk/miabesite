@@ -1,0 +1,31 @@
+{
+  "name": "Miabesite",
+  "short_name": "Miabesite",
+  "description": "Votre site web tout en main, en seulement 15 min, et 10 reponses, pour 0Fcfa",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://supabase.miabesite.site/storage/v1/object/public/static-assets/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://supabase.miabesite.site/storage/v1/object/public/static-assets/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "https://supabase.miabesite.site/storage/v1/object/public/static-assets/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "https://supabase.miabesite.site/storage/v1/object/public/static-assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
