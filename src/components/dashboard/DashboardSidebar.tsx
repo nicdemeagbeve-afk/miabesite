@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift } from "lucide-react"; // Import Gift icon
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon } from "lucide-react"; // Import UsersIcon for community
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -30,9 +30,14 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       label: "Profil & Paramètres",
     },
     {
-      href: "/dashboard/referral", // New referral page link
+      href: "/dashboard/referral",
       icon: <Gift className="h-5 w-5" />,
       label: "Parrainage",
+    },
+    {
+      href: "/dashboard/community/create", // New link for community creation
+      icon: <UsersIcon className="h-5 w-5" />,
+      label: "Créer une Communauté",
     },
     {
       href: "/dashboard/documentation",

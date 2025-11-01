@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Gift, Users, Coins, Copy, Loader2, CheckCircle2 } from "lucide-react";
+import { Gift, Users, Coins, Copy, Loader2, CheckCircle2, PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import Link from "next/link"; // Import Link
 
 // Schemas for forms
 const applyCodeSchema = z.object({
@@ -24,6 +25,8 @@ const transferCoinsSchema = z.object({
   recipientCode: z.string().length(5, "Le code du destinataire doit contenir 5 chiffres."),
   amount: z.coerce.number().int().min(1, "Le montant doit être au moins de 1 point."),
 });
+
+const COMMUNITY_UNLOCK_POINTS = 1000; // Define the unlock threshold
 
 export default function ReferralPage() {
   const supabase = createClient();
@@ -132,6 +135,8 @@ export default function ReferralPage() {
     }
   };
 
+  const hasEnoughPointsForCommunity = (referralStatus?.coinPoints || 0) >= COMMUNITY_UNLOCK_POINTS;
+
   if (loading) {
     return (
       <div className="container mx-auto p-4 md:p-8 flex items-center justify-center min-h-[calc(100vh-100px)]">
@@ -205,6 +210,31 @@ export default function ReferralPage() {
                 </div>
               </div>
             )}
+
+            <Separator />
+
+            {/* Community Creation Section */}
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Créer votre Communauté</h3>
+              {hasEnoughPointsForCommunity ? (
+                <>
+                  <p className="text-muted-foreground mb-4">
+                    Félicitations ! Vous avez {referralStatus?.coinPoints} pièces. Vous pouvez maintenant créer votre propre communauté.
+                  </p>
+                  <Link href="/dashboard/community/create" passHref>
+                    <Button asChild className="w-full">
+                      <div>
+                        <PlusCircle className="mr-2 h-5 w-5" /> Créer ma communauté
+                      </div>
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <p className="text-muted-foreground">
+                  Accumulez {COMMUNITY_UNLOCK_POINTS} pièces pour débloquer la création de votre communauté. Vous avez actuellement {referralStatus?.coinPoints} pièces.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
 
