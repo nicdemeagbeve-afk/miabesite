@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { createClient } from "./supabase/client"; // Import client-side Supabase for utility
+import { SupabaseClient } from '@supabase/supabase-js'; // Import generic SupabaseClient type
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -30,10 +30,10 @@ export const getSupabaseStorageUrl = (path: string) => {
 
 /**
  * Génère un code de parrainage unique à 5 chiffres.
- * @param supabase L'instance du client Supabase.
+ * @param supabase L'instance du client Supabase (peut être client ou server).
  * @returns Une promesse qui se résout avec un code de parrainage unique.
  */
-export async function generateUniqueReferralCode(supabase: ReturnType<typeof createClient>): Promise<string> {
+export async function generateUniqueReferralCode(supabase: SupabaseClient): Promise<string> {
   let code: string = ''; // Initialized to prevent TS2454 error
   let isUnique = false;
   while (!isUnique) {
@@ -58,10 +58,10 @@ export async function generateUniqueReferralCode(supabase: ReturnType<typeof cre
 
 /**
  * Génère un code de jointure unique à 6 chiffres pour une communauté.
- * @param supabase L'instance du client Supabase.
+ * @param supabase L'instance du client Supabase (peut être client ou server).
  * @returns Une promesse qui se résout avec un code de jointure unique.
  */
-export async function generateUniqueCommunityJoinCode(supabase: ReturnType<typeof createClient>): Promise<string> {
+export async function generateUniqueCommunityJoinCode(supabase: SupabaseClient): Promise<string> {
   let code: string = '';
   let isUnique = false;
   while (!isUnique) {
