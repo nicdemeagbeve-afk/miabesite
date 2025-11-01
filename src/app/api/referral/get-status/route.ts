@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { generateUniqueReferralCode } from '@/lib/utils'; // Import the utility function
 
 export async function GET(request: Request) {
   const supabase = createClient();
@@ -10,15 +11,58 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { data: profile, error: profileError } = await supabase
+    let { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('referral_code, referral_count, coin_points, referred_by')
+      .select('referral_code, referral_count, coin_points, referred_by, full_name, email') // Added full_name, email for profile creation fallback
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile) {
+    // If profile not found, create it
+    if (profileError && profileError.code === 'PGRST116') { // PGRST116 means "no rows found"
+      console.warn(`No profile found for user ${user.id}, creating one for referral system.`);
+      
+      let referralCode: string | null = null;
+      try {
+        // Use the client-side supabase instance for generateUniqueReferralCode
+        // For server-side, we need to pass the server client
+        referralCode = await generateUniqueReferralCode(supabase);
+      } catch (codeError: any) {
+        console.error("Failed to generate referral code for user:", codeError);
+        // Continue without referral code if generation fails, or handle as critical error
+      }
+
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          full_name: user.user_metadata?.full_name || user.email,
+          first_name: user.user_metadata?.first_name || '',
+          last_name: user.user_metadata?.last_name || '',
+          date_of_birth: user.user_metadata?.date_of_birth || null,
+          phone_number: user.user_metadata?.phone_number || '',
+          whatsapp_number: user.user_metadata?.phone_number || '',
+          expertise: user.user_metadata?.expertise || '',
+          avatar_url: user.user_metadata?.avatar_url || null,
+          referral_code: referralCode,
+          coin_points: 0,
+          referral_count: 0,
+        })
+        .select('referral_code, referral_count, coin_points, referred_by, full_name, email') // Select the same fields again
+        .single();
+
+      if (insertError) {
+        console.error("Error creating new profile in referral API:", insertError);
+        return NextResponse.json({ error: insertError.message || 'Erreur lors de la création du profil.' }, { status: 500 });
+      }
+      profile = newProfile; // Use the newly created profile
+    } else if (profileError) {
       console.error("Error fetching profile for referral status:", profileError);
-      return NextResponse.json({ error: 'Profil non trouvé.' }, { status: 404 });
+      return NextResponse.json({ error: 'Erreur lors du chargement du profil.' }, { status: 500 });
+    }
+
+    // If profile is still null after attempted creation (shouldn't happen with above logic)
+    if (!profile) {
+        return NextResponse.json({ error: 'Profil non trouvé après tentative de création.' }, { status: 404 });
     }
 
     let referrerInfo = null;
