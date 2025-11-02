@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useForm, ControllerRenderProps, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,44 +36,42 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
 import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox
 
-const formSchema = z.object({
-  firstName: z.string().min(2, { message: "Le prénom est requis." }).max(50, { message: "Le prénom ne peut pas dépasser 50 caractères." }),
-  lastName: z.string().min(2, { message: "Le nom est requis." }).max(50, { message: "Le nom ne peut pas dépasser 50 caractères." }),
-  dateOfBirth: z.date()
-    .max(new Date(), "La date de naissance ne peut pas être dans le futur.")
-    .optional() // Allow undefined as a type
-    .refine((date) => date, { // Make it logically required
-      message: "La date de naissance est requise.",
-    }),
-  phoneNumber: z.string().regex(/^\+?\d{8,15}$/, "Veuillez entrer un numéro de téléphone valide."),
-  expertise: z.string().min(3, { message: "Le domaine d'expertise est requis." }).max(100, { message: "Le domaine d'expertise ne peut pas dépasser 100 caractères." }),
-  email: z.string().email({ message: "Veuillez entrer une adresse email valide." }),
+// Schéma Zod CORRIGÉ pour correspondre à votre formulaire
+const signupSchema = z.object({
+  firstName: z.string().min(1, { message: "Le prénom est requis." }),
+  lastName: z.string().min(1, { message: "Le nom de famille est requis." }),
+  email: z.string().email({ message: "Adresse e-mail invalide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
+  dateOfBirth: z.date().optional(), // Utilisez z.date() si vous utilisez un calendrier
+  phoneNumber: z.string().optional(),
+  expertise: z.string().optional(),
   termsAccepted: z.boolean().refine(val => val === true, {
-    message: "Vous devez accepter les conditions générales d'utilisation et la politique de confidentialité.",
+    message: "Vous devez accepter les termes et conditions.",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine(data => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
-  path: ["confirmPassword"],
+  path: ["confirmPassword"], // Affiche l'erreur sous le champ de confirmation
 });
 
-type SignupFormData = z.infer<typeof formSchema>; // Define type for form data
+type SignupFormData = z.infer<typeof signupSchema>; // Define type for form data
 
 export function SignupForm() {
   const router = useRouter(); // Initialisez le hook useRouter
   const supabase = createClient(); // Initialisez le client Supabase
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const form = useForm<SignupFormData>({ // Use SignupFormData here
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
-      dateOfBirth: undefined, // Changed from null
-      phoneNumber: "",
-      expertise: "",
       email: "",
       password: "",
       confirmPassword: "",
+      phoneNumber: "",
+      expertise: "",
       termsAccepted: false, // Default to false
     },
   });
@@ -105,72 +103,38 @@ export function SignupForm() {
     }
   };
 
-  const onSubmit: SubmitHandler<SignupFormData> = async (values) => { // Explicitly type onSubmit
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
+    setIsLoading(true);
+    setError(null);
+
+    // Déstructuration des valeurs du formulaire
     const { email, password, firstName, lastName, dateOfBirth, phoneNumber, expertise } = values;
-    
-    // 1. Sign up the user with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // On crée fullName à partir de firstName et lastName
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback`,
-        // We will store profile data in the new 'profiles' table, not user_metadata directly
-        // Keeping these for backward compatibility if other parts of the app still rely on them
         data: {
-          full_name: `${firstName} ${lastName}`,
+          full_name: fullName,
           first_name: firstName,
           last_name: lastName,
-          date_of_birth: dateOfBirth?.toISOString().split('T')[0],
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Formatte la date pour la BDD
           phone_number: phoneNumber,
           expertise: expertise,
         },
+        // L'option emailRedirectTo a été supprimée pour activer la vérification par code (OTP)
       },
     });
 
-    if (authError) {
-      toast.error(authError.message);
-      form.setValue("password", "");
-      form.setValue("confirmPassword", "");
-      return;
-    }
-
-    if (authData.user) {
-      // 2. Generate a unique referral code
-      let referralCode: string | null = null;
-      try {
-        referralCode = await generateUniqueReferralCode(supabase);
-      } catch (codeError: any) {
-        console.error("Failed to generate referral code:", codeError);
-        toast.error(`Erreur lors de la génération du code de parrainage: ${codeError.message}`);
-        // Continue without referral code if generation fails, or handle as critical error
-      }
-
-      // 3. Insert user profile into the new 'profiles' table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          full_name: `${firstName} ${lastName}`,
-          first_name: firstName,
-          last_name: lastName,
-          date_of_birth: dateOfBirth?.toISOString().split('T')[0],
-          phone_number: phoneNumber,
-          whatsapp_number: phoneNumber, // Assuming primary phone is whatsapp for now
-          expertise: expertise,
-          referral_code: referralCode,
-          coin_points: 0,
-          referral_count: 0,
-        });
-
-      if (profileError) {
-        console.error("Error inserting profile:", profileError);
-        toast.error(`Erreur lors de la création du profil: ${profileError.message}`);
-        // Consider rolling back auth.signUp if profile creation is critical
-        return;
-      }
-
-      toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
-      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+    if (error) {
+      // AFFICHER L'ERREUR COMPLÈTE DANS LA CONSOLE
+      console.error("Erreur Supabase Auth:", error); 
+      setError(error.message);
+      setIsLoading(false);
+    } else {
+      router.push(`/auth/email-sent?email=${encodeURIComponent(values.email)}`);
     }
   }
 
