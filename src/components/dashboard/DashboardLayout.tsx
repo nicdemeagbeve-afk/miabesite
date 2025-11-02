@@ -44,12 +44,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           .eq("id", user.id)
           .single();
 
-        // 2. Si aucun profil n'est trouvé, en créer un
-        if (!profile && profileError) {
+        // Si une erreur réelle (pas juste "pas de ligne trouvée") survient lors de la récupération, la journaliser et arrêter.
+        if (profileError && profileError.code !== 'PGRST116') { // PGRST116 est souvent le code pour "aucune ligne trouvée"
+          console.error("Erreur lors de la récupération du profil:", profileError);
+          toast.error("Une erreur est survenue lors de la vérification de votre profil.");
+          setIsCheckingProfile(false);
+          return;
+        }
+
+        // 2. Si aucun profil n'est trouvé (data est null), en créer un
+        if (!profile) { // Condition simplifiée: si profile est null, on le crée
           console.log("Profil manquant pour l'utilisateur, création en cours...");
           toast.info("Mise à jour de votre compte en cours...");
 
-          const newReferralCode = await generateUniqueReferralCode(supabase); // Passer l'instance supabase
+          const newReferralCode = await generateUniqueReferralCode(supabase);
           const initialCoinPoints = 50; // Donnez des pièces en bonus aux anciens utilisateurs !
 
           const { error: insertError } = await supabase.from("profiles").insert({
@@ -61,15 +69,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             role: "user",
             referral_code: newReferralCode,
             coin_points: initialCoinPoints,
-            // Assurez-vous d'inclure des valeurs par défaut pour les autres champs NOT NULL
             referral_count: 0,
+            // IMPORTANT: Assurez-vous d'inclure des valeurs pour TOUTES les colonnes NOT NULL de votre table 'profiles'.
+            // Si d'autres colonnes NOT NULL existent et ne sont pas listées ici, l'insertion échouera.
+            // Par exemple, si vous avez une colonne 'created_at' NOT NULL, elle doit être gérée (par défaut dans la DB ou ici).
           });
 
           if (insertError) {
-            console.error("Erreur lors de la création du profil manquant:", insertError);
-            toast.error("Une erreur est survenue lors de la mise à jour de votre profil.");
+            console.error("Erreur détaillée lors de la création du profil manquant:", insertError);
+            toast.error(`Échec de la mise à jour du profil: ${insertError.message || 'Erreur inconnue'}`);
           } else {
-            console.log("Profil créé avec succès pour l'ancien utilisateur.");
+            console.log("Profil créé avec succès pour l'utilisateur.");
             toast.success("Bienvenue ! Votre compte a été mis à jour avec un code de parrainage et des pièces bonus.");
             // Optionnel : rafraîchir la page pour que les nouvelles données du profil soient utilisées partout
             window.location.reload();

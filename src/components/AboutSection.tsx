@@ -71,7 +71,6 @@ export function AboutSection() {
               alt="À propos de Miabesite"
               layout="fill"
               objectFit="cover"
-              className="transition-transform duration-500 hover:scale-105"
             />
           </div>
         </div>
