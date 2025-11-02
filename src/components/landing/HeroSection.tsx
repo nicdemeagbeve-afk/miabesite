@@ -60,7 +60,7 @@ export function HeroSection() {
             {!user && (
               <>
                 <Link href="/login" passHref>
-                  <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+                  <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
                     <div>
                       Connexion
                     </div>
