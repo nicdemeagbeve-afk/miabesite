@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Im
 import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile hook
 import { usePathname } from "next/navigation"; // Import usePathname
 import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
+import { PWAInstallButton } from "@/components/PWAInstallButton"; // Import PWAInstallButton
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -121,6 +122,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* You can add a dashboard title or logo here */}
           </div>
           <div className="flex items-center gap-2">
+            <PWAInstallButton /> {/* Ajoutez le bouton d'installation ici */}
             <ThemeToggle /> {/* Add ThemeToggle here */}
             {/* Removed SupabaseStatusIndicator from here */}
           </div>
