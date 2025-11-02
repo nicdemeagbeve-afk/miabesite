@@ -7,6 +7,7 @@ import { Header } from "@/components/landing/Header"; // Import Header
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
 import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Import CookieConsentBanner
 import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
+import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar"; // Importez le nouveau composant
 
 export const metadata: Metadata = {
   title: "Miabesite | le site pour tous",
@@ -23,6 +24,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
+        <link rel="icon" href="/favicon.ico" /> {/* Add this line */}
       </head>
       <body>
         <ThemeProvider
@@ -38,6 +40,7 @@ export default function RootLayout({
           <div className="fixed bottom-6 left-6 z-50">
             <PushNotificationInitializer /> {/* Add the initializer here */}
           </div>
+          <ServiceWorkerRegistrar /> {/* Ajoutez le composant ici */}
         </ThemeProvider>
       </body>
     </html>

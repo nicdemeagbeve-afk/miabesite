@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
 
   const { data: site, error } = await supabase
     .from('sites')
-    .select('site_data, template_type')
+    .select('site_data, template_type, is_public') // Ajoutez 'is_public' ici
     .eq('subdomain', subdomain)
     .single();
 
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       title: "Site non trouvé",
       description: "Le site que vous recherchez n'existe pas ou n'est pas accessible.",
       icons: {
-        icon: getSupabaseStorageUrl("favicon.ico"), // Fallback to SaaS favicon from Supabase
+        icon: getSupabaseStorageUrl("static-assets" , "favicon.ico"), // Fallback to SaaS favicon from Supabase
       },
     };
   }
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
 
   const title = siteData.publicName ? `${siteData.publicName} | ${siteData.heroSlogan || "Votre site professionnel"}` : `Site ${subdomain}`;
   const description = siteData.aboutStory || `Découvrez le site de ${siteData.publicName || subdomain}.`;
-  const siteLogoUrl = siteData.logoOrPhoto || getSupabaseStorageUrl("favicon.ico"); // Use site logo or fallback to SaaS favicon from Supabase
+  const siteLogoUrl = siteData.logoOrPhoto || getSupabaseStorageUrl("static-assets" , "favicon.ico"); // Use site logo or fallback to SaaS favicon from Supabase
 
   return {
     title: title,
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       siteName: siteData.publicName || "Miabesite",
       images: [
         {
-          url: siteData.logoOrPhoto || getSupabaseStorageUrl("miabesite-logo.png"), // Fallback image for OG from Supabase
+          url: siteData.logoOrPhoto || getSupabaseStorageUrl("static-assets" , "miabesite-logo.png"), // Fallback image for OG from Supabase
           width: 800,
           height: 600,
           alt: siteData.publicName || "Logo du site",
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: { params: { subdomain: string
       title: title,
       description: description,
       creator: '@Miabesite', // Replace with your Twitter handle
-      images: [siteData.logoOrPhoto || getSupabaseStorageUrl("miabesite-logo.png")], // Fallback image for Twitter from Supabase
+      images: [siteData.logoOrPhoto || getSupabaseStorageUrl("static-assets" , "miabesite-logo.png")], // Fallback image for Twitter from Supabase
     },
     icons: {
       icon: siteLogoUrl, // Dynamic favicon for user's site
@@ -83,7 +83,7 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   // Fetch site data and template_type from Supabase based on the subdomain
   const { data: site, error } = await supabase
     .from('sites')
-    .select('site_data, template_type, user_id') // Also select user_id for access control
+    .select('site_data, template_type, user_id, is_public') // Ajoutez 'is_public' ici
     .eq('subdomain', subdomain)
     .single();
 
@@ -95,9 +95,10 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
   const { data: { user } } = await supabase.auth.getUser();
 
   // Implement access control:
-  // If the site has a user_id and the current user is not the owner,
-  // redirect to landing page with an unauthorized message.
-  if (site.user_id && (!user || user.id !== site.user_id)) {
+  // If the site is NOT public AND the site has a user_id AND the current user is not the owner,
+  // then redirect to landing page with an unauthorized message.
+  // Otherwise, allow access.
+  if (!site.is_public && site.user_id && (!user || user.id !== site.user_id)) {
     redirect('/?message=unauthorized');
   }
 

@@ -18,7 +18,7 @@ export function FAQSection() {
     {
       question: "Puis-je avoir un nom de domaine personnalisé ?",
       answer:
-        "Oui, vous obtenez un sous-domaine personnalisé (ex: tonnom.ctcsite.com). Si vous souhaitez un nom de domaine entièrement personnalisé (ex: monentreprise.com), nous pouvons vous guider sur les étapes à suivre pour le connecter.",
+        "Oui, vous obtenez un sous-domaine personnalisé (ex: tonnom.miabesite.site). Si vous souhaitez un nom de domaine entièrement personnalisé (ex: monentreprise.com), nous pouvons vous guider sur les étapes à suivre pour le connecter. (très bientôt disponible)",
     },
     {
       question: "Puis-je modifier mon site après ?",
