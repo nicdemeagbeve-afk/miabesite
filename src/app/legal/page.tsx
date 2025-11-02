@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-// import { Header } from "@/components/landing/Header"; // Removed
+import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function LegalPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* <Header /> */} {/* Removed */}
+      <Header />
       <main className="flex-1 container mx-auto py-12 px-4 md:px-6">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8 text-center">
           Informations Légales
@@ -28,6 +28,7 @@ export default function LegalPage() {
               <h3 className="text-lg font-semibold text-foreground">1. Éditeur du Site</h3>
               <p><strong>Nom de la plateforme :</strong> Miabesite</p>
               <p><strong>Fondateur :</strong> Nicodème Ayao AGBEVE</p>
+              <p><strong>Incubateur Entreprise :</strong> House Of Innovation</p>
               <p><strong>Statut :</strong> Étudiant Autodidacte en Développement Web et Gestion de Projet</p>
               <p><strong>Nationalité :</strong> Togolais</p>
               <p><strong>Contact :</strong> contact@miabesite.site</p>

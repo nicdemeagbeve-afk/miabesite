@@ -90,7 +90,7 @@ export function Header() {
                     <LogoutButton onLogoutSuccess={() => setIsMobileMenuOpen(false)} />
                   ) : (
                     <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
+                      <Button variant="secondary" className="w-full justify-start">
                         Connexion
                       </Button>
                     </Link>
@@ -122,7 +122,7 @@ export function Header() {
               <LogoutButton />
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="secondary" size="sm">
                   Connexion
                 </Button>
               </Link>

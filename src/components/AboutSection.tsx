@@ -40,6 +40,10 @@ export function AboutSection() {
     },
   ];
 
+  const getInitials = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
+
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-background px-4">
       <div className="container mx-auto text-center">
@@ -86,8 +90,8 @@ export function AboutSection() {
           {teamMembers.map((member, index) => (
             <Card key={index} className="flex flex-col items-center p-6 text-center shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-blue-500">
               <div className="relative h-32 w-32 rounded-full overflow-hidden mb-4 border-4 border-yellow-400 flex items-center justify-center bg-gray-200">
-                {/* Affiche toujours l'icône UserIcon */}
-                <UserIcon className="h-16 w-16 text-gray-500" />
+                {/* Display initials instead of generic UserIcon */}
+                <span className="text-5xl font-bold text-gray-700">{getInitials(member.name)}</span>
               </div>
               <h4 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h4>
               <p className="text-blue-600 font-medium mb-3">{member.role}</p>

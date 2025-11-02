@@ -71,7 +71,7 @@
     --secondary-foreground: 0 0% 98%; /* Off-white */
 
     --muted: 210 15% 25%; /* Slightly Lighter Dark Grayish Blue */
-    --muted-foreground: 210 10% 70%; /* Light Grayish Blue */
+    --muted-foreground: 210 10% 80%; /* Adjusted to be lighter for better readability */
 
     --accent: 270 70% 70%; /* Lighter Medium Violet */
     --accent-foreground: 210 10% 10%; /* Very Dark Grayish Blue */

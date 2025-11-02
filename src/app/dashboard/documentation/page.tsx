@@ -28,7 +28,7 @@ export default function DocumentationPage() {
       section: "Fonctionnement des Menus Spécifiques au Site",
       fields: [
         { name: "Accès aux sections spécifiques", description: "Les sections 'Vue d'Ensemble', 'Messages', 'Éditeur Avancé' et 'Gestion Avancée' sont des outils de gestion pour un site spécifique. Pour y accéder, vous devez d'abord sélectionner un site en cliquant sur 'Gérer le site' depuis la page 'Mes Sites'." },
-        { name: "Indicateur visuel", description: "Lorsque vous n'avez pas encore sélectionné de site, ces liens de menu seront grisés et inactifs. Une info-bulle apparaîtra au survol pour vous indiquer qu'une sélection de site est nécessaire." },
+        { name: "Indicateur visuel", description: "Lorsque vous n'avez pas encore sélectionné de site, ces liens de menu seront grisés et inactifs. Une info-bulle apparaîtra au survol pour vous vous indiquer qu'une sélection de site est nécessaire." },
         { name: "Activation", description: "Une fois que vous avez cliqué sur 'Gérer le site' pour un de vos sites, les liens de gestion du site deviendront actifs et vous pourrez naviguer entre eux." },
       ],
     },
@@ -64,7 +64,7 @@ export default function DocumentationPage() {
         { name: "Vos Pièces", description: "Accumulez des pièces en parrainant des amis. Vous gagnez 10 pièces pour chaque tranche de 2 parrainages. Ces pièces pourront être utilisées pour des fonctionnalités premium ou retirées à l'avenir." },
         { name: "Appliquer un Code de Parrainage", description: "Si un ami vous a parrainé, entrez son code pour lier vos comptes. Vous ne pouvez être parrainé qu'une seule fois." },
         { name: "Transférer des Pièces", description: "Envoyez vos pièces à un autre utilisateur en utilisant son code de parrainage." },
-        { name: "Créer votre Communauté", description: "Attecheignez 1000 pièces pour débloquer la possibilité de créer votre propre communauté." },
+        { name: "Créer votre Communauté", description: "Atteignez 1000 pièces pour débloquer la possibilité de créer votre propre communauté." },
       ],
     },
     {

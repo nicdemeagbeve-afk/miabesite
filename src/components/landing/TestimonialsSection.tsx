@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star } from "lucide-react";
+import { Star, StarHalf } from "lucide-react"; // Import StarHalf
 import { Card, CardContent } from "@/components/ui/card";
 
 export function TestimonialsSection() {
@@ -24,26 +24,28 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background px-4"> {/* Added px-4 */}
-      <div className="container mx-auto text-center"> {/* Removed px-4 md:px-6, using container mx-auto */}
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-background px-4">
+      <div className="container mx-auto text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
           Ce que nos clients disent de nous
         </h2>
         <div className="flex items-center justify-center gap-2 mb-8">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+          {[...Array(3)].map((_, i) => ( // 3 full stars
+            <Star key={`full-${i}`} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
           ))}
-          <span className="text-xl md:text-2xl font-semibold">4.9/5</span> {/* Adjusted text size for mobile */}
+          <StarHalf className="h-6 w-6 fill-yellow-400 text-yellow-400" /> {/* 1 half star */}
+          <Star className="h-6 w-6 text-yellow-400" /> {/* 1 empty star */}
+          <span className="text-xl md:text-2xl font-semibold">3.5/5</span>
         </div>
-        <p className="text-lg md:text-xl text-muted-foreground mb-12"> {/* Adjusted text size for mobile */}
-          +1000 utilisateurs satisfaits
+        <p className="text-lg md:text-xl text-muted-foreground mb-12">
+          101 utilisateurs satisfaits
         </p>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"> {/* Adjusted gap and grid for mobile */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="p-6 text-left shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardContent className="p-0">
-                <p className="text-base italic mb-4">"{testimonial.quote}"</p> {/* Adjusted text size for mobile */}
-                <p className="font-semibold text-primary text-sm"> {/* Adjusted text size for mobile */}
+                <p className="text-base italic mb-4">"{testimonial.quote}"</p>
+                <p className="font-semibold text-primary text-sm">
                   – {testimonial.author}, {testimonial.location}
                 </p>
               </CardContent>

@@ -21,7 +21,7 @@ export function ExamplesSection() {
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12">
           Exemples de sites créés automatiquement
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
           {exampleSites.map((site, index) => (
             <div key={index} className="relative group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Image
