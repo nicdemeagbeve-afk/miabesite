@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation'; // Assurez-vous d'importer useRouter
+import { createClient } from '@/lib/supabase/client'; // Assurez-vous que le chemin est correct
 import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa';
 import type { Provider } from '@supabase/supabase-js';
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
@@ -60,9 +60,9 @@ const formSchema = z.object({
 
 type SignupFormData = z.infer<typeof formSchema>; // Define type for form data
 
-export default function SignupPage() {
-  const supabase = createClient();
-  const router = useRouter();
+export function SignupForm() {
+  const router = useRouter(); // Initialisez le hook useRouter
+  const supabase = createClient(); // Initialisez le client Supabase
   const form = useForm<SignupFormData>({ // Use SignupFormData here
     resolver: zodResolver(formSchema),
     defaultValues: {
