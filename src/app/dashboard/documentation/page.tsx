@@ -76,14 +76,6 @@ export default function DocumentationPage() {
       ],
     },
     {
-      section: "Tableau de Bord Administrateur (Accès Restreint)",
-      fields: [
-        { name: "Vue d'Ensemble", description: "Accédez à des statistiques globales sur les utilisateurs, les communautés (publiques/privées) et l'utilisation des templates sur la plateforme." },
-        { name: "Gérer les Admins", description: "En tant que Super Admin, vous pouvez ajouter de nouveaux administrateurs en utilisant leur code de parrainage et rétrograder les administrateurs existants." },
-        { name: "Gestion des Pièces", description: "Transférez des pièces aux utilisateurs (les administrateurs ont un solde illimité) et consultez l'historique détaillé de toutes les transactions de pièces." },
-      ],
-    },
-    {
       section: "Notifications Push",
       fields: [
         { name: "Activer/Désactiver les Notifications", description: "Un bouton (icône de cloche) est disponible en bas à gauche de la page d'accueil. Cliquez dessus pour activer ou désactiver les notifications push et recevoir des mises à jour importantes de Miabesite." },
