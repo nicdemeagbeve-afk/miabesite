@@ -31,6 +31,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { communityCategories } from '@/lib/constants'; // Import centralized categories
 
 
 interface Community {
@@ -48,20 +49,6 @@ interface Community {
 const joinCommunitySchema = z.object({
   joinCode: z.string().length(6, "Le code de jointure doit contenir 6 chiffres.").optional(),
 });
-
-const communityCategories = [
-  { value: "all", label: "Toutes les catégories" },
-  { value: "artisanat", label: "Artisanat" },
-  { value: "services", label: "Services" },
-  { value: "e-commerce", label: "E-commerce" },
-  { value: "consulting", label: "Consulting" },
-  { value: "education", label: "Éducation" },
-  { value: "technologie", label: "Technologie" },
-  { value: "bien-etre", label: "Bien-être" },
-  { value: "alimentation", label: "Alimentation" },
-  { value: "mode", label: "Mode" },
-  { value: "autres", label: "Autres" },
-];
 
 export default function CommunitiesPage() {
   const supabase = createClient();

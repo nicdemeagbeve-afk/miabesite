@@ -17,6 +17,7 @@ import { Loader2, Users, LayoutTemplate, Tag, Lock, Globe } from "lucide-react";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch"; // Import Switch component
 import { generateUniqueCommunityJoinCode } from "@/lib/utils"; // Import new utility
+import { communityCategories, premiumTemplates } from '@/lib/constants'; // Import centralized constants
 
 const COMMUNITY_UNLOCK_POINTS = 1000;
 
@@ -35,26 +36,8 @@ const communityFormSchema = z.object({
 
 type CommunityFormData = z.infer<typeof communityFormSchema>;
 
-// Predefined lists for templates and categories
-const premiumTemplates = [
-  { value: "ecommerce", label: "E-commerce" },
-  { value: "service-portfolio", label: "Service & Portfolio" },
-  { value: "professional-portfolio", label: "Portfolio Professionnel" },
-  { value: "artisan-ecommerce", label: "E-commerce Artisanal" },
-];
-
-const communityCategories = [
-  { value: "artisanat", label: "Artisanat" },
-  { value: "services", label: "Services" },
-  { value: "e-commerce", label: "E-commerce" },
-  { value: "consulting", label: "Consulting" },
-  { value: "education", label: "Éducation" },
-  { value: "technologie", label: "Technologie" },
-  { value: "bien-etre", label: "Bien-être" },
-  { value: "alimentation", label: "Alimentation" },
-  { value: "mode", label: "Mode" },
-  { value: "autres", label: "Autres" },
-];
+// Filter out the 'all' category for community creation
+const creatableCommunityCategories = communityCategories.filter(cat => cat.value !== 'all');
 
 export default function CreateCommunityPage() {
   const supabase = createClient();
@@ -297,7 +280,7 @@ export default function CreateCommunityPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {communityCategories.map((category) => (
+                        {creatableCommunityCategories.map((category) => (
                           <SelectItem key={category.value} value={category.value}>
                             {category.label}
                           </SelectItem>
