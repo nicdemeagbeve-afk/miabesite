@@ -67,7 +67,7 @@ export function AboutSection() {
           </div>
           <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-xl">
             <Image
-              src={getSupabaseStorageUrl("about-miabesite-hero.png")} // Using Supabase storage URL
+              src={getSupabaseStorageUrl("static-assets", "about-miabesite-hero.png")} // Correction ici
               alt="À propos de Miabesite"
               layout="fill"
               objectFit="cover"
