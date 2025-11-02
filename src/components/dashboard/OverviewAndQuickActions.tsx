@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, XCircle, Link as LinkIcon, Eye, Copy } from "lucide-react";
+import { CheckCircle, XCircle, Link as LinkIcon, Eye, Copy, Globe } from "lucide-react"; // Import Globe icon
 import { toast } from "sonner";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 interface SiteData {
   id: string;
@@ -16,6 +17,7 @@ interface SiteData {
   status: string;
   template_type: string;
   created_at: string;
+  is_public: boolean; // Ensure this is included
 }
 
 interface OverviewAndQuickActionsProps {
@@ -23,10 +25,14 @@ interface OverviewAndQuickActionsProps {
 }
 
 export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsProps) {
+  const router = useRouter();
+  const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
+
   const siteStatus = siteData.status;
+  const isPublic = siteData.is_public;
+
   // Construct dynamic URL using the new path-based routing
   const siteUrl = `${window.location.origin}/sites/${siteData.subdomain}`;
-  // Removed recentViews variable as requested.
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(siteUrl);
@@ -37,6 +43,33 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
     window.open(siteUrl, "_blank");
   };
 
+  const handleTogglePublish = async (publish: boolean) => {
+    setIsUpdatingStatus(true);
+    try {
+      const response = await fetch(`/api/sites/${siteData.subdomain}/publish`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ is_public: publish }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(publish ? "Site publié avec succès !" : "Site dépublié avec succès !");
+        router.refresh(); // Refresh the page to show updated status
+      } else {
+        toast.error(result.message || "Erreur lors de la mise à jour du statut du site.");
+      }
+    } catch (error) {
+      console.error("Error toggling publish status:", error);
+      toast.error("Une erreur inattendue est survenue.");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -45,7 +78,7 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
       <CardContent className="space-y-6">
         {/* Statut du Site */}
         <div className="flex items-center gap-4">
-          {siteStatus === "published" ? ( // Changed from "online" to "published" to match DB
+          {siteStatus === "published" ? (
             <CheckCircle className="h-8 w-8 text-green-500" />
           ) : (
             <XCircle className="h-8 w-8 text-red-500" />
@@ -56,6 +89,39 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
               {siteStatus === "published" ? "En ligne" : "Hors ligne"}
             </Badge>
           </div>
+        </div>
+
+        {/* Visibilité Publique */}
+        <div className="flex items-center gap-4">
+          <Globe className="h-8 w-8 text-blue-500" />
+          <div>
+            <p className="text-lg font-semibold">Visibilité Publique :</p>
+            <Badge variant={isPublic ? "default" : "secondary"} className="text-base px-3 py-1">
+              {isPublic ? "Visible par tous" : "Privé (visible par vous seul)"}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Boutons Publier/Dépublier */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {isPublic ? (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => handleTogglePublish(false)}
+              disabled={isUpdatingStatus}
+            >
+              Dépublier le site
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => handleTogglePublish(true)}
+              disabled={isUpdatingStatus}
+            >
+              Publier le site
+            </Button>
+          )}
         </div>
 
         {/* Lien du Site */}
@@ -73,8 +139,6 @@ export function OverviewAndQuickActions({ siteData }: OverviewAndQuickActionsPro
             </Button>
           </div>
         </div>
-
-        {/* Removed Vues Récentes (Optionnel) section as requested */}
 
         {/* Bouton d'Action Primaire */}
         <Button size="lg" className="w-full" onClick={handleViewSite}>

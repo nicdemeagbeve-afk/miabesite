@@ -18,6 +18,7 @@ interface SiteData {
   status: string;
   template_type: string;
   created_at: string;
+  is_public: boolean; // Added is_public property
 }
 
 export default async function DashboardOverviewPage({ params }: { params: { subdomain: string } }) {
