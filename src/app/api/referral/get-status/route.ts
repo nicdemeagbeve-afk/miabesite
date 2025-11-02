@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
+    console.error("API /referral/get-status: Unauthorized - No user or userError:", userError);
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -19,16 +20,15 @@ export async function GET(request: Request) {
 
     // If profile not found, create it
     if (profileError && profileError.code === 'PGRST116') { // PGRST116 means "no rows found"
-      console.warn(`No profile found for user ${user.id}, creating one for referral system.`);
+      console.warn(`API /referral/get-status: No profile found for user ${user.id}, attempting to create one.`);
       
       let referralCode: string | null = null;
       try {
-        // Use the client-side supabase instance for generateUniqueReferralCode
-        // For server-side, we need to pass the server client
         referralCode = await generateUniqueReferralCode(supabase);
       } catch (codeError: any) {
-        console.error("Failed to generate referral code for user:", codeError);
-        // Continue without referral code if generation fails, or handle as critical error
+        console.error("API /referral/get-status: Failed to generate referral code for new user:", codeError);
+        // If code generation fails, we should probably stop here or create profile without code
+        return NextResponse.json({ error: `Erreur lors de la génération du code de parrainage: ${codeError.message}` }, { status: 500 });
       }
 
       const { data: newProfile, error: insertError } = await supabase
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           last_name: user.user_metadata?.last_name || '',
           date_of_birth: user.user_metadata?.date_of_birth || null,
           phone_number: user.user_metadata?.phone_number || '',
-          whatsapp_number: user.user_metadata?.phone_number || '',
+          whatsapp_number: user.user_metadata?.phone_number || '', // Default to phone_number
           expertise: user.user_metadata?.expertise || '',
           avatar_url: user.user_metadata?.avatar_url || null,
           referral_code: referralCode,
@@ -51,17 +51,18 @@ export async function GET(request: Request) {
         .single();
 
       if (insertError) {
-        console.error("Error creating new profile in referral API:", insertError);
+        console.error("API /referral/get-status: Error creating new profile:", insertError);
         return NextResponse.json({ error: insertError.message || 'Erreur lors de la création du profil.' }, { status: 500 });
       }
       profile = newProfile; // Use the newly created profile
     } else if (profileError) {
-      console.error("Error fetching profile for referral status:", profileError);
-      return NextResponse.json({ error: 'Erreur lors du chargement du profil.' }, { status: 500 });
+      console.error("API /referral/get-status: Error fetching existing profile:", profileError);
+      return NextResponse.json({ error: profileError.message || 'Erreur lors du chargement du profil.' }, { status: 500 });
     }
 
     // If profile is still null after attempted creation (shouldn't happen with above logic)
     if (!profile) {
+        console.error("API /referral/get-status: Profile is null after fetch and attempted creation.");
         return NextResponse.json({ error: 'Profil non trouvé après tentative de création.' }, { status: 404 });
     }
 
@@ -74,7 +75,8 @@ export async function GET(request: Request) {
         .single();
       
       if (referrerProfileError) {
-        console.error("Error fetching referrer profile:", referrerProfileError);
+        console.error("API /referral/get-status: Error fetching referrer profile:", referrerProfileError);
+        // This is a non-critical error for the main referral status, so we log but don't fail the request.
       } else {
         referrerInfo = {
           fullName: referrerProfile?.full_name,
@@ -91,7 +93,7 @@ export async function GET(request: Request) {
     }, { status: 200 });
 
   } catch (error: any) {
-    console.error("API route error for referral status:", error);
+    console.error("API /referral/get-status: Unexpected API route error:", error);
     return NextResponse.json({ error: error.message || 'An unexpected error occurred' }, { status: 500 });
   }
 }
