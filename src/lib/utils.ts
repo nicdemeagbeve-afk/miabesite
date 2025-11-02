@@ -43,9 +43,9 @@ export async function generateUniqueReferralCode(supabase: SupabaseClient): Prom
   while (!isUnique) {
     code = generateRandomCode(6); // Longueur exemple pour le code de parrainage
     const { data, error } = await supabase
-      .from('referrals') // Supposant une table 'referrals'
-      .select('code')
-      .eq('code', code)
+      .from('profiles') // CORRECTION: Query 'profiles' table
+      .select('referral_code')
+      .eq('referral_code', code)
       .single();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 signifie "aucune ligne trouvée"
