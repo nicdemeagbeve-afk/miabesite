@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Header } from "@/components/landing/Header";
+// import { Header } from "@/components/landing/Header"; // Removed
 import { Footer } from "@/components/landing/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function LegalPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {/* <Header /> */} {/* Removed */}
       <main className="flex-1 container mx-auto py-12 px-4 md:px-6">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8 text-center">
           Informations Légales

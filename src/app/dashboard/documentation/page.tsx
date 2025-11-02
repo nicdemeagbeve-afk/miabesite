@@ -21,6 +21,7 @@ export default function DocumentationPage() {
         { name: "Documentation", description: "La page que vous lisez actuellement, expliquant les fonctionnalités du tableau de bord." },
         { name: "Support WhatsApp", description: "Un lien direct pour contacter notre équipe de support via WhatsApp." },
         { name: "Créer un site", description: "Lancez l'assistant de création pour démarrer un nouveau site web." },
+        { name: "Redirection automatique (PWA/Web)", description: "Si vous êtes connecté et accédez à la page d'accueil, vous serez automatiquement redirigé vers votre tableau de bord." },
       ],
     },
     {
@@ -63,7 +64,7 @@ export default function DocumentationPage() {
         { name: "Vos Pièces", description: "Accumulez des pièces en parrainant des amis. Vous gagnez 10 pièces pour chaque tranche de 2 parrainages. Ces pièces pourront être utilisées pour des fonctionnalités premium ou retirées à l'avenir." },
         { name: "Appliquer un Code de Parrainage", description: "Si un ami vous a parrainé, entrez son code pour lier vos comptes. Vous ne pouvez être parrainé qu'une seule fois." },
         { name: "Transférer des Pièces", description: "Envoyez vos pièces à un autre utilisateur en utilisant son code de parrainage." },
-        { name: "Créer votre Communauté", description: "Atteignez 1000 pièces pour débloquer la possibilité de créer votre propre communauté." },
+        { name: "Créer votre Communauté", description: "Attecheignez 1000 pièces pour débloquer la possibilité de créer votre propre communauté." },
       ],
     },
     {
