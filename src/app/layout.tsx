@@ -3,12 +3,11 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Header } from "@/components/landing/Header"; // Import Header
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
 import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Import CookieConsentBanner
 import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar"; // Importez le nouveau composant
-import { usePathname } from "next/navigation"; // Import usePathname for conditional rendering
+import { ConditionalHeader } from "@/components/ConditionalHeader"; // Import the new client component
 
 export const metadata: Metadata = {
   title: "Miabesite | le site pour tous",
@@ -20,13 +19,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // usePathname est un hook client, donc il doit être utilisé dans un composant client.
-  // Pour l'utiliser dans un layout serveur, nous devons le rendre dans un composant client enfant.
-  // Cependant, pour ce cas, nous pouvons le laisser ici et Next.js le gérera.
-  // Si cela pose problème, il faudrait créer un composant client pour envelopper le Header.
-  const pathname = usePathname();
-  const hideHeader = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
-
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <head>
@@ -41,7 +33,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {!hideHeader && <Header />} {/* Render Header conditionally */}
+          <ConditionalHeader /> {/* Render the new client component here */}
           {children}
           <Toaster /> {/* Render Toaster globally */}
           <CookieConsentBanner /> {/* Render CookieConsentBanner globally */}
