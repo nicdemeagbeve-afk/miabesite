@@ -2,11 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle } from 'lucide-react'; // Added all potentially used icons
+import { MessageSquare, MapPin, Star, Wrench, Phone, Mail, User, Check, Briefcase, Hammer, PaintRoller, Palette, PencilRuler, StarHalf, CheckCircle, Menu, X, ChevronUp } from 'lucide-react'; // Added all potentially used icons
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema';
 import { toast } from 'sonner'; // Import toast for notifications
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // Import Sheet components
+import { Button } from "@/components/ui/button"; // Import Button
 
 interface DefaultTemplateProps {
   siteData: SiteEditorFormData;
@@ -22,11 +24,15 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [showBackToTop, setShowBackToTop] = React.useState(false);
+
 
   const primaryColorClass = `bg-${siteData.primaryColor}-600`;
   const primaryColorTextClass = `text-${siteData.primaryColor}-600`;
   const secondaryColorClass = `bg-${siteData.secondaryColor}-500`;
   const secondaryColorTextClass = `text-${siteData.secondaryColor}-500`;
+  const secondaryColorHoverBgClass = `hover:bg-${siteData.secondaryColor}-600`; // Defined here
 
   const sectionsVisibility = siteData.sectionsVisibility || {
     showHero: true,
@@ -35,6 +41,32 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
     showTestimonials: true,
     showSkills: true,
     showContact: true,
+  };
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
+    e.preventDefault();
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+      const offset = 80; // Adjust offset as needed for fixed header
+      window.scrollTo({
+        top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
+        behavior: 'smooth',
+      });
+      setIsMobileMenuOpen(false); // Close mobile menu after clicking a link
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -88,10 +120,62 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
     return icons[iconName] || Wrench; // Default to Wrench if not found
   };
 
+  const navLinks = (
+    <>
+      {sectionsVisibility.showHero && <a href="#accueil" onClick={(e) => handleSmoothScroll(e, '#accueil')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Accueil</a>}
+      {sectionsVisibility.showAbout && <a href="#apropos" onClick={(e) => handleSmoothScroll(e, '#apropos')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">À Propos</a>}
+      {sectionsVisibility.showProductsServices && productsAndServicesToDisplay.length > 0 && <a href="#offres" onClick={(e) => handleSmoothScroll(e, '#offres')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Nos Offres</a>}
+      {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && <a href="#temoignages" onClick={(e) => handleSmoothScroll(e, '#temoignages')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Témoignages</a>}
+      {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && <a href="#competences" onClick={(e) => handleSmoothScroll(e, '#competences')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Compétences</a>}
+      {sectionsVisibility.showContact && <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="text-gray-700 font-medium hover:text-blue-600 transition-colors w-full text-center py-2 text-base">Contact</a>}
+    </>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full bg-white shadow-lg">
+        <div className="container mx-auto px-4 md:px-6">
+          <nav className="flex justify-between items-center py-4">
+            <div className="flex items-center gap-2">
+              {siteData.logoOrPhoto && (
+                <Image src={siteData.logoOrPhoto} alt={`${siteData.publicName} Logo`} width={40} height={40} className="rounded-full object-cover" />
+              )}
+              <h1 className={cn("text-lg font-bold", primaryColorTextClass)}>
+                {siteData.publicName}
+              </h1>
+            </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              {navLinks}
+            </div>
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden">
+              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle Menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64">
+                  <div className="flex flex-col h-full py-4">
+                    <div className="px-6 mb-4">
+                      <h2 className="font-bold text-xl">{siteData.publicName}</h2>
+                    </div>
+                    <nav className="flex flex-col gap-2 px-6 text-base font-medium flex-1">
+                      {navLinks}
+                    </nav>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </nav>
+        </div>
+      </header>
+
       {sectionsVisibility.showHero && (
-        <section className={cn("py-12 md:py-24 lg:py-32 w-full bg-cover bg-center text-white flex flex-col items-center justify-center px-4", `bg-${siteData.primaryColor}-600`)}
+        <section id="accueil" className={cn("py-12 md:py-24 lg:py-32 w-full bg-cover bg-center text-white flex flex-col items-center justify-center px-4", `bg-${siteData.primaryColor}-600`)}
           style={{
             backgroundImage: siteData.heroBackgroundImage
               ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${siteData.heroBackgroundImage}')`
@@ -119,7 +203,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
       )}
 
       {sectionsVisibility.showAbout && siteData.aboutStory && (
-        <section className="py-12 md:py-24 w-full bg-white text-center px-4">
+        <section id="apropos" className="py-12 md:py-24 w-full bg-white text-center px-4">
           <div className="container mx-auto max-w-3xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-6", primaryColorTextClass)}>À Propos de Nous</h2>
             <p className="text-base text-gray-700 leading-relaxed">
@@ -130,7 +214,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
       )}
 
       {sectionsVisibility.showProductsServices && productsAndServicesToDisplay.length > 0 && (
-        <section className="py-12 md:py-24 w-full bg-gray-50 text-center px-4">
+        <section id="offres" className="py-12 md:py-24 w-full bg-gray-50 text-center px-4">
           <div className="container mx-auto max-w-5xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Offres</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -162,7 +246,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
       )}
 
       {sectionsVisibility.showTestimonials && testimonialsToDisplay.length > 0 && (
-        <section className="py-12 md:py-24 w-full bg-white text-center px-4">
+        <section id="temoignages" className="py-12 md:py-24 w-full bg-white text-center px-4">
           <div className="container mx-auto max-w-4xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-12", primaryColorTextClass)}>Ce que nos clients disent</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -187,7 +271,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
       )}
 
       {sectionsVisibility.showSkills && skillsToDisplay.length > 0 && (
-        <section className="py-12 md:py-24 w-full bg-gray-50 text-center px-4">
+        <section id="competences" className="py-12 md:py-24 w-full bg-gray-50 text-center px-4">
           <div className="container mx-auto max-w-5xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Compétences</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -207,7 +291,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
       )}
 
       {sectionsVisibility.showContact && (
-        <section className="py-12 md:py-24 w-full bg-white text-center px-4">
+        <section id="contact" className="py-12 md:py-24 w-full bg-white text-center px-4">
           <div className="container mx-auto max-w-3xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-8", primaryColorTextClass)}>Contactez-nous</h2>
             {siteData.showContactForm ? (
@@ -278,6 +362,14 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
           © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
         </p>
       </footer>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+      >
+        <ChevronUp className="h-5 w-5" />
+      </button>
     </div>
   );
 }
