@@ -38,28 +38,38 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       } = await supabase.auth.getUser();
 
       if (user) {
+        console.log("Utilisateur connecté:", user.id);
+
         // 1. Vérifier si un profil existe déjà
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error: fetchProfileError } = await supabase
           .from("profiles")
           .select("id")
           .eq("id", user.id)
           .single();
 
-        // Si une erreur réelle (pas juste "pas de ligne trouvée") survient lors de la récupération, la journaliser et arrêter.
-        if (profileError && profileError.code !== 'PGRST116') { // PGRST116 est souvent le code pour "aucune ligne trouvée"
-          console.error("Erreur lors de la récupération du profil:", profileError);
-          toast.error("Une erreur est survenue lors de la vérification de votre profil.");
-          setIsCheckingProfile(false);
-          return;
+        console.log("Résultat de la récupération du profil:", { profile, fetchProfileError });
+
+        // Gérer les erreurs de récupération du profil
+        if (fetchProfileError) {
+          if (fetchProfileError.code === 'PGRST116') {
+            // C'est le code pour "aucune ligne trouvée", ce qui est attendu si le profil n'existe pas encore.
+            console.log("Aucun profil trouvé pour l'utilisateur (PGRST116), procéder à la création.");
+          } else {
+            // C'est une erreur réelle de base de données lors de la récupération
+            console.error("Erreur réelle lors de la récupération du profil:", fetchProfileError);
+            toast.error(`Erreur lors de la vérification du profil: ${fetchProfileError.message || 'Erreur inconnue'}`);
+            setIsCheckingProfile(false);
+            return;
+          }
         }
 
         // 2. Si aucun profil n'est trouvé (data est null), en créer un
-        if (!profile) { // Condition simplifiée: si profile est null, on le crée
-          console.log("Profil manquant pour l'utilisateur, création en cours...");
+        if (!profile) { // Cette condition est vraie si profile est null (soit PGRST116, soit aucune donnée)
+          console.log("Profil manquant pour l'utilisateur, tentative de création...");
           toast.info("Mise à jour de votre compte en cours...");
 
           const newReferralCode = await generateUniqueReferralCode(supabase);
-          const initialCoinPoints = 50; // Donnez des pièces en bonus aux anciens utilisateurs !
+          const initialCoinPoints = 50;
 
           const { error: insertError } = await supabase.from("profiles").insert({
             id: user.id,
@@ -77,15 +87,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           });
 
           if (insertError) {
-            console.error("Erreur détaillée lors de la création du profil manquant:", insertError);
-            toast.error(`Échec de la mise à jour du profil: ${insertError.message || 'Erreur inconnue'}`);
+            console.error("Erreur détaillée lors de la CRÉATION du profil:", insertError);
+            toast.error(`Échec de la création du profil: ${insertError.message || 'Erreur inconnue'}`);
           } else {
             console.log("Profil créé avec succès pour l'utilisateur.");
             toast.success("Bienvenue ! Votre compte a été mis à jour avec un code de parrainage et des pièces bonus.");
-            // Optionnel : rafraîchir la page pour que les nouvelles données du profil soient utilisées partout
             window.location.reload();
           }
+        } else {
+          console.log("Profil existant trouvé pour l'utilisateur.");
         }
+      } else {
+        console.log("Aucun utilisateur connecté.");
       }
       setIsCheckingProfile(false);
     };
