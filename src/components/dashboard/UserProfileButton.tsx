@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
 import { User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
+import { LogoutButton } from '@/components/LogoutButton'; // Importe le nouveau composant
 
 interface UserProfileButtonProps {
   onLinkClick?: () => void; // Callback for mobile menu closure
@@ -91,5 +92,20 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
         {userName || "Mon Profil"}
       </span>
     </Link>
+  );
+}
+
+export function DashboardSidebar() {
+  return (
+    <aside className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-background border-r md:translate-x-0">
+      <div className="h-full px-3 py-4 overflow-y-auto">
+        <nav className="space-y-2">
+          {/* ...existing navigation links... */}
+        </nav>
+        <div className="absolute bottom-4 left-0 w-full px-3">
+          <LogoutButton /> {/* Ajoute le bouton de déconnexion ici */}
+        </div>
+      </div>
+    </aside>
   );
 }
