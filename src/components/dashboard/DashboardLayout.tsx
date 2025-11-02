@@ -1,6 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { generateUniqueReferralCode } from "@/lib/utils"; // Importez la fonction
+import { toast } from "sonner"; // Pour notifier l'utilisateur
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Menu } from "lucide-react"; // Import Menu icon for mobile toggle
@@ -16,6 +19,8 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const supabase = createClient();
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const pathname = usePathname();
@@ -24,6 +29,62 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   // Example: /dashboard/my-site/overview -> my-site
   const subdomainMatch = pathname.match(/^\/dashboard\/([^\/]+)/);
   const currentSubdomain = subdomainMatch ? subdomainMatch[1] : undefined;
+
+  useEffect(() => {
+    const checkAndCreateProfile = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // 1. Vérifier si un profil existe déjà
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", user.id)
+          .single();
+
+        // 2. Si aucun profil n'est trouvé, en créer un
+        if (!profile && profileError) {
+          console.log("Profil manquant pour l'utilisateur, création en cours...");
+          toast.info("Mise à jour de votre compte en cours...");
+
+          const newReferralCode = generateUniqueReferralCode();
+          const initialCoinPoints = 50; // Donnez des pièces en bonus aux anciens utilisateurs !
+
+          const { error: insertError } = await supabase.from("profiles").insert({
+            id: user.id,
+            full_name: user.user_metadata?.full_name || user.email,
+            first_name: user.user_metadata?.first_name,
+            last_name: user.user_metadata?.last_name,
+            avatar_url: user.user_metadata?.avatar_url,
+            role: "user",
+            referral_code: newReferralCode,
+            coin_points: initialCoinPoints,
+            // Assurez-vous d'inclure des valeurs par défaut pour les autres champs NOT NULL
+            referral_count: 0,
+          });
+
+          if (insertError) {
+            console.error("Erreur lors de la création du profil manquant:", insertError);
+            toast.error("Une erreur est survenue lors de la mise à jour de votre profil.");
+          } else {
+            console.log("Profil créé avec succès pour l'ancien utilisateur.");
+            toast.success("Bienvenue ! Votre compte a été mis à jour avec un code de parrainage et des pièces bonus.");
+            // Optionnel : rafraîchir la page pour que les nouvelles données du profil soient utilisées partout
+            window.location.reload();
+          }
+        }
+      }
+      setIsCheckingProfile(false);
+    };
+
+    checkAndCreateProfile();
+  }, []); // Le tableau vide assure que l'effet ne s'exécute qu'une seule fois
+
+  if (isCheckingProfile) {
+    return <div>Vérification de votre compte...</div>; // Ou un spinner de chargement
+  }
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -54,9 +115,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Removed SupabaseStatusIndicator from here */}
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-8 lg:ml-0"> {/* Removed lg:ml-64 as the sidebar is now part of the flex container */}
-          {children}
-        </main>
+        <main className="flex-1 p-4 md:p-8 lg:ml-0">{children}</main>
       </div>
       <Toaster />
     </div>

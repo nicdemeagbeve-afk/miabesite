@@ -1,85 +1,34 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { SupabaseClient } from '@supabase/supabase-js'; // Import generic SupabaseClient type
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-/**
- * Génère une URL pour un asset stocké dans le bucket 'static-assets' de Supabase.
- * Assurez-vous que NEXT_PUBLIC_SUPABASE_URL est défini dans vos variables d'environnement.
- * @param path Le chemin du fichier dans le bucket (ex: 'miabesite-logo.png').
- * @returns L'URL publique complète de l'asset.
- */
-export const getSupabaseStorageUrl = (path: string) => {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    console.error("NEXT_PUBLIC_SUPABASE_URL n'est pas défini. Les assets Supabase ne seront pas chargés.");
-    // Fallback à un chemin local ou un placeholder si l'URL Supabase n'est pas configurée
-    return `/public/${path}`; 
+// AJOUTEZ CETTE FONCTION SI ELLE N'EXISTE PAS
+// Elle génère un code alphanumérique simple. Vous pouvez la rendre plus complexe si nécessaire.
+export function generateUniqueReferralCode(length: number = 6): string {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
+  return result;
+}
+
+// AJOUTEZ CETTE NOUVELLE FONCTION
+/**
+ * Construit l'URL publique pour un objet dans Supabase Storage.
+ * @param bucket Le nom du bucket de stockage (ex: 'profile-pictures').
+ * @param path Le chemin du fichier dans le bucket.
+ * @returns L'URL publique complète de l'objet.
+ */
+export function getSupabaseStorageUrl(bucket: string, path: string): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  // Supprime le slash final si présent
-  const baseUrl = supabaseUrl.endsWith('/') ? supabaseUrl.slice(0, -1) : supabaseUrl;
-  // Assurez-vous que le chemin du bucket est correct.
-  // Si votre bucket est 'static-assets', le chemin est 'storage/v1/object/public/static-assets/'
-  // Si votre bucket est 'profile-pictures', le chemin est 'storage/v1/object/public/profile-pictures/'
-  // Pour les assets statiques globaux, on suppose 'static-assets'
-  return `${baseUrl}/storage/v1/object/public/static-assets/${path}`;
-};
-
-/**
- * Génère un code de parrainage unique à 5 chiffres.
- * @param supabase L'instance du client Supabase (peut être client ou server).
- * @returns Une promesse qui se résout avec un code de parrainage unique.
- */
-export async function generateUniqueReferralCode(supabase: SupabaseClient): Promise<string> {
-  let code: string = ''; // Initialized to prevent TS2454 error
-  let isUnique = false;
-  while (!isUnique) {
-    code = Math.floor(10000 + Math.random() * 90000).toString(); // 5-digit number
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('referral_code')
-      .eq('referral_code', code)
-      .single();
-
-    if (error && error.code === 'PGRST116') { // No rows found, code is unique
-      isUnique = true;
-    } else if (data) {
-      // Code exists, regenerate
-    } else if (error) {
-      console.error("Error checking referral code uniqueness:", error);
-      throw new Error("Failed to generate unique referral code.");
-    }
+  if (!supabaseUrl || !path) {
+    return ""; // Retourne une chaîne vide si l'URL ou le chemin n'est pas défini
   }
-  return code;
-}
-
-/**
- * Génère un code de jointure unique à 6 chiffres pour une communauté.
- * @param supabase L'instance du client Supabase (peut être client ou server).
- * @returns Une promesse qui se résout avec un code de jointure unique.
- */
-export async function generateUniqueCommunityJoinCode(supabase: SupabaseClient): Promise<string> {
-  let code: string = '';
-  let isUnique = false;
-  while (!isUnique) {
-    code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit number
-    const { data, error } = await supabase
-      .from('communities')
-      .select('join_code')
-      .eq('join_code', code)
-      .single();
-
-    if (error && error.code === 'PGRST116') { // No rows found, code is unique
-      isUnique = true;
-    } else if (data) {
-      // Code exists, regenerate
-    } else if (error) {
-      console.error("Error checking community join code uniqueness:", error);
-      throw new Error("Failed to generate unique community join code.");
-    }
-  }
-  return code;
+  // Assure que le chemin n'a pas de slash au début
+  const cleanPath = path.startsWith("/") ? path.substring(1) : path;
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${cleanPath}`;
 }
