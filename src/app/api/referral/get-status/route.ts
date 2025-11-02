@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
     let { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('referral_code, referral_count, coin_points, referred_by, full_name, email') // Added full_name, email for profile creation fallback
+      .select('referral_code, referral_count, coin_points, referred_by, full_name') // Removed 'email' from select
       .eq('id', user.id)
       .single();
 
@@ -27,7 +27,6 @@ export async function GET(request: Request) {
         referralCode = await generateUniqueReferralCode(supabase);
       } catch (codeError: any) {
         console.error("API /referral/get-status: Failed to generate referral code for new user:", codeError);
-        // If code generation fails, we should probably stop here or create profile without code
         return NextResponse.json({ error: `Erreur lors de la génération du code de parrainage: ${codeError.message}` }, { status: 500 });
       }
 
@@ -47,7 +46,7 @@ export async function GET(request: Request) {
           coin_points: 0,
           referral_count: 0,
         })
-        .select('referral_code, referral_count, coin_points, referred_by, full_name, email') // Select the same fields again
+        .select('referral_code, referral_count, coin_points, referred_by, full_name') // Removed 'email' from select
         .single();
 
       if (insertError) {
@@ -60,7 +59,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: profileError.message || 'Erreur lors du chargement du profil.' }, { status: 500 });
     }
 
-    // If profile is still null after attempted creation (shouldn't happen with above logic)
     if (!profile) {
         console.error("API /referral/get-status: Profile is null after fetch and attempted creation.");
         return NextResponse.json({ error: 'Profil non trouvé après tentative de création.' }, { status: 404 });
@@ -76,7 +74,6 @@ export async function GET(request: Request) {
       
       if (referrerProfileError) {
         console.error("API /referral/get-status: Error fetching referrer profile:", referrerProfileError);
-        // This is a non-critical error for the main referral status, so we log but don't fail the request.
       } else {
         referrerInfo = {
           fullName: referrerProfile?.full_name,
