@@ -1,19 +1,59 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { type SupabaseClient } from '@supabase/supabase-js';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// AJOUTEZ CETTE FONCTION SI ELLE N'EXISTE PAS
-// Elle génère un code alphanumérique simple. Vous pouvez la rendre plus complexe si nécessaire.
-export function generateUniqueReferralCode(length: number = 6): string {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
+// Fonction pour générer une chaîne aléatoire d'une longueur donnée
+function generateRandomCode(length: number): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
+}
+
+// Fonction pour générer un code de jointure de communauté unique
+export async function generateUniqueCommunityJoinCode(supabase: SupabaseClient): Promise<string> {
+  let code: string = ''; // Initialiser 'code'
+  let isUnique = false;
+  while (!isUnique) {
+    code = generateRandomCode(8); // Longueur exemple pour le code de jointure
+    const { data, error } = await supabase
+      .from('communities') // Supposant une table 'communities'
+      .select('join_code')
+      .eq('join_code', code)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 signifie "aucune ligne trouvée"
+      throw error; // Les autres erreurs doivent être gérées
+    }
+    isUnique = !data; // Si data est null, le code est unique
+  }
+  return code;
+}
+
+// Fonction pour générer un code de parrainage unique
+export async function generateUniqueReferralCode(supabase: SupabaseClient): Promise<string> {
+  let code: string = ''; // Initialiser 'code'
+  let isUnique = false;
+  while (!isUnique) {
+    code = generateRandomCode(6); // Longueur exemple pour le code de parrainage
+    const { data, error } = await supabase
+      .from('referrals') // Supposant une table 'referrals'
+      .select('code')
+      .eq('code', code)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 signifie "aucune ligne trouvée"
+      throw error; // Les autres erreurs doivent être gérées
+    }
+    isUnique = !data; // Si data est null, le code est unique
+  }
+  return code;
 }
 
 // AJOUTEZ CETTE NOUVELLE FONCTION

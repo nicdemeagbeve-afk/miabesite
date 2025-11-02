@@ -49,7 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           console.log("Profil manquant pour l'utilisateur, création en cours...");
           toast.info("Mise à jour de votre compte en cours...");
 
-          const newReferralCode = generateUniqueReferralCode();
+          const newReferralCode = await generateUniqueReferralCode(supabase); // Passer l'instance supabase
           const initialCoinPoints = 50; // Donnez des pièces en bonus aux anciens utilisateurs !
 
           const { error: insertError } = await supabase.from("profiles").insert({
