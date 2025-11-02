@@ -15,7 +15,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CommunityCreationSchema, CommunityCreationFormData } from '@/lib/schemas/community-schema';
+import { communityCategories, premiumTemplates } from '@/lib/constants'; // Import centralized constants
+import { LayoutTemplate, Tag } from 'lucide-react'; // Import icons
+
+// Filter out the 'all' category for community creation
+const creatableCommunityCategories = communityCategories.filter(cat => cat.value !== 'all');
 
 export function CommunityCreationForm() {
   const form = useForm<CommunityCreationFormData>({
@@ -25,6 +37,10 @@ export function CommunityCreationForm() {
       description: '',
       utility: '',
       positioningDomain: '',
+      template_1: '', // Add default values for new fields
+      template_2: '',
+      category: '',
+      is_public: true, // Default to public
     },
   });
 
@@ -104,6 +120,82 @@ export function CommunityCreationForm() {
               <FormControl>
                 <Input placeholder="Ex: Développement Web, Bien-être, Marketing" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="template_1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1"><LayoutTemplate className="h-4 w-4" /> Premier Template Premium</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un template" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {premiumTemplates.map((template) => (
+                      <SelectItem key={template.value} value={template.value}>
+                        {template.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="template_2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1"><LayoutTemplate className="h-4 w-4" /> Deuxième Template Premium</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un template" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {premiumTemplates.map((template) => (
+                      <SelectItem key={template.value} value={template.value}>
+                        {template.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1"><Tag className="h-4 w-4" /> Catégorie de la Communauté</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une catégorie" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {creatableCommunityCategories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
