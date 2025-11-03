@@ -5,7 +5,7 @@ import { AdminSidebar } from "./AdminSidebar";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/use-mobile";
+// import { useIsMobile } from "@/hooks/use-mobile"; // Removed useIsMobile hook
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ interface AdminDashboardLayoutProps {
 }
 
 export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
-  const isMobile = useIsMobile();
+  // const isMobile = useIsMobile(); // Removed useIsMobile hook
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const supabase = createClient();
   const router = useRouter();
@@ -39,7 +39,8 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
       <div className="flex flex-col flex-1">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
           <div className="flex items-center gap-4">
-            {isMobile && ( // Show menu button only on mobile
+            {/* Mobile menu trigger: visible on small screens, hidden from md breakpoint up */}
+            <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -51,7 +52,7 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
                   <AdminSidebar onLinkClick={() => setIsMobileMenuOpen(false)} />
                 </SheetContent>
               </Sheet>
-            )}
+            </div>
             <h2 className="text-xl font-semibold">Tableau de Bord Admin</h2>
           </div>
           <div className="flex items-center gap-2">
@@ -61,7 +62,7 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
             </Button>
           </div>
         </header>
-        <div className="hidden lg:flex lg:w-64"> {/* Desktop sidebar */}
+        <div className="hidden md:flex md:w-64"> {/* Desktop sidebar */}
           <AdminSidebar />
         </div>
         <main className="flex-1 p-4 md:p-8 lg:ml-0">

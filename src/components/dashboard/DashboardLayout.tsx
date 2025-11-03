@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Menu } from "lucide-react"; // Import Menu icon for mobile toggle
 import { Button } from "@/components/ui/button"; // Import Button for mobile toggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
-import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile hook
+// import { useIsMobile } from "@/hooks/use-mobile"; // Removed useIsMobile hook
 import { usePathname } from "next/navigation"; // Import usePathname
 import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 import { PWAInstallButton } from "@/components/PWAInstallButton"; // Import PWAInstallButton
@@ -22,7 +22,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const supabase = createClient();
   const [isCheckingProfile, setIsCheckingProfile] = useState(true);
-  const isMobile = useIsMobile();
+  // const isMobile = useIsMobile(); // Removed useIsMobile hook
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const pathname = usePathname();
 
@@ -115,7 +115,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex flex-col flex-1">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
           <div className="flex items-center gap-4">
-            {isMobile && ( // Show menu button only on mobile
+            {/* Mobile menu trigger: visible on small screens, hidden from md breakpoint up */}
+            <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -127,7 +128,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <DashboardSidebar subdomain={currentSubdomain} onLinkClick={() => setIsMobileMenuOpen(false)} />
                 </SheetContent>
               </Sheet>
-            )}
+            </div>
             <h2 className="text-xl font-semibold">Tableau de Bord</h2> {/* Always show title */}
           </div>
           <div className="flex items-center gap-2">
@@ -135,7 +136,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <ThemeToggle />
           </div>
         </header>
-        <div className="hidden lg:flex lg:w-64"> {/* Desktop sidebar */}
+        {/* Desktop sidebar: hidden on small screens, flex from md breakpoint up */}
+        <div className="hidden md:flex md:w-64">
           <DashboardSidebar subdomain={currentSubdomain} />
         </div>
         <main className="flex-1 p-4 md:p-8 lg:ml-0">{children}</main>
