@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client"; // Import client-side Supa
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
+import { LogoutButton } from "@/components/LogoutButton"; // Import LogoutButton
 
 interface AdminDashboardLayoutProps {
   children: React.ReactNode;
@@ -22,17 +23,18 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
   const supabase = createClient();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error("Erreur lors de la déconnexion.");
-      console.error("Logout error:", error);
-    } else {
-      toast.success("Déconnexion réussie. Retour à la page de connexion utilisateur.");
-      router.push("/login");
-      router.refresh();
-    }
-  };
+  // The handleLogout function is now handled by the LogoutButton component itself
+  // const handleLogout = async () => {
+  //   const { error } = await supabase.auth.signOut();
+  //   if (error) {
+  //     toast.error("Erreur lors de la déconnexion.");
+  //     console.error("Logout error:", error);
+  //   } else {
+  //     toast.success("Déconnexion réussie. Retour à la page de connexion utilisateur.");
+  //     router.push("/login");
+  //     router.refresh();
+  //   }
+  // };
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -61,9 +63,7 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="outline" onClick={handleLogout}>
-              Déconnexion
-            </Button>
+            <LogoutButton /> {/* Replaced generic button with LogoutButton component */}
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8">

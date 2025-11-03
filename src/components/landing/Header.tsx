@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PWAInstallButton } from "@/components/PWAInstallButton";
 import { LogoutButton } from "@/components/LogoutButton";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react"; // Import Menu and X icons
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
 import { usePathname, useRouter } from "next/navigation"; // Import useRouter

@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Im
 import { usePathname } from "next/navigation"; // Import usePathname
 import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 import { PWAInstallButton } from "@/components/PWAInstallButton"; // Import PWAInstallButton
+import { LogoutButton } from "@/components/LogoutButton"; // Import LogoutButton
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -138,6 +139,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-2">
             <PWAInstallButton />
             <ThemeToggle />
+            <LogoutButton /> {/* Added LogoutButton here */}
           </div>
         </header>
         <main className="flex-1 p-4 md:p-8">{children}</main>
