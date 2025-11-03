@@ -5,9 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter } from "lucide-react"; // Import ListFilter icon for communities listing
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, ShieldCheck } from "lucide-react"; // Import ShieldCheck icon
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface DashboardSidebarProps {
   subdomain?: string;
@@ -16,7 +19,51 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const supabase = createClient();
+  const router = useRouter();
   const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482";
+
+  const [userRole, setUserRole] = React.useState<string | null>(null);
+  const [loadingRole, setLoadingRole] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchUserRole = async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        setUserRole(null);
+        setLoadingRole(false);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile) {
+        console.error("Error fetching user profile role:", profileError);
+        setUserRole(null);
+      } else {
+        setUserRole(profile.role);
+      }
+      setLoadingRole(false);
+    };
+
+    fetchUserRole();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        fetchUserRole();
+      } else if (event === 'SIGNED_OUT') {
+        setUserRole(null);
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const alwaysVisibleNavItems = [
     {
@@ -164,6 +211,19 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
                 </React.Fragment>
               ))}
             </>
+          )}
+
+          {/* Conditional Admin Login Button */}
+          {(userRole === 'admin' || userRole === 'super_admin') && (
+            <div className="my-4 border-t border-border pt-4">
+              <Link href="/admin/overview" passHref>
+                <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={onLinkClick}>
+                  <div>
+                    <ShieldCheck className="mr-2 h-5 w-5" /> Accéder au Tableau de Bord Admin
+                  </div>
+                </Button>
+              </Link>
+            </div>
           )}
         </TooltipProvider>
       </nav>
