@@ -36,6 +36,10 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
 
   return (
     <div className="flex min-h-screen bg-muted/40">
+      {/* Desktop sidebar: hidden on small screens, flex from md breakpoint up */}
+      <div className="hidden md:flex md:w-64">
+        <AdminSidebar />
+      </div>
       <div className="flex flex-col flex-1">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4 lg:px-6">
           <div className="flex items-center gap-4">
@@ -62,10 +66,7 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
             </Button>
           </div>
         </header>
-        <div className="hidden md:flex md:w-64"> {/* Desktop sidebar */}
-          <AdminSidebar />
-        </div>
-        <main className="flex-1 p-4 md:p-8 lg:ml-0">
+        <main className="flex-1 p-4 md:p-8">
           {children}
         </main>
       </div>
