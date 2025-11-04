@@ -43,14 +43,30 @@ export async function POST(request: Request) {
       systemInstruction: systemInstruction,
       tools: [
         {
-          // Correction 1: Utiliser 'functionDeclarations' (camelCase)
           functionDeclarations: [
             {
               name: "list_user_sites",
               description: "Liste tous les sites web créés par l'utilisateur actuel.",
               parameters: {
-                type: "object",
+                // Correction 1: 'OBJECT' en majuscules
+                type: "OBJECT", 
                 properties: {}, // Pas de paramètres pour cette fonction
+              },
+            },
+            {
+              name: "get_site_stats",
+              description: "Récupère les statistiques (ventes, visites, contacts) pour un site web spécifique de l'utilisateur.",
+              parameters: {
+                // Correction 2: 'OBJECT' en majuscules
+                type: "OBJECT", 
+                properties: {
+                  subdomain: {
+                    // Correction 3: 'STRING' en majuscules
+                    type: "STRING", 
+                    description: "Le sous-domaine du site web pour lequel récupérer les statistiques (ex: 'monsite').",
+                  },
+                },
+                required: ["subdomain"],
               },
             },
           ],
@@ -65,7 +81,6 @@ export async function POST(request: Request) {
     const result = await chat.sendMessage(message);
     const response = result.response;
 
-    // Correction 2: Appeler response.functionCalls() pour obtenir le tableau
     const functionCalls = response.functionCalls(); 
     if (functionCalls && functionCalls.length > 0) {
       const functionCall = functionCalls[0]; // Accéder au premier élément du tableau
@@ -108,6 +123,55 @@ export async function POST(request: Request) {
             functionResponse: {
               name: "list_user_sites",
               response: sitesData, // Send the actual data back
+            },
+          },
+        ]);
+        return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+      } else if (functionCall.name === "get_site_stats") {
+        // Correction 4: Assertion de type pour functionCall.args
+        const { subdomain } = functionCall.args as { subdomain: string }; 
+
+        if (!subdomain) {
+          return NextResponse.json({
+            response: "Veuillez spécifier le sous-domaine du site pour lequel vous souhaitez les statistiques.",
+            tool_code: "MISSING_SUBDOMAIN"
+          }, { status: 200 });
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          return NextResponse.json({
+            response: "Je ne peux pas récupérer les statistiques de vos sites car vous n'êtes pas connecté. Veuillez vous connecter d'abord.",
+            tool_code: "UNAUTHORIZED"
+          }, { status: 200 });
+        }
+
+        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/dashboard/stats?subdomain=${subdomain}`, {
+          headers: {
+            // Same authentication considerations as above
+          },
+        });
+
+        if (!apiResponse.ok) {
+          const errorData = await apiResponse.json();
+          console.error(`Error fetching stats for ${subdomain}:`, apiResponse.status, errorData);
+          return NextResponse.json({
+            response: `Désolé, je n'ai pas pu récupérer les statistiques pour le site "${subdomain}". ${errorData.error || 'Veuillez vérifier le sous-domaine et réessayer.'}`,
+            tool_code: "API_ERROR"
+          }, { status: 200 });
+        }
+
+        const statsData = await apiResponse.json();
+
+        const toolResponse = await chat.sendMessage([
+          {
+            functionCall: functionCall,
+          },
+          {
+            functionResponse: {
+              name: "get_site_stats",
+              response: statsData,
             },
           },
         ]);
