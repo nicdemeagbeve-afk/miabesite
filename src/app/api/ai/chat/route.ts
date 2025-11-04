@@ -1,4 +1,15 @@
 import { NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Assurez-vous que votre clé API Gemini est définie dans vos variables d'environnement
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+if (!GEMINI_API_KEY) {
+  console.error("GEMINI_API_KEY n'est pas définie dans les variables d'environnement.");
+  // En production, vous pourriez vouloir empêcher le démarrage de l'application ou désactiver la fonctionnalité IA.
+}
+
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 export async function POST(request: Request) {
   try {
@@ -8,13 +19,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // Pour l'instant, une réponse simple.
-    // Plus tard, nous intégrerons un LLM (comme Gemini) et des outils ici.
-    const aiResponse = `J'ai reçu votre message : "${message}". Je suis en cours de développement pour vous aider avec la gestion de votre compte et de vos sites.`;
+    if (!genAI) {
+      return NextResponse.json({ error: 'L\'API Gemini n\'est pas configurée. Veuillez vérifier la clé API.' }, { status: 500 });
+    }
 
-    return NextResponse.json({ response: aiResponse }, { status: 200 });
+    // Choisissez le modèle Gemini que vous souhaitez utiliser
+    // 'gemini-pro' est un bon point de départ pour le texte
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const result = await model.generateContent(message);
+    const response = await result.response;
+    const text = response.text();
+
+    return NextResponse.json({ response: text }, { status: 200 });
   } catch (error: any) {
-    console.error("API route error for AI chat:", error);
-    return NextResponse.json({ error: error.message || 'An unexpected error occurred' }, { status: 500 });
+    console.error("API route error for AI chat with Gemini:", error);
+    // Fournir un message d'erreur plus convivial à l'utilisateur
+    return NextResponse.json({ error: 'Une erreur est survenue lors de la génération de la réponse par l\'IA. Veuillez réessayer.' }, { status: 500 });
   }
 }
