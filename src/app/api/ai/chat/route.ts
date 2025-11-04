@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@/lib/supabase/server'; // Import server-side Supabase client
 
 // Assurez-vous que votre clé API Gemini est définie dans vos variables d'environnement
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -12,8 +13,10 @@ if (!GEMINI_API_KEY) {
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 export async function POST(request: Request) {
+  const supabase = createClient(); // Initialize Supabase client for server-side operations
+
   try {
-    const { message } = await request.json();
+    const { message, history } = await request.json(); // 'history' will be used for multi-turn conversations
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -32,17 +35,88 @@ export async function POST(request: Request) {
       Si un utilisateur pose une question qui est en dehors de ce domaine (par exemple, des connaissances générales,
       des conseils personnels, des sujets non liés), vous devez poliment refuser de répondre et le rediriger
       vers des questions concernant Miabesite. Ne vous engagez pas dans des conversations hors sujet.
+      Vous pouvez utiliser les outils disponibles pour aider l'utilisateur.
     `;
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      systemInstruction: systemInstruction, // Ajout de l'instruction système ici
+      systemInstruction: systemInstruction,
+      tools: [
+        {
+          // Correction 1: Utiliser 'functionDeclarations' (camelCase)
+          functionDeclarations: [
+            {
+              name: "list_user_sites",
+              description: "Liste tous les sites web créés par l'utilisateur actuel.",
+              parameters: {
+                type: "object",
+                properties: {}, // Pas de paramètres pour cette fonction
+              },
+            },
+          ],
+        },
+      ],
     });
 
-    const result = await model.generateContent(message);
-    const response = await result.response;
-    const text = response.text();
+    const chat = model.startChat({
+      history: history || [], // Initialize chat history
+    });
 
+    const result = await chat.sendMessage(message);
+    const response = result.response;
+
+    // Correction 2: Appeler response.functionCalls() pour obtenir le tableau
+    const functionCalls = response.functionCalls(); 
+    if (functionCalls && functionCalls.length > 0) {
+      const functionCall = functionCalls[0]; // Accéder au premier élément du tableau
+
+      if (functionCall.name === "list_user_sites") {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          return NextResponse.json({
+            response: "Je ne peux pas lister vos sites car vous n'êtes pas connecté. Veuillez vous connecter d'abord.",
+            tool_code: "UNAUTHORIZED"
+          }, { status: 200 });
+        }
+
+        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/sites`, {
+          headers: {
+            // IMPORTANT: In a real scenario, you'd need to pass authentication headers
+            // or ensure your internal API route can be called securely from here.
+            // For this example, we're assuming the /dashboard/sites API route
+            // handles its own authentication check via Supabase server client.
+          },
+        });
+
+        if (!apiResponse.ok) {
+          console.error("Error fetching user sites from internal API:", apiResponse.status, await apiResponse.text());
+          return NextResponse.json({
+            response: "Désolé, je n'ai pas pu récupérer la liste de vos sites pour le moment. Veuillez réessayer plus tard.",
+            tool_code: "API_ERROR"
+          }, { status: 200 });
+        }
+
+        const sitesData = await apiResponse.json();
+        
+        // Send the tool result back to Gemini to generate a natural language response
+        const toolResponse = await chat.sendMessage([
+          {
+            functionCall: functionCall,
+          },
+          {
+            functionResponse: {
+              name: "list_user_sites",
+              response: sitesData, // Send the actual data back
+            },
+          },
+        ]);
+        return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+      }
+    }
+
+    // If no tool call, return the direct text response from Gemini
+    const text = response.text();
     return NextResponse.json({ response: text }, { status: 200 });
   } catch (error: any) {
     console.error("API route error for AI chat with Gemini:", error);

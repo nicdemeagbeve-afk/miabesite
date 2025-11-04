@@ -24,6 +24,10 @@ interface Message {
   id: string;
   sender: 'user' | 'ai';
   text: string;
+  // Ajout de 'parts' pour stocker l'historique de conversation pour Gemini
+  parts?: { text: string }[];
+  functionCall?: { name: string; args: any };
+  functionResponse?: { name: string; response: any };
 }
 
 export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
@@ -42,16 +46,23 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
     e.preventDefault();
     if (input.trim() === '' || isLoading) return;
 
-    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: input };
+    const userMessageText = input;
+    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: userMessageText };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+
+    // Préparer l'historique pour l'API Gemini
+    const historyForGemini = messages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }],
+    }));
 
     try {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: userMessageText, history: historyForGemini }),
       });
 
       if (!response.ok) {
