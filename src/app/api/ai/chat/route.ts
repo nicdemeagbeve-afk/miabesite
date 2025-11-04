@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'; // Import SchemaType
 import { createClient } from '@/lib/supabase/server'; // Import server-side Supabase client
 
 // Assurez-vous que votre clé API Gemini est définie dans vos variables d'environnement
@@ -48,8 +48,7 @@ export async function POST(request: Request) {
               name: "list_user_sites",
               description: "Liste tous les sites web créés par l'utilisateur actuel.",
               parameters: {
-                // Correction 1: 'OBJECT' en majuscules
-                type: "OBJECT", 
+                type: SchemaType.OBJECT, // Correction ici
                 properties: {}, // Pas de paramètres pour cette fonction
               },
             },
@@ -57,12 +56,10 @@ export async function POST(request: Request) {
               name: "get_site_stats",
               description: "Récupère les statistiques (ventes, visites, contacts) pour un site web spécifique de l'utilisateur.",
               parameters: {
-                // Correction 2: 'OBJECT' en majuscules
-                type: "OBJECT", 
+                type: SchemaType.OBJECT, // Correction ici
                 properties: {
                   subdomain: {
-                    // Correction 3: 'STRING' en majuscules
-                    type: "STRING", 
+                    type: SchemaType.STRING, // Correction ici
                     description: "Le sous-domaine du site web pour lequel récupérer les statistiques (ex: 'monsite').",
                   },
                 },
@@ -128,7 +125,6 @@ export async function POST(request: Request) {
         ]);
         return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
       } else if (functionCall.name === "get_site_stats") {
-        // Correction 4: Assertion de type pour functionCall.args
         const { subdomain } = functionCall.args as { subdomain: string }; 
 
         if (!subdomain) {
