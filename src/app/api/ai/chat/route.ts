@@ -23,10 +23,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'L\'API Gemini n\'est pas configurée. Veuillez vérifier la clé API.' }, { status: 500 });
     }
 
-    // Choisissez le modèle Gemini que vous souhaitez utiliser
-    // 'gemini-pro' est un bon point de départ pour le texte
-    // Correction: Utilisation de 'gemini-1.0-pro' qui est le nom de modèle actuel recommandé
-    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+    // Correction: Utilisation de 'gemini-flash' comme demandé
+    const model = genAI.getGenerativeModel({ model: "gemini-flash" });
 
     const result = await model.generateContent(message);
     const response = await result.response;
