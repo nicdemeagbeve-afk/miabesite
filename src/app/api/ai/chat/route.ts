@@ -23,8 +23,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'L\'API Gemini n\'est pas configurée. Veuillez vérifier la clé API.' }, { status: 500 });
     }
 
-    // Correction: Utilisation de 'gemini-2.5-flash' comme nom de modèle recommandé
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Instruction système pour guider le comportement de l'IA
+    const systemInstruction = `
+      Vous êtes un assistant IA utile pour Miabesite, une plateforme de création et de gestion de sites web.
+      Votre objectif est d'aider les utilisateurs avec des questions et des tâches *strictement liées aux services de Miabesite,
+      à la création de sites web, à la gestion de sites, aux fonctionnalités, au design, à l'édition de contenu,
+      et à tout autre aspect concernant directement la plateforme*.
+      Si un utilisateur pose une question qui est en dehors de ce domaine (par exemple, des connaissances générales,
+      des conseils personnels, des sujets non liés), vous devez poliment refuser de répondre et le rediriger
+      vers des questions concernant Miabesite. Ne vous engagez pas dans des conversations hors sujet.
+    `;
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction: systemInstruction, // Ajout de l'instruction système ici
+    });
 
     const result = await model.generateContent(message);
     const response = await result.response;
