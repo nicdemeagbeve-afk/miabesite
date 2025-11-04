@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import React from "react";
 import type { Metadata } from 'next';
+import { AIChatBubble } from "@/components/AIChatBubble"; // Import AIChatBubble
 
 export const metadata: Metadata = {
   title: {
@@ -15,13 +16,10 @@ interface LayoutProps {
 }
 
 export default function DashboardRootLayout({ children }: LayoutProps) {
-  // This layout is for /dashboard, /dashboard/sites, /dashboard/profile
-  // It does not have a subdomain param directly.
-  // DashboardLayout will be rendered without a specific subdomain,
-  // and the sidebar will only show general links.
   return (
     <DashboardLayout>
       {children}
+      <AIChatBubble /> {/* Add the AI chat bubble here */}
     </DashboardLayout>
   );
 }
