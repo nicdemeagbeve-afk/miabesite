@@ -88,7 +88,7 @@ export function AdminOverview() {
       });
 
     } catch (err: any) {
-      console.error("Failed to fetch admin stats:", err);
+      console.error("Failed to fetch admin stats:", err); // Added log
       setError(err.message || "Erreur lors du chargement des statistiques administrateur.");
       toast.error(err.message || "Erreur lors du chargement des statistiques administrateur.");
     } finally {

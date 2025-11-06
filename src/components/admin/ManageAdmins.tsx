@@ -54,6 +54,7 @@ export function ManageAdmins() {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
+        console.error("User not authenticated for admin management:", userError); // Added log
         toast.error("Veuillez vous connecter pour gérer les administrateurs.");
         return;
       }
@@ -65,6 +66,7 @@ export function ManageAdmins() {
         .single();
 
       if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+        console.error("Admin role check failed:", profileError); // Added log
         toast.error("Accès refusé. Vous n'avez pas les permissions d'administrateur.");
         return;
       }
@@ -76,7 +78,7 @@ export function ManageAdmins() {
         .or('role.eq.admin,role.eq.super_admin');
 
       if (error) {
-        console.error("Error fetching admins:", error);
+        console.error("Supabase Error fetching admins:", error); // Added log
         toast.error("Erreur lors du chargement des administrateurs.");
       } else {
         setAdmins(data as AdminProfile[]);
@@ -113,6 +115,7 @@ export function ManageAdmins() {
         fetchAdmins(); // Refresh the list
         form.reset();
       } else {
+        console.error("API Error adding admin:", result.error); // Added log
         toast.error(result.error || "Erreur lors de l'ajout de l'administrateur.");
       }
     } catch (err) {
@@ -139,6 +142,7 @@ export function ManageAdmins() {
         toast.success(result.message);
         fetchAdmins(); // Refresh the list
       } else {
+        console.error("API Error removing admin:", result.error); // Added log
         toast.error(result.error || "Erreur lors de la suppression de l'administrateur.");
       }
     } catch (err) {
@@ -223,8 +227,8 @@ export function ManageAdmins() {
           ) : (
             <div className="space-y-4">
               {admins.map((admin) => (
-                <div key={admin.id} className="flex items-center justify-between p-3 border rounded-md bg-muted">
-                  <div className="flex items-center gap-3">
+                <div key={admin.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-md bg-muted">
+                  <div className="flex items-center gap-3 mb-2 sm:mb-0">
                     <User className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-semibold">{admin.full_name || admin.email}</p>

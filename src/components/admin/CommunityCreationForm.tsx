@@ -57,6 +57,7 @@ export function CommunityCreationForm() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("API Error creating community:", errorData); // Added log
         throw new Error(errorData.message || 'Échec de la création de la communauté.');
       }
 

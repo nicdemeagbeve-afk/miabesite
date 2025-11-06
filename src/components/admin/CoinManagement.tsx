@@ -93,6 +93,7 @@ export function CoinManagement() {
       if (response.ok) {
         setTransactions(result.transactions);
       } else {
+        console.error("API Error fetching transactions:", result.error); // Added log
         toast.error(result.error || "Erreur lors du chargement des transactions.");
       }
     } catch (err) {
@@ -127,6 +128,7 @@ export function CoinManagement() {
           description: "",
         });
       } else {
+        console.error("API Error transferring coins:", result.error); // Added log
         toast.error(result.error || "Erreur lors du transfert des pièces.");
       }
     } catch (err) {
