@@ -83,7 +83,9 @@ export async function POST(request: Request) {
       des conseils personnels, des sujets non liés), vous devez poliment refuser de répondre et le rediriger
       vers des questions concernant Miabesite. Ne vous engagez pas dans des conversations hors sujet.
       Vous pouvez utiliser les outils disponibles pour aider l'utilisateur.
-      Lorsque vous fournissez des informations, assurez-vous qu'elles sont claires, concises et bien formatées pour une lisibilité optimale.
+      Lorsque vous fournissez des informations, assurez-vous qu'elles sont claires, concises et bien formatées pour une lisibilité parfaite.
+      Utilisez des sauts de ligne pour séparer les informations importantes et les listes.
+      Soyez bref et rapide dans vos réponses, ne donnez que les informations essentielles sans paragraphes longs.
       Si l'utilisateur demande des statistiques pour 'chaque' site ou pour 'tous' ses sites après avoir listé ses sites,
       vous devez appeler l'outil 'get_site_stats' pour chaque sous-domaine listé et compiler les résultats dans une réponse unique et bien formatée.
     `;
@@ -373,12 +375,12 @@ export async function POST(request: Request) {
         if (!sitesData || sitesData.length === 0) {
           responseText = "Vous n'avez aucun site enregistré dans votre compte.";
         } else {
-          responseText = `Vous avez ${sitesData.length} site(s) : \n\n`; // Added extra newline here
-          sitesData.forEach((site: any, index: number) => {
-            responseText += `- **${site.subdomain}**\n`;
-            responseText += `  - Nom public: ${site.publicName || 'Non défini'}\n`;
-            responseText += `  - Statut: ${site.status}\n`;
-            responseText += `  - Template: ${site.template_type}\n\n`; // Added extra newline here
+          responseText = `Vous avez ${sitesData.length} site(s) : \n\n`;
+          sitesData.forEach((site: any) => {
+            responseText += `**${site.subdomain}** \n`;
+            responseText += `Nom public: ${site.publicName || 'Non défini'} \n`;
+            responseText += `Statut: ${site.status} \n`;
+            responseText += `Template: ${site.template_type} \n\n`;
           });
         }
         
@@ -413,10 +415,10 @@ export async function POST(request: Request) {
         const statsData = await apiResponse.json();
 
         // Format the stats data directly into a readable string
-        const formattedStats = `Voici les statistiques pour le site **${subdomain}** :
-- Ventes totales : ${statsData.totalSales}
-- Visites totales : ${statsData.totalVisits}
-- Contacts totaux : ${statsData.totalContacts}\n\n`; // Added extra newline here
+        const formattedStats = `Voici les statistiques pour le site **${subdomain}** : \n` +
+                               `- Ventes totales : ${statsData.totalSales} \n` +
+                               `- Visites totales : ${statsData.totalVisits} \n` +
+                               `- Contacts totaux : ${statsData.totalContacts} \n\n`;
         
         return NextResponse.json({ response: formattedStats }, { status: 200 });
 
@@ -444,12 +446,7 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            {
-              functionResponse: {
-                name: "update_site_hero_content",
-                response: { success: true, message: `Contenu du site "${subdomain}" mis à jour avec succès.` },
-              },
-            },
+            { functionResponse: { name: "update_site_hero_content", response: { success: true, message: `Contenu du site "${subdomain}" mis à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
         } catch (error: any) {
@@ -492,12 +489,7 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            {
-              functionResponse: {
-                name: "update_site_design",
-                response: { success: true, message: `Design du site "${subdomain}" mis à jour avec succès.` },
-              },
-            },
+            { functionResponse: { name: "update_site_design", response: { success: true, message: `Design du site "${subdomain}" mis à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
         } catch (error: any) {
