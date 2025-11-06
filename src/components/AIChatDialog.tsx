@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, User, Send, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { usePathname } from 'next/navigation'; // Import usePathname
 
 interface AIChatDialogProps {
   isOpen: boolean;
@@ -24,7 +25,6 @@ interface Message {
   id: string;
   sender: 'user' | 'ai';
   text: string;
-  // Ajout de 'parts' pour stocker l'historique de conversation pour Gemini
   parts?: { text: string }[];
   functionCall?: { name: string; args: any };
   functionResponse?: { name: string; response: any };
@@ -35,6 +35,13 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
   const [input, setInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const pathname = usePathname(); // Initialize usePathname
+
+  // Extract subdomain from the current path if it's a dashboard site page
+  const currentSubdomain = React.useMemo(() => {
+    const match = pathname.match(/^\/dashboard\/([^\/]+)/);
+    return match ? match[1] : undefined;
+  }, [pathname]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -52,7 +59,6 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
     setInput('');
     setIsLoading(true);
 
-    // Préparer l'historique pour l'API Gemini
     const historyForGemini = messages.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }],
@@ -62,7 +68,11 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessageText, history: historyForGemini }),
+        body: JSON.stringify({ 
+          message: userMessageText, 
+          history: historyForGemini,
+          current_site_subdomain: currentSubdomain, // Pass the current subdomain
+        }),
       });
 
       if (!response.ok) {
@@ -91,6 +101,11 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
           </DialogTitle>
           <DialogDescription>
             Posez vos questions ou demandez des modifications pour votre compte ou vos sites.
+            {currentSubdomain && (
+              <span className="block text-xs text-muted-foreground mt-1">
+                Contexte actuel : Site <span className="font-semibold text-primary">{currentSubdomain}</span>
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="flex-1 p-4 border rounded-md bg-muted/20 mb-4">

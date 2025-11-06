@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   const supabase = createClient();
 
   try {
-    const { message, history } = await request.json();
+    const { message, history, current_site_subdomain } = await request.json(); // Receive current_site_subdomain
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -97,6 +97,14 @@ export async function POST(request: Request) {
       Par exemple, pour créer un site, dites : "Je ne peux pas créer un site directement pour vous, mais vous pouvez le faire facilement en allant sur la page 'Créer un site' de votre tableau de bord."
       Pour modifier le profil, dites : "Je ne peux pas modifier votre profil directement, mais vous pouvez le faire sur la page 'Profil & Paramètres' de votre tableau de bord."
       Pour les fonctionnalités avancées comme la liaison de domaine ou l'exportation de code, dites : "Ces fonctionnalités avancées sont prévues pour la version 2 de Miabesite et ne sont pas encore disponibles. Vous pouvez consulter la page 'Gestion Avancée' de votre site pour plus d'informations."
+
+      ${current_site_subdomain ? `
+      L'utilisateur est actuellement sur le site avec le sous-domaine '${current_site_subdomain}'.
+      Toutes les questions ou demandes concernant un site doivent être interprétées comme se référant à ce sous-domaine,
+      SAUF si l'utilisateur mentionne explicitement un autre sous-domaine dans sa requête.
+      Si une fonction d'outil nécessite un 'subdomain' et que l'utilisateur n'en fournit pas explicitement un dans sa requête,
+      vous devez utiliser la valeur de '${current_site_subdomain}' pour cet appel de fonction.
+      ` : ''}
     `;
 
     const model = genAI.getGenerativeModel({
@@ -208,7 +216,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ response: responseText }, { status: 200 });
 
       } else if (functionCall.name === "get_site_stats") {
-        const { subdomain } = functionCall.args as { subdomain: string };
+        // Prioritize subdomain from functionCall.args, then current_site_subdomain
+        const subdomain = (functionCall.args as { subdomain?: string }).subdomain || current_site_subdomain;
 
         if (!subdomain) {
           return NextResponse.json({
@@ -243,7 +252,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ response: formattedStats }, { status: 200 });
 
       } else if (functionCall.name === "rewrite_site_text") {
-        const { subdomain, field_name, new_text } = functionCall.args as { subdomain: string; field_name: keyof SiteEditorFormData; current_text: string; new_text: string; };
+        // Prioritize subdomain from functionCall.args, then current_site_subdomain
+        const subdomain = (functionCall.args as { subdomain?: string }).subdomain || current_site_subdomain;
+        const { field_name, new_text } = functionCall.args as { subdomain?: string; field_name: keyof SiteEditorFormData; current_text: string; new_text: string; };
 
         if (!subdomain || !field_name || !new_text) {
           return NextResponse.json({ response: "Veuillez spécifier le sous-domaine, le nom du champ et le nouveau texte." }, { status: 200 });
