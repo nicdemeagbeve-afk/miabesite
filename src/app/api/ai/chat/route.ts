@@ -368,9 +368,6 @@ export async function POST(request: Request) {
 
         const toolResponse = await chat.sendMessage([
           {
-            functionCall: functionCall,
-          },
-          {
             functionResponse: {
               name: "list_user_sites",
               response: sitesData,
@@ -408,9 +405,6 @@ export async function POST(request: Request) {
 
         const toolResponse = await chat.sendMessage([
           {
-            functionCall: functionCall,
-          },
-          {
             functionResponse: {
               name: "get_site_stats",
               response: statsData,
@@ -443,9 +437,6 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            {
-              functionCall: functionCall,
-            },
             {
               functionResponse: {
                 name: "update_site_hero_content",
@@ -495,9 +486,6 @@ export async function POST(request: Request) {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
             {
-              functionCall: functionCall,
-            },
-            {
               functionResponse: {
                 name: "update_site_design",
                 response: { success: true, message: `Design du site "${subdomain}" mis à jour avec succès.` },
@@ -546,7 +534,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { productsAndServices: updatedProducts });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "add_product_or_service", response: { success: true, message: `Produit/service "${title}" ajouté avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -592,7 +579,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { productsAndServices: currentProducts });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "update_product_or_service", response: { success: true, message: `Produit/service "${oldTitle}" mis à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -629,7 +615,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { productsAndServices: updatedProducts });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "remove_product_or_service", response: { success: true, message: `Produit/service "${title}" supprimé avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -671,7 +656,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { testimonials: updatedTestimonials });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "add_testimonial", response: { success: true, message: `Témoignage de "${author}" ajouté avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -715,7 +699,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { testimonials: currentTestimonials });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "update_testimonial", response: { success: true, message: `Témoignage de "${oldAuthor}" mis à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -752,7 +735,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { testimonials: updatedTestimonials });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "remove_testimonial", response: { success: true, message: `Témoignage de "${author}" supprimé avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -792,7 +774,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { skills: updatedSkills });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "add_skill", response: { success: true, message: `Compétence "${title}" ajoutée avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -835,7 +816,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { skills: currentSkills });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "update_skill", response: { success: true, message: `Compétence "${oldTitle}" mise à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -872,7 +852,6 @@ export async function POST(request: Request) {
 
           await updateSiteData(supabase, user.id, subdomain, { skills: updatedSkills });
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "remove_skill", response: { success: true, message: `Compétence "${title}" supprimée avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -908,7 +887,6 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall, },
             { functionResponse: { name: "update_site_basic_info", response: { success: true, message: `Informations de base du site "${subdomain}" mises à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
@@ -944,7 +922,6 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
             { functionResponse: { name: "update_site_contact_settings", response: { success: true, message: `Paramètres de contact et réseaux sociaux du site "${subdomain}" mis à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
