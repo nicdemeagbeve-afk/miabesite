@@ -83,6 +83,7 @@ export async function POST(request: Request) {
       des conseils personnels, des sujets non liés), vous devez poliment refuser de répondre et le rediriger
       vers des questions concernant Miabesite. Ne vous engagez pas dans des conversations hors sujet.
       Vous pouvez utiliser les outils disponibles pour aider l'utilisateur.
+      Lorsque vous fournissez des informations, assurez-vous qu'elles sont claires, concises et bien formatées pour une lisibilité optimale.
     `;
 
     const model = genAI.getGenerativeModel({
@@ -372,7 +373,7 @@ export async function POST(request: Request) {
         } else {
           responseText = `Vous avez ${sitesData.length} site(s) : \n`;
           sitesData.forEach((site: any, index: number) => {
-            responseText += `- ${site.subdomain} (Nom public: ${site.publicName || 'Non défini'}, Statut: ${site.status}, Template: ${site.template_type})\n`;
+            responseText += `- **${site.subdomain}** (Nom public: ${site.publicName || 'Non défini'}, Statut: ${site.status}, Template: ${site.template_type})\n`;
           });
         }
         
@@ -406,15 +407,13 @@ export async function POST(request: Request) {
 
         const statsData = await apiResponse.json();
 
-        const toolResponse = await chat.sendMessage([
-          {
-            functionResponse: {
-              name: "get_site_stats",
-              response: statsData,
-            },
-          },
-        ]);
-        return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        // Format the stats data directly into a readable string
+        const formattedStats = `Voici les statistiques pour le site **${subdomain}** :
+- Ventes totales : ${statsData.totalSales}
+- Visites totales : ${statsData.totalVisits}
+- Contacts totaux : ${statsData.totalContacts}`;
+        
+        return NextResponse.json({ response: formattedStats }, { status: 200 });
 
       } else if (functionCall.name === "update_site_hero_content") {
         const { subdomain, heroSlogan, aboutStory } = functionCall.args as { subdomain: string; heroSlogan?: string; aboutStory?: string };
