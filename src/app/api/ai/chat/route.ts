@@ -366,15 +366,18 @@ export async function POST(request: Request) {
           }, { status: 200 });
         }
 
-        const toolResponse = await chat.sendMessage([
-          {
-            functionResponse: {
-              name: "list_user_sites",
-              response: sitesData,
-            },
-          },
-        ]);
-        return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        let responseText = "";
+        if (!sitesData || sitesData.length === 0) {
+          responseText = "Vous n'avez aucun site enregistré dans votre compte.";
+        } else {
+          responseText = `Vous avez ${sitesData.length} site(s) : \n`;
+          sitesData.forEach((site: any, index: number) => {
+            responseText += `- ${site.subdomain} (Nom public: ${site.publicName || 'Non défini'}, Statut: ${site.status}, Template: ${site.template_type})\n`;
+          });
+        }
+        
+        // Directly return the formatted text
+        return NextResponse.json({ response: responseText }, { status: 200 });
 
       } else if (functionCall.name === "get_site_stats") {
         const { subdomain } = functionCall.args as { subdomain: string };
@@ -892,7 +895,7 @@ export async function POST(request: Request) {
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
         } catch (error: any) {
           console.error("Error updating site basic info:", error);
-          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les informations de base du site "${subdomain}". ${error.message}` }, { status: 200 });
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les informations de base du site "${subdomain}". ${error.message}`, tool_code: "UPDATE_ERROR" }, { status: 200 });
         }
       } else if (functionCall.name === "update_site_contact_settings") {
         const { subdomain, contactButtonAction, showContactForm, facebookLink, instagramLink, linkedinLink } = functionCall.args as {
@@ -927,7 +930,7 @@ export async function POST(request: Request) {
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
         } catch (error: any) {
           console.error("Error updating site contact settings:", error);
-          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les paramètres de contact du site "${subdomain}". ${error.message}` }, { status: 200 });
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les paramètres de contact du site "${subdomain}". ${error.message}`, tool_code: "UPDATE_ERROR" }, { status: 200 });
         }
       }
     }
