@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, XCircle } from "lucide-react";
+import { PlusCircle, XCircle, ShoppingCart, DollarSign, Image as ImageIcon } from "lucide-react"; // Importation des icônes
 import {
   Select,
   SelectContent,
@@ -58,7 +58,9 @@ export function ProductsServicesStep() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center">🛍️ Produits & Services</h3>
+      <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+        <ShoppingCart className="h-6 w-6 text-primary" /> Produits & Services
+      </h3>
       <p className="text-center text-muted-foreground">
         Présentez vos offres phares (3 maximum).
       </p>
@@ -97,7 +99,7 @@ export function ProductsServicesStep() {
                 name={`productsAndServices.${index}.price`}
                 render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.price`> }) => (
                   <FormItem>
-                    <FormLabel>Prix/Tarif</FormLabel>
+                    <FormLabel className="flex items-center gap-1"><DollarSign className="h-4 w-4 text-muted-foreground" /> Prix/Tarif</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -158,7 +160,7 @@ export function ProductsServicesStep() {
               name={`productsAndServices.${index}.image`}
               render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.image`> }) => (
                 <FormItem>
-                  <FormLabel>Image du Produit/Service (Optionnel)</FormLabel>
+                  <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-muted-foreground" /> Image du Produit/Service (Optionnel)</FormLabel>
                   <FormControl>
                     <Input
                       {...fieldProps}

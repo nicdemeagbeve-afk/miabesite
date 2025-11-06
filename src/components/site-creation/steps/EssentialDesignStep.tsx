@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { MapPin } from "lucide-react"; // Import MapPin icon
+import { MapPin, Palette, User, Phone, Mail, Image as ImageIcon } from "lucide-react"; // Importation des icônes
+
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode"; // Import new component
 
 const predefinedColors = [
@@ -38,7 +39,9 @@ export function EssentialDesignStep() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center">🏷️ Infos Essentielles & Design</h3>
+      <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+        <Palette className="h-6 w-6 text-primary" /> Infos Essentielles & Design
+      </h3>
       <p className="text-center text-muted-foreground">
         L'identité numérique de votre entreprise.
       </p>
@@ -48,7 +51,7 @@ export function EssentialDesignStep() {
         name="firstName"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "firstName"> }) => (
           <FormItem>
-            <FormLabel>Prénom</FormLabel>
+            <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-muted-foreground" /> Prénom</FormLabel>
             <FormControl>
               <Input placeholder="Ex: Jean" {...field} />
             </FormControl>
@@ -61,7 +64,7 @@ export function EssentialDesignStep() {
         name="lastName"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "lastName"> }) => (
           <FormItem>
-            <FormLabel>Nom</FormLabel>
+            <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-muted-foreground" /> Nom</FormLabel>
             <FormControl>
               <Input placeholder="Ex: Dupont" {...field} />
             </FormControl>
@@ -74,7 +77,7 @@ export function EssentialDesignStep() {
         name="expertise"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "expertise"> }) => (
           <FormItem>
-            <FormLabel>Domaine d'expertise / Travail</FormLabel>
+            <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-muted-foreground" /> Domaine d'expertise / Travail</FormLabel>
             <FormControl>
               <Input placeholder="Ex: Développeur Web, Artisan Plombier" {...field} />
             </FormControl>
@@ -88,7 +91,7 @@ export function EssentialDesignStep() {
         name="publicName"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "publicName"> }) => (
           <FormItem>
-            <FormLabel>Nom Public & Activité</FormLabel>
+            <FormLabel className="flex items-center gap-1"><User className="h-4 w-4 text-muted-foreground" /> Nom Public & Activité</FormLabel>
             <FormControl>
               <Input placeholder="Ex: Mamadou Couture, Aïsha Délices" {...field} />
             </FormControl>
@@ -130,7 +133,7 @@ export function EssentialDesignStep() {
         name="email"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "email"> }) => (
           <FormItem>
-            <FormLabel>E-mail (Optionnel)</FormLabel>
+            <FormLabel className="flex items-center gap-1"><Mail className="h-4 w-4 text-muted-foreground" /> E-mail (Optionnel)</FormLabel>
             <FormControl>
               <Input type="email" placeholder="votre@email.com" {...field} />
             </FormControl>
@@ -195,7 +198,7 @@ export function EssentialDesignStep() {
         name="logoOrPhoto"
         render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, "logoOrPhoto"> }) => (
           <FormItem>
-            <FormLabel>Logo ou Photo de Profil (Optionnel)</FormLabel>
+            <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-muted-foreground" /> Logo ou Photo de Profil (Optionnel)</FormLabel>
             <FormControl>
               <Input
                 {...fieldProps}

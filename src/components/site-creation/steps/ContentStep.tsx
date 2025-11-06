@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Image as ImageIcon } from "lucide-react"; // Import ImageIcon
+import { Image as ImageIcon, LayoutTemplate, BookOpen } from "lucide-react"; // Importation des icônes
 import { toast } from "sonner";
 
 export function ContentStep() {
@@ -21,7 +21,9 @@ export function ContentStep() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center">🎯 Contenu (Les Pages Clés)</h3>
+      <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+        <LayoutTemplate className="h-6 w-6 text-primary" /> Contenu (Les Pages Clés)
+      </h3>
       <p className="text-center text-muted-foreground">
         Le cœur de votre site web : ce que vous offrez et votre histoire.
       </p>
@@ -48,7 +50,7 @@ export function ContentStep() {
         name="aboutStory"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "aboutStory"> }) => (
           <FormItem>
-            <FormLabel>Mon Histoire / Ma Mission (Page "À Propos")</FormLabel>
+            <FormLabel className="flex items-center gap-1"><BookOpen className="h-4 w-4 text-muted-foreground" /> Mon Histoire / Ma Mission (Page "À Propos")</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Racontez votre parcours, vos valeurs, votre engagement local (max 500 caractères)."

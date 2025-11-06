@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch"; // Import Switch
+import { Globe, Facebook, Instagram, Linkedin, MessageSquare, CreditCard, Truck, EyeOff } from "lucide-react"; // Importation des icônes
 
 export function ConfigurationNetworkStep() {
   const { control } = useFormContext();
@@ -47,7 +48,9 @@ export function ConfigurationNetworkStep() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center">🌐 Configuration et Réseaux</h3>
+      <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+        <Globe className="h-6 w-6 text-primary" /> Configuration et Réseaux
+      </h3>
       <p className="text-center text-muted-foreground">
         Paramétrez les interactions et la visibilité de votre site.
       </p>
@@ -57,7 +60,7 @@ export function ConfigurationNetworkStep() {
 
       <Separator className="my-8" />
 
-      <h4 className="text-xl font-semibold text-center">Gestion des Commandes</h4>
+      <h4 className="text-xl font-semibold text-center flex items-center justify-center gap-2"><MessageSquare className="h-5 w-5" /> Gestion des Commandes</h4>
       <FormField
         control={control}
         name="contactButtonAction"
@@ -109,13 +112,13 @@ export function ConfigurationNetworkStep() {
 
       <Separator className="my-8" />
 
-      <h4 className="text-xl font-semibold text-center">Réseaux Sociaux (Optionnel)</h4>
+      <h4 className="text-xl font-semibold text-center flex items-center justify-center gap-2"><Globe className="h-5 w-5" /> Réseaux Sociaux (Optionnel)</h4>
       <FormField
         control={control}
         name="facebookLink"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "facebookLink"> }) => (
           <FormItem>
-            <FormLabel>Lien Facebook</FormLabel>
+            <FormLabel className="flex items-center gap-1"><Facebook className="h-4 w-4 text-muted-foreground" /> Lien Facebook</FormLabel>
             <FormControl>
               <Input placeholder="https://facebook.com/votrepage" {...field} />
             </FormControl>
@@ -128,7 +131,7 @@ export function ConfigurationNetworkStep() {
         name="instagramLink"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "instagramLink"> }) => (
           <FormItem>
-            <FormLabel>Lien Instagram</FormLabel>
+            <FormLabel className="flex items-center gap-1"><Instagram className="h-4 w-4 text-muted-foreground" /> Lien Instagram</FormLabel>
             <FormControl>
               <Input placeholder="https://instagram.com/votreprofil" {...field} />
             </FormControl>
@@ -141,7 +144,7 @@ export function ConfigurationNetworkStep() {
         name="linkedinLink"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "linkedinLink"> }) => (
           <FormItem>
-            <FormLabel>Lien LinkedIn</FormLabel>
+            <FormLabel className="flex items-center gap-1"><Linkedin className="h-4 w-4 text-muted-foreground" /> Lien LinkedIn</FormLabel>
             <FormControl>
               <Input placeholder="https://linkedin.com/in/votreprofil" {...field} />
             </FormControl>
@@ -152,7 +155,7 @@ export function ConfigurationNetworkStep() {
 
       <Separator className="my-8" />
 
-      <h4 className="text-xl font-semibold text-center">Conditions de Paiement & Livraison</h4>
+      <h4 className="text-xl font-semibold text-center flex items-center justify-center gap-2"><CreditCard className="h-5 w-5" /> Conditions de Paiement & Livraison</h4>
       <FormField
         control={control}
         name="paymentMethods"
@@ -204,7 +207,7 @@ export function ConfigurationNetworkStep() {
         name="deliveryOption"
         render={({ field }: { field: ControllerRenderProps<FieldValues, "deliveryOption"> }) => (
           <FormItem>
-            <FormLabel>Livraison / Déplacement</FormLabel>
+            <FormLabel className="flex items-center gap-1"><Truck className="h-4 w-4 text-muted-foreground" /> Livraison / Déplacement</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -247,7 +250,7 @@ export function ConfigurationNetworkStep() {
 
       <Separator className="my-8" />
 
-      <h4 className="text-xl font-semibold text-center">Visibilité des Sections</h4>
+      <h4 className="text-xl font-semibold text-center flex items-center justify-center gap-2"><EyeOff className="h-5 w-5" /> Visibilité des Sections</h4>
       <FormField
         control={control}
         name="sectionsVisibility.showHero"

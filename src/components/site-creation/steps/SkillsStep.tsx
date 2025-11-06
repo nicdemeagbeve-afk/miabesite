@@ -69,7 +69,9 @@ export function SkillsStep() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center">🛠️ Compétences / Expertise</h3>
+      <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+        <Wrench className="h-6 w-6 text-primary" /> Compétences / Expertise
+      </h3>
       <p className="text-center text-muted-foreground">
         Mettez en avant vos domaines d'expertise (10 maximum).
       </p>
