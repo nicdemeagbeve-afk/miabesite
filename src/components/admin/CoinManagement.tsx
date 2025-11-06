@@ -138,6 +138,7 @@ export function CoinManagement() {
   };
 
   const recipientIdentifierType = form.watch("identifierType");
+  const amountValue = form.watch("amount");
 
   if (loading) {
     return (
@@ -235,7 +236,7 @@ export function CoinManagement() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmittingTransfer || (recipientIdentifierType === 'referralCode' && form.getValues("recipientIdentifier").length < 5)}>
+              <Button type="submit" className="w-full" disabled={isSubmittingTransfer || (recipientIdentifierType === 'referralCode' && form.getValues("recipientIdentifier").length < 5) || amountValue <= 0}>
                 {isSubmittingTransfer ? "Transfert en cours..." : "Transférer les Pièces"}
               </Button>
             </form>

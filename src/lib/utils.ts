@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Fonction pour générer une chaîne aléatoire d'une longueur donnée
-function generateRandomCode(length: number): string {
+// Fonction pour générer une chaîne alphanumérique aléatoire d'une longueur donnée
+function generateRandomAlphanumericCode(length: number): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
@@ -16,47 +16,56 @@ function generateRandomCode(length: number): string {
   return result;
 }
 
-// Fonction pour générer un code de jointure de communauté unique
+// Nouvelle fonction pour générer une chaîne numérique aléatoire d'une longueur donnée
+function generateRandomNumericCode(length: number): string {
+  const characters = '0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+// Fonction pour générer un code de jointure de communauté unique (6 chiffres)
 export async function generateUniqueCommunityJoinCode(supabase: SupabaseClient): Promise<string> {
-  let code: string = ''; // Initialiser 'code'
+  let code: string = '';
   let isUnique = false;
   while (!isUnique) {
-    code = generateRandomCode(8); // Longueur exemple pour le code de jointure
+    code = generateRandomNumericCode(6); // Génère un code de 6 chiffres
     const { data, error } = await supabase
-      .from('communities') // Supposant une table 'communities'
+      .from('communities')
       .select('join_code')
       .eq('join_code', code)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 signifie "aucune ligne trouvée"
-      throw error; // Les autres erreurs doivent être gérées
+    if (error && error.code !== 'PGRST116') {
+      throw error;
     }
-    isUnique = !data; // Si data est null, le code est unique
+    isUnique = !data;
   }
   return code;
 }
 
-// Fonction pour générer un code de parrainage unique
+// Fonction pour générer un code de parrainage unique (5 chiffres)
 export async function generateUniqueReferralCode(supabase: SupabaseClient): Promise<string> {
-  let code: string = ''; // Initialiser 'code'
+  let code: string = '';
   let isUnique = false;
   while (!isUnique) {
-    code = generateRandomCode(6); // Longueur exemple pour le code de parrainage
+    code = generateRandomNumericCode(5); // Génère un code de 5 chiffres
     const { data, error } = await supabase
-      .from('profiles') // CORRECTION: Query 'profiles' table
+      .from('profiles')
       .select('referral_code')
       .eq('referral_code', code)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 signifie "aucune ligne trouvée"
-      throw error; // Les autres erreurs doivent être gérées
+    if (error && error.code !== 'PGRST116') {
+      throw error;
     }
-    isUnique = !data; // Si data est null, le code est unique
+    isUnique = !data;
   }
   return code;
 }
 
-// AJOUTEZ CETTE NOUVELLE FONCTION
 /**
  * Construit l'URL publique pour un objet dans Supabase Storage.
  * @param bucket Le nom du bucket de stockage (ex: 'profile-pictures').
