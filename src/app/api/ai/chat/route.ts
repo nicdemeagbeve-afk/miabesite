@@ -3,6 +3,7 @@ import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
 import { SiteEditorFormData, ProductAndService, Testimonial, Skill } from '@/lib/schemas/site-editor-form-schema'; // Import SiteEditorFormData type
 import { SupabaseClient } from '@supabase/supabase-js'; // Import SupabaseClient type
+import { generateUniqueCommunityJoinCode } from '@/lib/utils'; // Import utility for join code
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -11,6 +12,8 @@ if (!GEMINI_API_KEY) {
 }
 
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+
+const COMMUNITY_UNLOCK_POINTS = 1000; // Defined here for AI to reference
 
 /**
  * Helper function to fetch, update, and save site_data in Supabase.
@@ -98,6 +101,14 @@ export async function POST(request: Request) {
         {
           functionDeclarations: [
             {
+              name: "get_user_profile",
+              description: "Récupère les informations de profil de l'utilisateur actuel, y compris le nom complet, l'email, le numéro WhatsApp, l'expertise, le code de parrainage, les points et le nombre de parrainages.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {},
+              },
+            },
+            {
               name: "list_user_sites",
               description: "Liste tous les sites web créés par l'utilisateur actuel.",
               parameters: {
@@ -114,6 +125,38 @@ export async function POST(request: Request) {
                   subdomain: {
                     type: SchemaType.STRING,
                     description: "Le sous-domaine du site web pour lequel récupérer les statistiques (ex: 'monsite').",
+                  },
+                },
+                required: ["subdomain"],
+              },
+            },
+            {
+              name: "toggle_site_publish_status",
+              description: "Change le statut de publication (public/privé) d'un site web de l'utilisateur.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: {
+                    type: SchemaType.STRING,
+                    description: "Le sous-domaine du site web à modifier.",
+                  },
+                  is_public: {
+                    type: SchemaType.BOOLEAN,
+                    description: "Le nouveau statut de publication (true pour public, false pour privé).",
+                  },
+                },
+                required: ["subdomain", "is_public"],
+              },
+            },
+            {
+              name: "delete_site",
+              description: "Supprime un site web de l'utilisateur de manière permanente.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: {
+                    type: SchemaType.STRING,
+                    description: "Le sous-domaine du site web à supprimer.",
                   },
                 },
                 required: ["subdomain"],
@@ -334,6 +377,84 @@ export async function POST(request: Request) {
                 required: ["subdomain"],
               },
             },
+            {
+              name: "list_user_communities",
+              description: "Liste toutes les communautés dont l'utilisateur est membre ou propriétaire.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {},
+              },
+            },
+            {
+              name: "create_community",
+              description: "Crée une nouvelle communauté. Nécessite 1000 pièces de parrainage.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  name: { type: SchemaType.STRING, description: "Le nom de la communauté." },
+                  description: { type: SchemaType.STRING, description: "La description de la communauté." },
+                  utility: { type: SchemaType.STRING, description: "L'utilité ou le but de la communauté." },
+                  positioningDomain: { type: SchemaType.STRING, description: "Le domaine de positionnement de la communauté." },
+                  template_1: { type: SchemaType.STRING, description: "Le premier template premium choisi pour la communauté." },
+                  template_2: { type: SchemaType.STRING, description: "Le deuxième template premium choisi pour la communauté." },
+                  category: { type: SchemaType.STRING, description: "La catégorie de la communauté (ex: 'artisanat', 'services')." },
+                  is_public: { type: SchemaType.BOOLEAN, description: "Indique si la communauté est publique (true) ou privée (false)." },
+                },
+                required: ["name", "description", "utility", "positioningDomain", "template_1", "template_2", "category", "is_public"],
+              },
+            },
+            {
+              name: "join_community",
+              description: "Rejoint une communauté existante en utilisant son ID et un code de jointure si elle est privée.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  communityId: { type: SchemaType.STRING, description: "L'ID UUID de la communauté à rejoindre." },
+                  isPublic: { type: SchemaType.BOOLEAN, description: "Indique si la communauté est publique (true) ou privée (false)." },
+                  joinCode: { type: SchemaType.STRING, description: "Le code de jointure de 6 chiffres si la communauté est privée." },
+                },
+                required: ["communityId", "isPublic"],
+              },
+            },
+            {
+              name: "get_referral_status",
+              description: "Récupère le code de parrainage de l'utilisateur, le nombre d'amis parrainés, les points de pièces et les informations sur le parrain.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {},
+              },
+            },
+            {
+              name: "apply_referral_code",
+              description: "Applique un code de parrainage pour lier l'utilisateur à un parrain.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  referrerCode: { type: SchemaType.STRING, description: "Le code de parrainage de 5 chiffres du parrain." },
+                },
+                required: ["referrerCode"],
+              },
+            },
+            {
+              name: "transfer_coin_points",
+              description: "Transfère un certain montant de pièces de l'utilisateur actuel à un autre utilisateur via son code de parrainage.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  recipientCode: { type: SchemaType.STRING, description: "Le code de parrainage de 5 chiffres du destinataire." },
+                  amount: { type: SchemaType.NUMBER, description: "Le montant de pièces à transférer." },
+                },
+                required: ["recipientCode", "amount"],
+              },
+            },
+            {
+              name: "get_push_subscription_status",
+              description: "Vérifie si l'utilisateur est actuellement abonné aux notifications push.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {},
+              },
+            },
           ],
         },
       ],
@@ -358,7 +479,46 @@ export async function POST(request: Request) {
         }, { status: 200 });
       }
 
-      if (functionCall.name === "list_user_sites") {
+      if (functionCall.name === "get_user_profile") {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name, email, whatsapp_number, expertise, referral_code, coin_points, referral_count, referred_by')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          console.error("Error fetching user profile:", profileError);
+          return NextResponse.json({
+            response: "Désolé, je n'ai pas pu récupérer votre profil. Veuillez réessayer plus tard.",
+            tool_code: "API_ERROR"
+          }, { status: 200 });
+        }
+
+        let referredByInfo = "Non parrainé";
+        if (profile.referred_by) {
+          const { data: referrerProfile, error: referrerError } = await supabase
+            .from('profiles')
+            .select('full_name, referral_code')
+            .eq('id', profile.referred_by)
+            .single();
+          if (!referrerError && referrerProfile) {
+            referredByInfo = `${referrerProfile.full_name || 'Utilisateur inconnu'} (Code: ${referrerProfile.referral_code})`;
+          }
+        }
+
+        const responseText = `Voici les détails de votre profil : \n\n` +
+                               `Nom complet : ${profile.full_name || 'Non défini'} \n` +
+                               `Email : ${user.email || 'Non défini'} \n` +
+                               `Numéro WhatsApp : ${profile.whatsapp_number || 'Non défini'} \n` +
+                               `Expertise : ${profile.expertise || 'Non définie'} \n` +
+                               `Votre code de parrainage : ${profile.referral_code || 'Non défini'} \n` +
+                               `Vos pièces : ${profile.coin_points} \n` +
+                               `Amis parrainés : ${profile.referral_count} \n` +
+                               `Parrainé par : ${referredByInfo} \n\n`;
+
+        return NextResponse.json({ response: responseText }, { status: 200 });
+
+      } else if (functionCall.name === "list_user_sites") {
         const { data: sitesData, error: fetchSitesError } = await supabase
           .from('sites')
           .select('subdomain, site_data->publicName, status, template_type')
@@ -423,6 +583,62 @@ export async function POST(request: Request) {
         
         return NextResponse.json({ response: formattedStats }, { status: 200 });
 
+      } else if (functionCall.name === "toggle_site_publish_status") {
+        const { subdomain, is_public } = functionCall.args as { subdomain: string; is_public: boolean; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sites/${subdomain}/publish`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_public }),
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.message || "Erreur lors de la mise à jour du statut du site.");
+          }
+
+          const statusMessage = is_public ? "publié" : "dépublié";
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "toggle_site_publish_status", response: { success: true, message: `Site "${subdomain}" ${statusMessage} avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error toggling site publish status:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu modifier le statut de publication du site "${subdomain}". ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "delete_site") {
+        const { subdomain } = functionCall.args as { subdomain: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site à supprimer." }, { status: 200 });
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sites/${subdomain}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.message || "Erreur lors de la suppression du site.");
+          }
+
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "delete_site", response: { success: true, message: `Site "${subdomain}" supprimé avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error deleting site:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu supprimer le site "${subdomain}". ${error.message}` }, { status: 200 });
+        }
       } else if (functionCall.name === "update_site_hero_content") {
         const { subdomain, heroSlogan, aboutStory } = functionCall.args as { subdomain: string; heroSlogan?: string; aboutStory?: string };
 
@@ -929,6 +1145,233 @@ export async function POST(request: Request) {
           console.error("Error updating site contact settings:", error);
           return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les paramètres de contact du site "${subdomain}". ${error.message}`, tool_code: "UPDATE_ERROR" }, { status: 200 });
         }
+      } else if (functionCall.name === "list_user_communities") {
+        const { data: communitiesData, error: fetchCommunitiesError } = await supabase
+          .from('communities')
+          .select('id, name, description, category, is_public, owner_id')
+          .or(`owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // User is owner or member
+
+        if (fetchCommunitiesError) {
+          console.error("Error fetching user communities:", fetchCommunitiesError);
+          return NextResponse.json({
+            response: "Désolé, je n'ai pas pu récupérer la liste de vos communautés pour le moment. Veuillez réessayer plus tard.",
+            tool_code: "API_ERROR"
+          }, { status: 200 });
+        }
+
+        let responseText = "";
+        if (!communitiesData || communitiesData.length === 0) {
+          responseText = "Vous n'êtes membre ou propriétaire d'aucune communauté.";
+        } else {
+          responseText = `Vous êtes membre ou propriétaire de ${communitiesData.length} communauté(s) : \n\n`;
+          for (const community of communitiesData) {
+            const { count: memberCount, error: countError } = await supabase
+              .from('community_members')
+              .select('id', { count: 'exact' })
+              .eq('community_id', community.id);
+
+            responseText += `Nom : ${community.name} \n`;
+            responseText += `ID : ${community.id} \n`;
+            responseText += `Description : ${community.description} \n`;
+            responseText += `Catégorie : ${community.category} \n`;
+            responseText += `Visibilité : ${community.is_public ? 'Publique' : 'Privée'} \n`;
+            responseText += `Membres : ${memberCount || 0} \n`;
+            responseText += `Propriétaire : ${community.owner_id === user.id ? 'Vous' : 'Autre'} \n\n`;
+          }
+        }
+        return NextResponse.json({ response: responseText }, { status: 200 });
+
+      } else if (functionCall.name === "create_community") {
+        const { name, description, utility, positioningDomain, template_1, template_2, category, is_public } = functionCall.args as {
+          name: string; description: string; utility: string; positioningDomain: string; template_1: string; template_2: string; category: string; is_public: boolean;
+        };
+
+        // Check user's coin points
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('coin_points')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          return NextResponse.json({ response: "Impossible de récupérer votre profil pour vérifier les pièces." }, { status: 200 });
+        }
+
+        if (profile.coin_points < COMMUNITY_UNLOCK_POINTS) {
+          return NextResponse.json({ response: `Vous avez besoin de ${COMMUNITY_UNLOCK_POINTS} pièces pour créer une communauté. Vous avez actuellement ${profile.coin_points} pièces.` }, { status: 200 });
+        }
+
+        let joinCode: string | null = null;
+        if (!is_public) {
+          joinCode = await generateUniqueCommunityJoinCode(supabase);
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/community/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, description, utility, positioningDomain, template_1, template_2, category, is_public, join_code: joinCode }),
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.error || "Erreur lors de la création de la communauté.");
+          }
+
+          let responseText = `Communauté "${name}" créée avec succès !`;
+          if (!is_public && joinCode) {
+            responseText += `\n\nLe code de jointure pour cette communauté privée est : ${joinCode}`;
+          }
+
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "create_community", response: { success: true, message: responseText } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error creating community:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu créer la communauté. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "join_community") {
+        const { communityId, isPublic, joinCode } = functionCall.args as { communityId: string; isPublic: boolean; joinCode?: string; };
+
+        if (!communityId) {
+          return NextResponse.json({ response: "Veuillez spécifier l'ID de la communauté à rejoindre." }, { status: 200 });
+        }
+        if (!isPublic && !joinCode) {
+          return NextResponse.json({ response: "Veuillez fournir le code de jointure pour cette communauté privée." }, { status: 200 });
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/community/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ communityId, isPublic, joinCode }),
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.error || "Erreur lors de la jointure de la communauté.");
+          }
+
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "join_community", response: { success: true, message: `Vous avez rejoint la communauté avec succès !` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error joining community:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu rejoindre la communauté. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "get_referral_status") {
+        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/referral/get-status`, {
+          headers: {
+            // No specific headers needed as Supabase server client handles auth
+          },
+        });
+
+        if (!apiResponse.ok) {
+          const errorData = await apiResponse.json();
+          console.error("Error fetching referral status:", apiResponse.status, errorData);
+          return NextResponse.json({
+            response: `Désolé, je n'ai pas pu récupérer votre statut de parrainage. ${errorData.error || 'Veuillez réessayer plus tard.'}`,
+            tool_code: "API_ERROR"
+          }, { status: 200 });
+        }
+
+        const referralData = await apiResponse.json();
+
+        let referredByInfo = "Non parrainé";
+        if (referralData.referredBy) {
+          referredByInfo = `${referralData.referredBy.fullName || 'Utilisateur inconnu'} (Code: ${referralData.referredBy.referralCode})`;
+        }
+
+        const formattedStatus = `Voici votre statut de parrainage : \n` +
+                                 `Votre code de parrainage : ${referralData.referralCode} \n` +
+                                 `Amis parrainés : ${referralData.referralCount} \n` +
+                                 `Vos pièces : ${referralData.coinPoints} \n` +
+                                 `Parrainé par : ${referredByInfo} \n\n`;
+
+        return NextResponse.json({ response: formattedStatus }, { status: 200 });
+
+      } else if (functionCall.name === "apply_referral_code") {
+        const { referrerCode } = functionCall.args as { referrerCode: string; };
+
+        if (!referrerCode) {
+          return NextResponse.json({ response: "Veuillez fournir le code de parrainage à appliquer." }, { status: 200 });
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/referral/apply-code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ referrerCode }),
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.error || "Erreur lors de l'application du code de parrainage.");
+          }
+
+          let responseText = `Code de parrainage appliqué avec succès !`;
+          if (result.awardedPoints > 0) {
+            responseText += ` Votre parrain a reçu ${result.awardedPoints} pièces.`;
+          }
+
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "apply_referral_code", response: { success: true, message: responseText } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error applying referral code:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu appliquer le code de parrainage. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "transfer_coin_points") {
+        const { recipientCode, amount } = functionCall.args as { recipientCode: string; amount: number; };
+
+        if (!recipientCode || !amount) {
+          return NextResponse.json({ response: "Veuillez spécifier le code du destinataire et le montant à transférer." }, { status: 200 });
+        }
+
+        try {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/referral/transfer-coins`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipientCode, amount }),
+          });
+
+          const result = await apiResponse.json();
+
+          if (!apiResponse.ok) {
+            throw new Error(result.error || "Erreur lors du transfert des pièces.");
+          }
+
+          const toolResponse = await chat.sendMessage([
+            { functionResponse: { name: "transfer_coin_points", response: { success: true, message: result.message } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error transferring coin points:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu transférer les pièces. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "get_push_subscription_status") {
+        const { data: existingSubscription, error: fetchError } = await supabase
+          .from('push_subscriptions')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        let responseText = "";
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          console.error("Error checking push subscription status:", fetchError);
+          responseText = "Désolé, je n'ai pas pu vérifier votre statut d'abonnement aux notifications. Veuillez réessayer plus tard.";
+        } else if (existingSubscription) {
+          responseText = "Vous êtes actuellement abonné aux notifications push.";
+        } else {
+          responseText = "Vous n'êtes pas abonné aux notifications push.";
+        }
+        return NextResponse.json({ response: responseText }, { status: 200 });
       }
     }
 
