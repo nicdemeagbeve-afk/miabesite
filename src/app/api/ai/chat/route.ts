@@ -353,21 +353,18 @@ export async function POST(request: Request) {
       }
 
       if (functionCall.name === "list_user_sites") {
-        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/sites`, {
-          headers: {
-            // No specific headers needed as Supabase server client handles auth
-          },
-        });
+        const { data: sitesData, error: fetchSitesError } = await supabase
+          .from('sites')
+          .select('subdomain, site_data->publicName, status, template_type')
+          .eq('user_id', user.id);
 
-        if (!apiResponse.ok) {
-          console.error("Error fetching user sites from internal API:", apiResponse.status, await apiResponse.text());
+        if (fetchSitesError) {
+          console.error("Error fetching user sites from Supabase:", fetchSitesError);
           return NextResponse.json({
             response: "Désolé, je n'ai pas pu récupérer la liste de vos sites pour le moment. Veuillez réessayer plus tard.",
             tool_code: "API_ERROR"
           }, { status: 200 });
         }
-
-        const sitesData = await apiResponse.json();
 
         const toolResponse = await chat.sendMessage([
           {
@@ -911,7 +908,7 @@ export async function POST(request: Request) {
         try {
           await updateSiteData(supabase, user.id, subdomain, updates);
           const toolResponse = await chat.sendMessage([
-            { functionCall: functionCall },
+            { functionCall: functionCall, },
             { functionResponse: { name: "update_site_basic_info", response: { success: true, message: `Informations de base du site "${subdomain}" mises à jour avec succès.` } } },
           ]);
           return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
