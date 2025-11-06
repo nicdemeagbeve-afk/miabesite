@@ -85,9 +85,8 @@ export async function POST(request: Request) {
       Vous pouvez utiliser les outils disponibles pour aider l'utilisateur.
       Lorsque vous fournissez des informations, assurez-vous qu'elles sont claires, concises et bien formatées pour une lisibilité parfaite.
       - Utilisez des paragraphes pour organiser les idées.
-      - Utilisez des tirets pour les listes.
       - Utilisez des sauts de ligne pour séparer les informations importantes.
-      Soyez bref et rapide dans vos réponses, ne donnez que les informations essentielles sans paragraphes longs.
+      Soyez extrêmement bref et rapide dans vos réponses, ne donnez que les informations essentielles sans paragraphes longs, listes à puces ou caractères spéciaux comme les tirets ou les astérisques.
       Si l'utilisateur demande des statistiques pour 'chaque' site ou pour 'tous' ses sites après avoir listé ses sites,
       vous devez appeler l'outil 'get_site_stats' pour chaque sous-domaine listé et compiler les résultats dans une réponse unique et bien formatée.
     `;
@@ -379,10 +378,10 @@ export async function POST(request: Request) {
         } else {
           responseText = `Vous avez ${sitesData.length} site(s) : \n\n`;
           sitesData.forEach((site: any) => {
-            responseText += `**${site.subdomain}** \n`;
-            responseText += `- Nom public: ${site.publicName || 'Non défini'} \n`;
-            responseText += `- Statut: ${site.status} \n`;
-            responseText += `- Template: ${site.template_type} \n\n`;
+            responseText += `Nom public: ${site.publicName || 'Non défini'} \n`;
+            responseText += `Sous-domaine: ${site.subdomain} \n`;
+            responseText += `Statut: ${site.status} \n`;
+            responseText += `Template: ${site.template_type} \n\n`;
           });
         }
         
@@ -417,10 +416,10 @@ export async function POST(request: Request) {
         const statsData = await apiResponse.json();
 
         // Format the stats data directly into a readable string
-        const formattedStats = `Voici les statistiques pour le site **${subdomain}** : \n` +
-                               `- Ventes totales : ${statsData.totalSales} \n` +
-                               `- Visites totales : ${statsData.totalVisits} \n` +
-                               `- Contacts totaux : ${statsData.totalContacts} \n\n`;
+        const formattedStats = `Voici les statistiques pour le site ${subdomain} : \n` +
+                               `Ventes totales : ${statsData.totalSales} \n` +
+                               `Visites totales : ${statsData.totalVisits} \n` +
+                               `Contacts totaux : ${statsData.totalContacts} \n\n`;
         
         return NextResponse.json({ response: formattedStats }, { status: 200 });
 
