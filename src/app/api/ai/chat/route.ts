@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
-import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import SiteEditorFormData type
+import { SiteEditorFormData, ProductAndService, Testimonial, Skill } from '@/lib/schemas/site-editor-form-schema'; // Import SiteEditorFormData type
 import { SupabaseClient } from '@supabase/supabase-js'; // Import SupabaseClient type
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -163,6 +163,137 @@ export async function POST(request: Request) {
                   },
                 },
                 required: ["subdomain"],
+              },
+            },
+            {
+              name: "add_product_or_service",
+              description: "Ajoute un nouveau produit ou service à un site web.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  title: { type: SchemaType.STRING, description: "Le titre du produit/service." },
+                  price: { type: SchemaType.NUMBER, description: "Le prix du produit/service." },
+                  currency: { type: SchemaType.STRING, description: "La devise (ex: 'XOF', 'USD')." },
+                  description: { type: SchemaType.STRING, description: "La description du produit/service." },
+                  imageUrl: { type: SchemaType.STRING, description: "L'URL publique de l'image du produit/service." },
+                  actionButton: { type: SchemaType.STRING, description: "L'action du bouton (ex: 'buy', 'quote', 'contact')." },
+                },
+                required: ["subdomain", "title", "currency", "description", "actionButton"],
+              },
+            },
+            {
+              name: "update_product_or_service",
+              description: "Met à jour un produit ou service existant sur un site web, identifié par son ancien titre.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  oldTitle: { type: SchemaType.STRING, description: "L'ancien titre du produit/service à modifier." },
+                  newTitle: { type: SchemaType.STRING, description: "Le nouveau titre du produit/service." },
+                  newPrice: { type: SchemaType.NUMBER, description: "Le nouveau prix du produit/service." },
+                  newCurrency: { type: SchemaType.STRING, description: "La nouvelle devise." },
+                  newDescription: { type: SchemaType.STRING, description: "La nouvelle description." },
+                  newImageUrl: { type: SchemaType.STRING, description: "La nouvelle URL publique de l'image." },
+                  newActionButton: { type: SchemaType.STRING, description: "La nouvelle action du bouton." },
+                },
+                required: ["subdomain", "oldTitle"],
+              },
+            },
+            {
+              name: "remove_product_or_service",
+              description: "Supprime un produit ou service d'un site web, identifié par son titre.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  title: { type: SchemaType.STRING, description: "Le titre du produit/service à supprimer." },
+                },
+                required: ["subdomain", "title"],
+              },
+            },
+            {
+              name: "add_testimonial",
+              description: "Ajoute un nouveau témoignage à un site web.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  author: { type: SchemaType.STRING, description: "Le nom de l'auteur du témoignage." },
+                  quote: { type: SchemaType.STRING, description: "Le contenu du témoignage." },
+                  location: { type: SchemaType.STRING, description: "La localisation de l'auteur." },
+                  avatarUrl: { type: SchemaType.STRING, description: "L'URL publique de l'avatar de l'auteur." },
+                },
+                required: ["subdomain", "author", "quote", "location"],
+              },
+            },
+            {
+              name: "update_testimonial",
+              description: "Met à jour un témoignage existant sur un site web, identifié par son ancien auteur.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  oldAuthor: { type: SchemaType.STRING, description: "L'ancien nom de l'auteur du témoignage à modifier." },
+                  newAuthor: { type: SchemaType.STRING, description: "Le nouveau nom de l'auteur." },
+                  newQuote: { type: SchemaType.STRING, description: "Le nouveau contenu du témoignage." },
+                  newLocation: { type: SchemaType.STRING, description: "La nouvelle localisation de l'auteur." },
+                  newAvatarUrl: { type: SchemaType.STRING, description: "La nouvelle URL publique de l'avatar." },
+                },
+                required: ["subdomain", "oldAuthor"],
+              },
+            },
+            {
+              name: "remove_testimonial",
+              description: "Supprime un témoignage d'un site web, identifié par son auteur.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  author: { type: SchemaType.STRING, description: "Le nom de l'auteur du témoignage à supprimer." },
+                },
+                required: ["subdomain", "author"],
+              },
+            },
+            {
+              name: "add_skill",
+              description: "Ajoute une nouvelle compétence à un site web.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  title: { type: SchemaType.STRING, description: "Le titre de la compétence." },
+                  description: { type: SchemaType.STRING, description: "La description de la compétence." },
+                  icon: { type: SchemaType.STRING, description: "Le nom de l'icône Lucide React (ex: 'Wrench', 'Hammer')." },
+                },
+                required: ["subdomain", "title", "description"],
+              },
+            },
+            {
+              name: "update_skill",
+              description: "Met à jour une compétence existante sur un site web, identifiée par son ancien titre.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  oldTitle: { type: SchemaType.STRING, description: "L'ancien titre de la compétence à modifier." },
+                  newTitle: { type: SchemaType.STRING, description: "Le nouveau titre de la compétence." },
+                  newDescription: { type: SchemaType.STRING, description: "La nouvelle description de la compétence." },
+                  newIcon: { type: SchemaType.STRING, description: "Le nouveau nom de l'icône Lucide React." },
+                },
+                required: ["subdomain", "oldTitle"],
+              },
+            },
+            {
+              name: "remove_skill",
+              description: "Supprime une compétence d'un site web, identifiée par son titre.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web." },
+                  title: { type: SchemaType.STRING, description: "Le titre de la compétence à supprimer." },
+                },
+                required: ["subdomain", "title"],
               },
             },
           ],
@@ -351,6 +482,374 @@ export async function POST(request: Request) {
             response: `Désolé, je n'ai pas pu mettre à jour le design du site "${subdomain}". ${error.message}`,
             tool_code: "UPDATE_ERROR"
           }, { status: 200 });
+        }
+      } else if (functionCall.name === "add_product_or_service") {
+        // Destructure imageUrl from functionCall.args, which is what the tool provides
+        const { subdomain, title, price, currency, description, imageUrl, actionButton } = functionCall.args as { subdomain: string; title: string; price?: number; currency: string; description: string; imageUrl?: string; actionButton: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          const currentProducts = (site.site_data as SiteEditorFormData).productsAndServices || [];
+          if (currentProducts.length >= 5) {
+            return NextResponse.json({ response: "Vous avez atteint la limite de 5 produits/services pour ce site." }, { status: 200 });
+          }
+          if (currentProducts.some(p => p.title === title)) {
+            return NextResponse.json({ response: `Un produit/service avec le titre "${title}" existe déjà.` }, { status: 200 });
+          }
+
+          // Map imageUrl to image property for ProductAndService type
+          const newProduct: ProductAndService = { title, price, currency, description, image: imageUrl, actionButton };
+          const updatedProducts = [...currentProducts, newProduct];
+
+          await updateSiteData(supabase, user.id, subdomain, { productsAndServices: updatedProducts });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "add_product_or_service", response: { success: true, message: `Produit/service "${title}" ajouté avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error adding product/service:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu ajouter le produit/service. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "update_product_or_service") {
+        const { subdomain, oldTitle, newTitle, newPrice, newCurrency, newDescription, newImageUrl, newActionButton } = functionCall.args as { subdomain: string; oldTitle: string; newTitle?: string; newPrice?: number; newCurrency?: string; newDescription?: string; newImageUrl?: string; newActionButton?: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentProducts = (site.site_data as SiteEditorFormData).productsAndServices || [];
+          const productIndex = currentProducts.findIndex(p => p.title === oldTitle);
+
+          if (productIndex === -1) {
+            return NextResponse.json({ response: `Produit/service "${oldTitle}" non trouvé.` }, { status: 200 });
+          }
+
+          const updatedProduct = { ...currentProducts[productIndex] };
+          if (newTitle !== undefined) updatedProduct.title = newTitle;
+          if (newPrice !== undefined) updatedProduct.price = newPrice;
+          if (newCurrency !== undefined) updatedProduct.currency = newCurrency;
+          if (newDescription !== undefined) updatedProduct.description = newDescription;
+          if (newImageUrl !== undefined) updatedProduct.image = newImageUrl; // Map newImageUrl to image
+          if (newActionButton !== undefined) updatedProduct.actionButton = newActionButton;
+
+          currentProducts[productIndex] = updatedProduct;
+
+          await updateSiteData(supabase, user.id, subdomain, { productsAndServices: currentProducts });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "update_product_or_service", response: { success: true, message: `Produit/service "${oldTitle}" mis à jour avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error updating product/service:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour le produit/service. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "remove_product_or_service") {
+        const { subdomain, title } = functionCall.args as { subdomain: string; title: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentProducts = (site.site_data as SiteEditorFormData).productsAndServices || [];
+          const initialLength = currentProducts.length;
+          const updatedProducts = currentProducts.filter(p => p.title !== title);
+
+          if (updatedProducts.length === initialLength) {
+            return NextResponse.json({ response: `Produit/service "${title}" non trouvé.` }, { status: 200 });
+          }
+
+          await updateSiteData(supabase, user.id, subdomain, { productsAndServices: updatedProducts });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "remove_product_or_service", response: { success: true, message: `Produit/service "${title}" supprimé avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error removing product/service:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu supprimer le produit/service. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "add_testimonial") {
+        // Destructure avatarUrl from functionCall.args, which is what the tool provides
+        const { subdomain, author, quote, location, avatarUrl } = functionCall.args as { subdomain: string; author: string; quote: string; location: string; avatarUrl?: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          const currentTestimonials = (site.site_data as SiteEditorFormData).testimonials || [];
+          if (currentTestimonials.length >= 5) {
+            return NextResponse.json({ response: "Vous avez atteint la limite de 5 témoignages pour ce site." }, { status: 200 });
+          }
+          if (currentTestimonials.some(t => t.author === author)) {
+            return NextResponse.json({ response: `Un témoignage de "${author}" existe déjà.` }, { status: 200 });
+          }
+
+          // Map avatarUrl to avatar property for Testimonial type
+          const newTestimonial: Testimonial = { author, quote, location, avatar: avatarUrl };
+          const updatedTestimonials = [...currentTestimonials, newTestimonial];
+
+          await updateSiteData(supabase, user.id, subdomain, { testimonials: updatedTestimonials });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "add_testimonial", response: { success: true, message: `Témoignage de "${author}" ajouté avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error adding testimonial:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu ajouter le témoignage. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "update_testimonial") {
+        const { subdomain, oldAuthor, newAuthor, newQuote, newLocation, newAvatarUrl } = functionCall.args as { subdomain: string; oldAuthor: string; newAuthor?: string; newQuote?: string; newLocation?: string; newAvatarUrl?: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentTestimonials = (site.site_data as SiteEditorFormData).testimonials || [];
+          const testimonialIndex = currentTestimonials.findIndex(t => t.author === oldAuthor);
+
+          if (testimonialIndex === -1) {
+            return NextResponse.json({ response: `Témoignage de "${oldAuthor}" non trouvé.` }, { status: 200 });
+          }
+
+          const updatedTestimonial = { ...currentTestimonials[testimonialIndex] };
+          if (newAuthor !== undefined) updatedTestimonial.author = newAuthor;
+          if (newQuote !== undefined) updatedTestimonial.quote = newQuote;
+          if (newLocation !== undefined) updatedTestimonial.location = newLocation;
+          if (newAvatarUrl !== undefined) updatedTestimonial.avatar = newAvatarUrl; // Map newAvatarUrl to avatar
+
+          currentTestimonials[testimonialIndex] = updatedTestimonial;
+
+          await updateSiteData(supabase, user.id, subdomain, { testimonials: currentTestimonials });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "update_testimonial", response: { success: true, message: `Témoignage de "${oldAuthor}" mis à jour avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error updating testimonial:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour le témoignage. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "remove_testimonial") {
+        const { subdomain, author } = functionCall.args as { subdomain: string; author: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentTestimonials = (site.site_data as SiteEditorFormData).testimonials || [];
+          const initialLength = currentTestimonials.length;
+          const updatedTestimonials = currentTestimonials.filter(t => t.author !== author);
+
+          if (updatedTestimonials.length === initialLength) {
+            return NextResponse.json({ response: `Témoignage de "${author}" non trouvé.` }, { status: 200 });
+          }
+
+          await updateSiteData(supabase, user.id, subdomain, { testimonials: updatedTestimonials });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "remove_testimonial", response: { success: true, message: `Témoignage de "${author}" supprimé avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error removing testimonial:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu supprimer le témoignage. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "add_skill") {
+        const { subdomain, title, description, icon } = functionCall.args as Skill & { subdomain: string };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          const currentSkills = (site.site_data as SiteEditorFormData).skills || [];
+          if (currentSkills.length >= 10) {
+            return NextResponse.json({ response: "Vous avez atteint la limite de 10 compétences pour ce site." }, { status: 200 });
+          }
+          if (currentSkills.some(s => s.title === title)) {
+            return NextResponse.json({ response: `Une compétence avec le titre "${title}" existe déjà.` }, { status: 200 });
+          }
+
+          const newSkill: Skill = { title, description, icon };
+          const updatedSkills = [...currentSkills, newSkill];
+
+          await updateSiteData(supabase, user.id, subdomain, { skills: updatedSkills });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "add_skill", response: { success: true, message: `Compétence "${title}" ajoutée avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error adding skill:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu ajouter la compétence. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "update_skill") {
+        const { subdomain, oldTitle, newTitle, newDescription, newIcon } = functionCall.args as { subdomain: string; oldTitle: string; newTitle?: string; newDescription?: string; newIcon?: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentSkills = (site.site_data as SiteEditorFormData).skills || [];
+          const skillIndex = currentSkills.findIndex(s => s.title === oldTitle);
+
+          if (skillIndex === -1) {
+            return NextResponse.json({ response: `Compétence "${oldTitle}" non trouvée.` }, { status: 200 });
+          }
+
+          const updatedSkill = { ...currentSkills[skillIndex] };
+          if (newTitle !== undefined) updatedSkill.title = newTitle;
+          if (newDescription !== undefined) updatedSkill.description = newDescription;
+          if (newIcon !== undefined) updatedSkill.icon = newIcon;
+
+          currentSkills[skillIndex] = updatedSkill;
+
+          await updateSiteData(supabase, user.id, subdomain, { skills: currentSkills });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "update_skill", response: { success: true, message: `Compétence "${oldTitle}" mise à jour avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error updating skill:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour la compétence. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "remove_skill") {
+        const { subdomain, title } = functionCall.args as { subdomain: string; title: string; };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        try {
+          const { data: site, error: fetchError } = await supabase
+            .from('sites')
+            .select('site_data')
+            .eq('user_id', user.id)
+            .eq('subdomain', subdomain)
+            .single();
+
+          if (fetchError || !site) {
+            throw new Error('Site non trouvé ou non autorisé.');
+          }
+
+          let currentSkills = (site.site_data as SiteEditorFormData).skills || [];
+          const initialLength = currentSkills.length;
+          const updatedSkills = currentSkills.filter(s => s.title !== title);
+
+          if (updatedSkills.length === initialLength) {
+            return NextResponse.json({ response: `Compétence "${title}" non trouvée.` }, { status: 200 });
+          }
+
+          await updateSiteData(supabase, user.id, subdomain, { skills: updatedSkills });
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "remove_skill", response: { success: true, message: `Compétence "${title}" supprimée avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error removing skill:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu supprimer la compétence. ${error.message}` }, { status: 200 });
         }
       }
     }
