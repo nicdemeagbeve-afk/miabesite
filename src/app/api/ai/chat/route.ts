@@ -296,6 +296,38 @@ export async function POST(request: Request) {
                 required: ["subdomain", "title"],
               },
             },
+            {
+              name: "update_site_basic_info",
+              description: "Met à jour les informations de base d'un site web, y compris le nom public, les numéros de téléphone, l'e-mail et la localisation de l'entreprise.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web à modifier." },
+                  publicName: { type: SchemaType.STRING, description: "Le nouveau nom public de l'entreprise." },
+                  whatsappNumber: { type: SchemaType.STRING, description: "Le nouveau numéro WhatsApp (ex: '+2250700000000')." },
+                  secondaryPhoneNumber: { type: SchemaType.STRING, description: "Le nouveau numéro de téléphone secondaire (ex: '+2250100000000')." },
+                  email: { type: SchemaType.STRING, description: "La nouvelle adresse e-mail de contact." },
+                  businessLocation: { type: SchemaType.STRING, description: "La nouvelle localisation de l'entreprise." },
+                },
+                required: ["subdomain"],
+              },
+            },
+            {
+              name: "update_site_contact_settings",
+              description: "Met à jour les paramètres de contact et les liens de réseaux sociaux d'un site web.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  subdomain: { type: SchemaType.STRING, description: "Le sous-domaine du site web à modifier." },
+                  contactButtonAction: { type: SchemaType.STRING, description: "La nouvelle action du bouton de contact (ex: 'whatsapp', 'emailForm', 'phoneNumber')." },
+                  showContactForm: { type: SchemaType.BOOLEAN, description: "Indique si le formulaire de contact doit être affiché (true/false)." },
+                  facebookLink: { type: SchemaType.STRING, description: "Le nouveau lien URL de la page Facebook." },
+                  instagramLink: { type: SchemaType.STRING, description: "Le nouveau lien URL du profil Instagram." },
+                  linkedinLink: { type: SchemaType.STRING, description: "Le nouveau lien URL du profil LinkedIn." },
+                },
+                required: ["subdomain"],
+              },
+            },
           ],
         },
       ],
@@ -556,7 +588,7 @@ export async function POST(request: Request) {
           if (newPrice !== undefined) updatedProduct.price = newPrice;
           if (newCurrency !== undefined) updatedProduct.currency = newCurrency;
           if (newDescription !== undefined) updatedProduct.description = newDescription;
-          if (newImageUrl !== undefined) updatedProduct.image = newImageUrl; // Map newImageUrl to image
+          if (newImageUrl !== undefined) updatedProduct.image = newImageUrl;
           if (newActionButton !== undefined) updatedProduct.actionButton = newActionButton;
 
           currentProducts[productIndex] = updatedProduct;
@@ -680,7 +712,7 @@ export async function POST(request: Request) {
           if (newAuthor !== undefined) updatedTestimonial.author = newAuthor;
           if (newQuote !== undefined) updatedTestimonial.quote = newQuote;
           if (newLocation !== undefined) updatedTestimonial.location = newLocation;
-          if (newAvatarUrl !== undefined) updatedTestimonial.avatar = newAvatarUrl; // Map newAvatarUrl to avatar
+          if (newAvatarUrl !== undefined) updatedTestimonial.avatar = newAvatarUrl;
 
           currentTestimonials[testimonialIndex] = updatedTestimonial;
 
@@ -850,6 +882,78 @@ export async function POST(request: Request) {
         } catch (error: any) {
           console.error("Error removing skill:", error);
           return NextResponse.json({ response: `Désolé, je n'ai pas pu supprimer la compétence. ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "update_site_basic_info") {
+        const { subdomain, publicName, whatsappNumber, secondaryPhoneNumber, email, businessLocation } = functionCall.args as {
+          subdomain: string;
+          publicName?: string;
+          whatsappNumber?: string;
+          secondaryPhoneNumber?: string;
+          email?: string;
+          businessLocation?: string;
+        };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        const updates: Partial<SiteEditorFormData> = {};
+        if (publicName !== undefined) updates.publicName = publicName;
+        if (whatsappNumber !== undefined) updates.whatsappNumber = whatsappNumber;
+        if (secondaryPhoneNumber !== undefined) updates.secondaryPhoneNumber = secondaryPhoneNumber;
+        if (email !== undefined) updates.email = email;
+        if (businessLocation !== undefined) updates.businessLocation = businessLocation;
+
+        if (Object.keys(updates).length === 0) {
+          return NextResponse.json({ response: "Aucune information de base à mettre à jour n'a été fournie." }, { status: 200 });
+        }
+
+        try {
+          await updateSiteData(supabase, user.id, subdomain, updates);
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "update_site_basic_info", response: { success: true, message: `Informations de base du site "${subdomain}" mises à jour avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error updating site basic info:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les informations de base du site "${subdomain}". ${error.message}` }, { status: 200 });
+        }
+      } else if (functionCall.name === "update_site_contact_settings") {
+        const { subdomain, contactButtonAction, showContactForm, facebookLink, instagramLink, linkedinLink } = functionCall.args as {
+          subdomain: string;
+          contactButtonAction?: string;
+          showContactForm?: boolean;
+          facebookLink?: string;
+          instagramLink?: string;
+          linkedinLink?: string;
+        };
+
+        if (!subdomain) {
+          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine du site." }, { status: 200 });
+        }
+
+        const updates: Partial<SiteEditorFormData> = {};
+        if (contactButtonAction !== undefined) updates.contactButtonAction = contactButtonAction;
+        if (showContactForm !== undefined) updates.showContactForm = showContactForm;
+        if (facebookLink !== undefined) updates.facebookLink = facebookLink;
+        if (instagramLink !== undefined) updates.instagramLink = instagramLink;
+        if (linkedinLink !== undefined) updates.linkedinLink = linkedinLink;
+
+        if (Object.keys(updates).length === 0) {
+          return NextResponse.json({ response: "Aucun paramètre de contact ou de réseau social à mettre à jour n'a été fourni." }, { status: 200 });
+        }
+
+        try {
+          await updateSiteData(supabase, user.id, subdomain, updates);
+          const toolResponse = await chat.sendMessage([
+            { functionCall: functionCall },
+            { functionResponse: { name: "update_site_contact_settings", response: { success: true, message: `Paramètres de contact et réseaux sociaux du site "${subdomain}" mis à jour avec succès.` } } },
+          ]);
+          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
+        } catch (error: any) {
+          console.error("Error updating site contact settings:", error);
+          return NextResponse.json({ response: `Désolé, je n'ai pas pu mettre à jour les paramètres de contact du site "${subdomain}". ${error.message}` }, { status: 200 });
         }
       }
     }
