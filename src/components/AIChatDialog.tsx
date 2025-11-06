@@ -11,10 +11,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Loader2 } from 'lucide-react';
+import { Bot, User, Send, Loader2, Mic, StopCircle } from 'lucide-react'; // Import Mic and StopCircle
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
 
 interface AIChatDialogProps {
   isOpen: boolean;
@@ -35,9 +35,13 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
   const [input, setInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const pathname = usePathname(); // Initialize usePathname
+  const pathname = usePathname();
 
-  // Extract subdomain from the current path if it's a dashboard site page
+  // Audio recording states
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [mediaRecorder, setMediaRecorder] = React.useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = React.useState<Blob[]>([]);
+
   const currentSubdomain = React.useMemo(() => {
     const match = pathname.match(/^\/dashboard\/([^\/]+)/);
     return match ? match[1] : undefined;
@@ -49,14 +53,79 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
 
   React.useEffect(scrollToBottom, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim() === '' || isLoading) return;
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = (event) => {
+        setAudioChunks((prev) => [...prev, event.data]);
+      };
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setAudioChunks([]); // Clear chunks for next recording
+        await sendAudioForTranscription(audioBlob);
+      };
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+      toast.info("Enregistrement audio démarré...");
+    } catch (err) {
+      console.error("Erreur d'accès au microphone:", err);
+      toast.error("Impossible d'accéder au microphone. Veuillez vérifier les permissions.");
+    }
+  };
 
-    const userMessageText = input;
-    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: userMessageText };
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Stop microphone access
+      setIsRecording(false);
+      toast.info("Enregistrement audio terminé. Transcription en cours...");
+    }
+  };
+
+  const sendAudioForTranscription = async (audioBlob: Blob) => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'audio.webm');
+
+    try {
+      const response = await fetch('/api/ai/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur de transcription audio : ' + response.statusText);
+      }
+
+      const data = await response.json();
+      if (data.transcribedText) {
+        setInput(data.transcribedText); // Set transcribed text to input field
+        // Automatically send the message after transcription
+        // We need to ensure handleSendMessage is called with the new input state
+        // A small delay or direct call with the text is needed.
+        handleSendMessage({ preventDefault: () => {} } as React.FormEvent, data.transcribedText);
+      } else {
+        toast.error("Aucun texte transcrit reçu.");
+      }
+    } catch (error: any) {
+      console.error('Erreur lors de la transcription audio:', error);
+      toast.error('Impossible de transcrire l\'audio. Veuillez réessayer.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent, transcribedText?: string) => {
+    e.preventDefault();
+    const messageToSend = transcribedText || input;
+    if (messageToSend.trim() === '' || isLoading) return;
+
+    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: messageToSend };
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    setInput(''); // Clear input after sending
+
     setIsLoading(true);
 
     const historyForGemini = messages.map(msg => ({
@@ -69,9 +138,9 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: userMessageText, 
+          message: messageToSend, 
           history: historyForGemini,
-          current_site_subdomain: currentSubdomain, // Pass the current subdomain
+          current_site_subdomain: currentSubdomain,
         }),
       });
 
@@ -157,9 +226,19 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
             placeholder="Tapez votre message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
+            disabled={isLoading || isRecording}
             className="flex-1"
           />
+          {isRecording ? (
+            <Button type="button" onClick={stopRecording} disabled={isLoading} variant="destructive">
+              <StopCircle className="h-4 w-4 mr-2 animate-pulse" /> Arrêter
+            </Button>
+          ) : (
+            <Button type="button" onClick={startRecording} disabled={isLoading} variant="outline">
+              <Mic className="h-4 w-4" />
+              <span className="sr-only">Enregistrer audio</span>
+            </Button>
+          )}
           <Button type="submit" disabled={isLoading || input.trim() === ''}>
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
