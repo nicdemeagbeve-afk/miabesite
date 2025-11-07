@@ -57,7 +57,8 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
         .eq('user_id', user.id)
         .single();
       
-      const isAdmin = profile && (profile.role === 'admin' || profile.role === 'super_admin');
+      // Ensure isAdmin is always a boolean
+      const isAdmin = !!profile && (profile.role === 'admin' || profile.role === 'super_admin');
       setHasAIVideoAccess(!!accessEntry || isAdmin);
       setLoadingRole(false);
     };
