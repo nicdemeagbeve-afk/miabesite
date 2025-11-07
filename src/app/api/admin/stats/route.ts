@@ -9,15 +9,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Check if the user is an admin or super_admin
+  // Check if the user is a super_admin
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-    return NextResponse.json({ error: 'Forbidden: Not an admin' }, { status: 403 });
+  if (profileError || !profile || profile.role !== 'super_admin') {
+    return NextResponse.json({ error: 'Forbidden: Seuls les Super Admins peuvent accéder aux statistiques.' }, { status: 403 });
   }
 
   try {
@@ -47,18 +47,20 @@ export async function GET(request: Request) {
       .eq('is_public', false);
     if (privateCommunitiesError) throw privateCommunitiesError;
 
-    // Fetch admins and super admins
-    const { count: totalAdmins, error: adminsError } = await supabase
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'admin');
-    if (adminsError) throw adminsError;
-
+    // Fetch super admins (no more 'admin' system role)
     const { count: totalSuperAdmins, error: superAdminsError } = await supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
       .eq('role', 'super_admin');
     if (superAdminsError) throw superAdminsError;
+
+    // Fetch community admins
+    const { count: totalCommunityAdmins, error: communityAdminsError } = await supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'community_admin');
+    if (communityAdminsError) throw communityAdminsError;
+
 
     // Fetch templates usage
     const { data: communitiesData, error: templatesError } = await supabase
@@ -77,7 +79,7 @@ export async function GET(request: Request) {
       totalCommunities: totalCommunities || 0,
       totalPublicCommunities: totalPublicCommunities || 0,
       totalPrivateCommunities: totalPrivateCommunities || 0,
-      totalAdmins: totalAdmins || 0,
+      totalAdmins: totalCommunityAdmins || 0, // Renamed to reflect community admins
       totalSuperAdmins: totalSuperAdmins || 0,
       templatesUsed,
     }, { status: 200 });

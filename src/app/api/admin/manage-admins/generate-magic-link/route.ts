@@ -71,15 +71,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Impossible de déterminer l\'utilisateur cible.' }, { status: 500 });
     }
 
-    // 3. Verify the target user is an admin or super_admin
+    // 3. Verify the target user is a super_admin (only super_admins can be impersonated for admin dashboard)
     const { data: targetProfile, error: targetProfileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', targetUserId)
       .single();
 
-    if (targetProfileError || !targetProfile || (targetProfile.role !== 'admin' && targetProfile.role !== 'super_admin')) {
-      return NextResponse.json({ error: 'Accès refusé: L\'utilisateur cible n\'est pas un administrateur.' }, { status: 403 });
+    if (targetProfileError || !targetProfile || targetProfile.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Accès refusé: L\'utilisateur cible n\'est pas un Super Administrateur.' }, { status: 403 });
     }
 
     // 4. Generate the magic link

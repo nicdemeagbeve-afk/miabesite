@@ -11,16 +11,16 @@ export default async function CommunityManagementPage() {
     redirect('/login?message=unauthorized');
   }
 
-  // Vérifier le rôle de l'utilisateur
+  // Vérifier le rôle de l'utilisateur - seul un super_admin peut gérer les communautés via ce panneau
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile || profile.role !== 'admin') {
-    console.error("Accès refusé: L'utilisateur n'est pas un administrateur ou profil introuvable.", profileError);
-    redirect('/dashboard?message=admin_required'); // Rediriger vers le tableau de bord avec un message
+  if (profileError || !profile || profile.role !== 'super_admin') {
+    console.error("Accès refusé: L'utilisateur n'est pas un super_admin ou profil introuvable.", profileError);
+    redirect('/dashboard?message=super_admin_required'); // Rediriger vers le tableau de bord avec un message
   }
 
   return (

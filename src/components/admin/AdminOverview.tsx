@@ -4,179 +4,255 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, LayoutTemplate, MessageSquare, Loader2, ShieldCheck, Globe } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
+import { createClient } from "@/lib/supabase/client<dyad-problem-report summary="12 problems">
+<problem file="src/app/api/ai/generate-video/route.ts" line="139" column="60" code="2304">Cannot find name 'newCoinPoints'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="199" column="22" code="2552">Cannot find name 'Select'. Did you mean 'onselect'?</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="201" column="26" code="2304">Cannot find name 'SelectTrigger'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="202" column="28" code="2304">Cannot find name 'SelectValue'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="203" column="27" code="2304">Cannot find name 'SelectTrigger'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="205" column="24" code="2304">Cannot find name 'SelectContent'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="206" column="26" code="2304">Cannot find name 'SelectItem'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="206" column="58" code="2304">Cannot find name 'SelectItem'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="207" column="26" code="2304">Cannot find name 'SelectItem'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="207" column="78" code="2304">Cannot find name 'SelectItem'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="208" column="25" code="2304">Cannot find name 'SelectContent'.</problem>
+<problem file="src/components/admin/ManageAdmins.tsx" line="209" column="23" code="2552">Cannot find name 'Select'. Did you mean 'onselect'?</problem>
+</dyad-problem-report><think>**Investigating Compile Errors**
 
-interface AdminStats {
-  totalUsers: number;
-  totalCommunities: number;
-  totalPublicCommunities: number;
-  totalPrivateCommunities: number;
-  totalAdmins: number;
-  totalSuperAdmins: number;
-  templatesUsed: { [key: string]: number };
+I'm currently focused on the initial error, "Cannot find name 'newCoinPoints'". It seems like a simple typo or missing variable declaration. I'll meticulously review the `route.ts` file, specifically line 139, to ensure proper variable definition or import. Addressing this could quickly resolve this issue.
+
+
+**Resolving Missing Imports**
+
+Now, I'm tackling the remaining errors. The `ManageAdmins.tsx` file is missing imports for the `shadcn/ui` Select components: `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, and `SelectItem`.  I need to add the import statement to fix these 11 errors. Simultaneously, I've confirmed that the issue with `newCoinPoints` stems from its scope. I'm adjusting the logic so that `newCoinBalance` for super admins directly reflects their existing `profile.coin_points`.
+
+
+</think>You're right, let's get these TypeScript errors sorted out!
+
+The first error is due to `newCoinPoints` potentially being undefined if the user is a `super_admin`. For `super_admin` users, no coins are deducted, so their balance remains the same. I'll adjust the logic to reflect this.
+
+The remaining errors in `src/components/admin/ManageAdmins.tsx` are all related to missing imports for the `Select` UI components. I'll add the necessary import statement to resolve these.
+
+<dyad-write path="src/app/api/ai/generate-video/route.ts" description="Ensuring newCoinBalance is always defined for AI video generation.">
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import * as z from 'zod';
+
+const KIE_AI_API_KEY = process.env.KIE_AI_API_KEY;
+const KIE_AI_BASE_URL = "https://api.kie.ai/api/v1/jobs";
+const VIDEO_GENERATION_COST = 30; // Cost in coins
+
+if (!KIE_AI_API_KEY) {
+  console.error("KIE_AI_API_KEY n'est pas définie dans les variables d'environnement.");
 }
 
-export function AdminOverview() {
+const createVideoTaskSchema = z.object({
+  prompt: z.string().min(1, "Le prompt est requis.").max(10000, "Le prompt est trop long."),
+  aspect_ratio: z.enum(["portrait", "landscape"]).default("landscape"),
+  n_frames: z.enum(["10", "15"]).default("10"),
+  remove_watermark: z.boolean().default(true),
+});
+
+const queryVideoTaskSchema = z.object({
+  taskId: z.string().min(1, "L'ID de la tâche est requis."),
+});
+
+export async function POST(request: Request) {
   const supabase = createClient();
-  const [stats, setStats] = React.useState<AdminStats | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  const fetchAdminStats = React.useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Fetch total users
-      const { count: totalUsers, error: usersError } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true });
-      if (usersError) throw usersError;
+  if (userError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-      // Fetch total communities
-      const { count: totalCommunities, error: communitiesError } = await supabase
-        .from('communities')
-        .select('id', { count: 'exact', head: true });
-      if (communitiesError) throw communitiesError;
+  // Check if user has access to AI video generation (community_admin or super_admin or explicit access)
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role, coin_points')
+    .eq('id', user.id)
+    .single();
 
-      // Fetch public communities
-      const { count: totalPublicCommunities, error: publicCommunitiesError } = await supabase
-        .from('communities')
-        .select('id', { count: 'exact', head: true })
-        .eq('is_public', true);
-      if (publicCommunitiesError) throw publicCommunitiesError;
+  if (profileError || !profile) {
+    return NextResponse.json({ error: 'Forbidden: Profil utilisateur non trouvé.' }, { status: 403 });
+  }
 
-      // Fetch private communities
-      const { count: totalPrivateCommunities, error: privateCommunitiesError } = await supabase
-        .from('communities')
-        .select('id', { count: 'exact', head: true })
-        .eq('is_public', false);
-      if (privateCommunitiesError) throw privateCommunitiesError;
+  const isCommunityAdmin = profile.role === 'community_admin';
+  const isSuperAdmin = profile.role === 'super_admin';
+  let newCoinPoints = profile.coin_points; // Initialize newCoinPoints here
 
-      // Fetch admins and super admins
-      const { count: totalAdmins, error: adminsError } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true })
-        .eq('role', 'admin');
-      if (adminsError) throw adminsError;
+  const { data: access, error: accessError } = await supabase
+    .from('ai_video_access')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
 
-      const { count: totalSuperAdmins, error: superAdminsError } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true })
-        .eq('role', 'super_admin');
-      if (superAdminsError) throw superAdminsError;
+  if (!access && !isCommunityAdmin && !isSuperAdmin) {
+    return NextResponse.json({ error: 'Forbidden: Vous n\'avez pas accès à la génération de vidéos IA.' }, { status: 403 });
+  }
 
-      // Fetch templates usage
-      const { data: communitiesData, error: templatesError } = await supabase
-        .from('communities')
-        .select('template_1, template_2');
-      if (templatesError) throw templatesError;
-
-      const templatesUsed: { [key: string]: number } = {};
-      communitiesData?.forEach(comm => {
-        templatesUsed[comm.template_1] = (templatesUsed[comm.template_1] || 0) + 1;
-        templatesUsed[comm.template_2] = (templatesUsed[comm.template_2] || 0) + 1;
-      });
-
-      setStats({
-        totalUsers: totalUsers || 0,
-        totalCommunities: totalCommunities || 0,
-        totalPublicCommunities: totalPublicCommunities || 0,
-        totalPrivateCommunities: totalPrivateCommunities || 0,
-        totalAdmins: totalAdmins || 0,
-        totalSuperAdmins: totalSuperAdmins || 0,
-        templatesUsed,
-      });
-
-    } catch (err: any) {
-      console.error("Failed to fetch admin stats:", err); // Added log
-      setError(err.message || "Erreur lors du chargement des statistiques administrateur.");
-      toast.error(err.message || "Erreur lors du chargement des statistiques administrateur.");
-    } finally {
-      setLoading(false);
+  // Deduct coins only if not a Super Admin (Super Admins have unlimited access)
+  if (!isSuperAdmin) {
+    if (profile.coin_points < VIDEO_GENERATION_COST) {
+      return NextResponse.json({ error: `Fonds insuffisants. Vous avez besoin de ${VIDEO_GENERATION_COST} pièces pour générer une vidéo. Vous avez actuellement ${profile.coin_points} pièces.` }, { status: 403 });
     }
-  }, [supabase]);
 
-  React.useEffect(() => {
-    fetchAdminStats();
-  }, [fetchAdminStats]);
+    newCoinPoints = profile.coin_points - VIDEO_GENERATION_COST;
 
-  if (loading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card><CardHeader><CardTitle>Utilisateurs</CardTitle></CardHeader><CardContent><Loader2 className="h-6 w-6 animate-spin text-primary" /></CardContent></Card>
-        <Card><CardHeader><CardTitle>Communautés</CardTitle></CardHeader><CardContent><Loader2 className="h-6 w-6 animate-spin text-primary" /></CardContent></Card>
-        <Card><CardHeader><CardTitle>Admins</CardTitle></CardHeader><CardContent><Loader2 className="h-6 w-6 animate-spin text-primary" /></CardContent></Card>
-      </div>
-    );
+    const { error: updateCoinsError } = await supabase
+      .from('profiles')
+      .update({ coin_points: newCoinPoints })
+      .eq('id', user.id);
+
+    if (updateCoinsError) {
+      console.error("Error deducting coins for AI video generation:", updateCoinsError);
+      return NextResponse.json({ error: 'Erreur lors de la déduction des pièces.' }, { status: 500 });
+    }
+
+    // Record transaction
+    const { error: transactionError } = await supabase
+      .from('coin_transactions')
+      .insert({
+        sender_id: user.id,
+        recipient_id: user.id, // Self-deduction
+        amount: -VIDEO_GENERATION_COST, // Negative for deduction
+        transaction_type: 'ai_video_generation',
+        description: 'Coût de génération de vidéo IA',
+      });
+
+    if (transactionError) {
+      console.error("Error recording AI video generation transaction:", transactionError);
+    }
   }
 
-  if (error) {
-    return (
-      <div className="text-red-500 p-4">
-        <p>{error}</p>
-      </div>
-    );
+  if (!KIE_AI_API_KEY) {
+    return NextResponse.json({ error: 'Kie.ai API Key non configurée.' }, { status: 500 });
   }
 
-  return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Utilisateurs</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats?.totalUsers}</div>
-          <p className="text-xs text-muted-foreground">Utilisateurs enregistrés</p>
-        </CardContent>
-      </Card>
+  try {
+    const body = await request.json();
+    const validationResult = createVideoTaskSchema.safeParse(body);
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Communautés</CardTitle>
-          <Globe className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats?.totalCommunities}</div>
-          <p className="text-xs text-muted-foreground">
-            {stats?.totalPublicCommunities} publiques, {stats?.totalPrivateCommunities} privées
-          </p>
-        </CardContent>
-      </Card>
+    if (!validationResult.success) {
+      console.error("Validation error for video generation:", validationResult.error);
+      // If validation fails, and coins were already deducted, consider refunding them.
+      // For simplicity, we'll assume validation happens client-side first.
+      return NextResponse.json({ error: 'Invalid video generation data provided', details: validationResult.error.flatten() }, { status: 400 });
+    }
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Admins Système</CardTitle>
-          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats?.totalAdmins}</div>
-          <p className="text-xs text-muted-foreground">
-            Dont {stats?.totalSuperAdmins} Super Admins
-          </p>
-        </CardContent>
-      </Card>
+    const { prompt, aspect_ratio, n_frames, remove_watermark } = validationResult.data;
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Templates Utilisés</CardTitle>
-          <LayoutTemplate className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {stats?.templatesUsed && Object.keys(stats.templatesUsed).length > 0 ? (
-            <ul className="text-sm space-y-1">
-              {Object.entries(stats.templatesUsed).map(([template, count]) => (
-                <li key={template} className="flex justify-between">
-                  <span>{template.charAt(0).toUpperCase() + template.slice(1)}:</span>
-                  <span className="font-bold">{count}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-xs text-muted-foreground">Aucun template utilisé.</p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+    const kieAiResponse = await fetch(`${KIE_AI_BASE_URL}/createTask`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${KIE_AI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "sora-2-text-to-video",
+        input: {
+          prompt,
+          aspect_ratio,
+          n_frames,
+          remove_watermark,
+        },
+      }),
+    });
+
+    const kieAiResult = await kieAiResponse.json();
+
+    if (!kieAiResponse.ok || kieAiResult.code !== 200) {
+      console.error("Kie.ai API Error (createTask):", kieAiResult);
+      // If Kie.ai API fails, refund coins if they were deducted
+      if (!isSuperAdmin) {
+        await supabase.from('profiles').update({ coin_points: profile.coin_points }).eq('id', user.id);
+        await supabase.from('coin_transactions').delete().eq('sender_id', user.id).eq('transaction_type', 'ai_video_generation').order('created_at', { ascending: false }).limit(1);
+      }
+      return NextResponse.json({ error: kieAiResult.msg || 'Erreur lors de la création de la tâche de génération vidéo.' }, { status: kieAiResponse.status });
+    }
+
+    return NextResponse.json({
+      message: 'Tâche de génération vidéo créée avec succès.',
+      taskId: kieAiResult.data.taskId,
+      newCoinBalance: isSuperAdmin ? profile.coin_points : newCoinPoints, // Return updated balance
+      deductedAmount: isSuperAdmin ? 0 : VIDEO_GENERATION_COST,
+    }, { status: 200 });
+
+  } catch (error: any) {
+    console.error("API route error for AI video generation (createTask):", error);
+    // If an unexpected error occurs, refund coins if they were deducted
+    if (!isSuperAdmin && profile) {
+      await supabase.from('profiles').update({ coin_points: profile.coin_points }).eq('id', user.id);
+      await supabase.from('coin_transactions').delete().eq('sender_id', user.id).eq('transaction_type', 'ai_video_generation').order('created_at', { ascending: false }).limit(1);
+    }
+    return NextResponse.json({ error: error.message || 'An unexpected error occurred' }, { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  const supabase = createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check if user has access to AI video generation (community_admin or super_admin or explicit access)
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return NextResponse.json({ error: 'Forbidden: Profil utilisateur non trouvé.' }, { status: 403 });
+  }
+
+  const isCommunityAdmin = profile.role === 'community_admin';
+  const isSuperAdmin = profile.role === 'super_admin';
+
+  const { data: access, error: accessError } = await supabase
+    .from('ai_video_access')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
+  if (!access && !isCommunityAdmin && !isSuperAdmin) {
+    return NextResponse.json({ error: 'Forbidden: Vous n\'avez pas accès à la génération de vidéos IA.' }, { status: 403 });
+  }
+
+  if (!KIE_AI_API_KEY) {
+    return NextResponse.json({ error: 'Kie.ai API Key non configurée.' }, { status: 500 });
+  }
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const taskId = searchParams.get('taskId');
+
+    const validationResult = queryVideoTaskSchema.safeParse({ taskId });
+
+    if (!validationResult.success) {
+      console.error("Validation error for query task:", validationResult.error);
+      return NextResponse.json({ error: 'Invalid taskId provided', details: validationResult.error.flatten() }, { status: 400 });
+    }
+
+    const kieAiResponse = await fetch(`${KIE_AI_BASE_URL}/recordInfo?taskId=${taskId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${KIE_AI_API_KEY}`,
+      },
+    });
+
+    const kieAiResult = await kieAiResponse.json();
+
+    if (!kieAiResponse.ok || kieAiResult.code !== 200) {
+      console.error("Kie.ai API Error (recordInfo):", kieAiResult);
+      return NextResponse.json({ error: kieAiResult.msg || 'Erreur lors de la récupération du statut de la tâche.' }, { status: kieAiResponse.status });
+    }
+
+    return NextResponse.json({ message: 'Statut de la tâche récupéré avec succès.', taskInfo: kieAiResult.data }, { status: 200 });
+
+  } catch (error: any) {
+    console.error("API route error for AI video generation (recordInfo):", error);
+    return NextResponse.json({ error: error.message || 'An unexpected error occurred' }, { status: 500 });
+  }
 }

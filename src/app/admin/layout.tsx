@@ -25,15 +25,15 @@ export default async function AdminRootLayout({ children }: AdminLayoutProps) {
     redirect('/login/admin?message=Veuillez vous connecter pour accéder au tableau de bord administrateur.');
   }
 
-  // Check user role from profiles table
+  // Check user role from profiles table - only super_admin can access this dashboard
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-    redirect('/login/admin?message=Accès refusé. Vous n\'avez pas les permissions d\'administrateur.');
+  if (profileError || !profile || profile.role !== 'super_admin') {
+    redirect('/login/admin?message=Accès refusé. Seuls les Super Admins peuvent accéder à ce tableau de bord.');
   }
 
   return (

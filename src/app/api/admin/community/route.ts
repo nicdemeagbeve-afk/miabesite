@@ -12,16 +12,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  // Vérifier le rôle de l'utilisateur
+  // Vérifier le rôle de l'utilisateur - seul un super_admin peut créer des communautés via ce panneau
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile || profile.role !== 'admin') {
+  if (profileError || !profile || profile.role !== 'super_admin') {
     console.error("API: Accès refusé pour la création de communauté. Rôle:", profile?.role, "Erreur:", profileError);
-    return NextResponse.json({ message: 'Forbidden: Admin access required' }, { status: 403 });
+    return NextResponse.json({ message: 'Forbidden: Super Admin access required' }, { status: 403 });
   }
 
   const body = await request.json();

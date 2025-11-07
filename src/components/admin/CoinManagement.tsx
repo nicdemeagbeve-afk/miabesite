@@ -70,8 +70,8 @@ export function CoinManagement() {
       .select('role')
       .eq('id', user.id)
       .single();
-    if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-      toast.error("Accès refusé. Vous n'avez pas les permissions d'administrateur.");
+    if (profileError || !profile || profile.role !== 'super_admin') { // Only super_admin can access
+      toast.error("Accès refusé. Seuls les Super Admins peuvent accéder à cette page.");
       return null;
     }
     setCurrentAdminRole(profile.role);
@@ -160,7 +160,7 @@ export function CoinManagement() {
             <Send className="h-6 w-6" /> Transférer des Pièces
           </CardTitle>
           <CardDescription>
-            Envoyez des pièces à n'importe quel utilisateur. Les administrateurs ont un solde illimité.
+            Envoyez des pièces à n'importe quel utilisateur. Les Super Admins ont un solde illimité.
           </CardDescription>
         </CardHeader>
         <CardContent>

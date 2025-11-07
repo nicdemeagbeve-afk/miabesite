@@ -28,7 +28,7 @@ export function AdminSidebar({ onLinkClick }: AdminSidebarProps) {
     {
       href: "/admin/manage-admins",
       icon: <ShieldCheck className="h-5 w-5" />,
-      label: "Gérer les Admins",
+      label: "Gérer les Admins", // This will manage community_admins
     },
     {
       href: "/admin/coin-management",
@@ -87,7 +87,7 @@ export function AdminSidebar({ onLinkClick }: AdminSidebarProps) {
   return (
     <aside className="sticky top-0 h-screen w-full bg-card text-card-foreground border-r border-border p-4 flex flex-col">
       <div className="mb-4 text-center">
-        <h3 className="text-xl font-bold text-primary">Miabesite Admin</h3>
+        <h3 className="text-xl font-bold text-primary">Miabesite Super Admin</h3>
       </div>
 
       <nav className="space-y-2 flex-1">
@@ -104,7 +104,7 @@ export function AdminSidebar({ onLinkClick }: AdminSidebarProps) {
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors text-destructive hover:bg-destructive/10"
         >
-          <Home className="h-5 w-5" /> Retour au mode utilisateur
+          <Home className="h-5 w-5" /> Retour à la connexion utilisateur
         </button>
       </div>
     </aside>

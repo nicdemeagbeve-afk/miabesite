@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const VIDEO_GENERATION_COST = 30; // Cost in coins
+
 const videoGenerationSchema = z.object({
   prompt: z.string().min(10, "Le prompt doit contenir au moins 10 caractères.").max(10000, "Le prompt est trop long."),
   aspect_ratio: z.enum(["portrait", "landscape"]).default("landscape"),
@@ -79,9 +81,10 @@ export default function AIVideoGeneratorPage() {
       .eq('id', user.id)
       .single();
 
-    const isAdmin = profile && (profile.role === 'admin' || profile.role === 'super_admin');
+    const isCommunityAdmin = profile && profile.role === 'community_admin';
+    const isSuperAdmin = profile && profile.role === 'super_admin';
 
-    if (accessEntry || isAdmin) {
+    if (accessEntry || isCommunityAdmin || isSuperAdmin) {
       setHasAccess(true);
     } else {
       toast.error("Accès refusé. Vous n'avez pas les permissions pour générer des vidéos IA.");
@@ -173,6 +176,9 @@ export default function AIVideoGeneratorPage() {
 
       if (response.ok) {
         toast.info("Tâche de génération vidéo soumise. Cela peut prendre quelques minutes...");
+        if (result.deductedAmount > 0) {
+          toast.success(`-${result.deductedAmount} pièces. Votre nouveau solde est de ${result.newCoinBalance} pièces.`);
+        }
         const realTaskId = result.taskId;
         setGeneratedVideos(prev => prev.map(video => video.taskId === newVideo.taskId ? { ...video, taskId: realTaskId } : video));
         setActivePollingTaskId(realTaskId);
@@ -207,7 +213,7 @@ export default function AIVideoGeneratorPage() {
             <Video className="h-16 w-16 text-primary mx-auto mb-4" />
             <CardTitle className="text-2xl">Accès Refusé</CardTitle>
             <CardDescription>
-              Vous n'avez pas les permissions pour accéder à la génération de vidéos IA.
+              Vous n'avez pas les permissions pour générer des vidéos IA.
               Veuillez contacter un administrateur si vous pensez que c'est une erreur.
             </CardDescription>
           </CardHeader>
@@ -228,7 +234,7 @@ export default function AIVideoGeneratorPage() {
               <Film className="h-6 w-6" /> Créer une nouvelle vidéo
             </CardTitle>
             <CardDescription>
-              Décrivez la vidéo que vous souhaitez générer avec Sora 2.
+              Décrivez la vidéo que vous souhaitez générer avec Sora 2. Coût: {VIDEO_GENERATION_COST} pièces.
             </CardDescription>
           </CardHeader>
           <CardContent>

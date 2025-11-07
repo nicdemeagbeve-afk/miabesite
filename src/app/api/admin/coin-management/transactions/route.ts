@@ -9,15 +9,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // 1. Check if the requesting user is an admin or super_admin
+  // 1. Check if the requesting user is a super_admin
   const { data: requesterProfile, error: requesterProfileError } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
-  if (requesterProfileError || !requesterProfile || (requesterProfile.role !== 'admin' && requesterProfile.role !== 'super_admin')) {
-    return NextResponse.json({ error: 'Forbidden: Vous n\'avez pas les permissions d\'administrateur pour cette action.' }, { status: 403 });
+  if (requesterProfileError || !requesterProfile || requesterProfile.role !== 'super_admin') {
+    return NextResponse.json({ error: 'Forbidden: Seuls les Super Admins peuvent accéder à l\'historique des transactions.' }, { status: 403 });
   }
 
   try {

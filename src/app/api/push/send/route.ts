@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   const supabase = createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  // Only allow admins to send notifications for now
+  // Only allow super_admins to send notifications
   if (userError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -44,8 +44,8 @@ export async function POST(request: Request) {
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-    return NextResponse.json({ error: 'Forbidden: Only admins can send push notifications.' }, { status: 403 });
+  if (profileError || !profile || profile.role !== 'super_admin') {
+    return NextResponse.json({ error: 'Forbidden: Seuls les Super Admins peuvent envoyer des notifications push.' }, { status: 403 });
   }
 
   try {

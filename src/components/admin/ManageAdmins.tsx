@@ -24,9 +24,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const addAdminSchema = z.object({
-  referralCode: z.string().length(5, "Le code de parrainage doit contenir 5 chiffres."),
+const addCommunityAdminSchema = z.object({
+  identifier: z.string().min(1, "L'identifiant est requis."),
+  identifierType: z.enum(['referralCode', 'email']),
 });
 
 interface AdminProfile {
@@ -43,18 +51,21 @@ export function ManageAdmins() {
   const [admins, setAdmins] = React.useState<AdminProfile[]>([]);
   const [currentAdminRole, setCurrentAdminRole] = React.useState<string | null>(null);
   const [deletingAdminId, setDeletingAdminId] = React.useState<string | null>(null);
+  const [isSubmittingAdd, setIsSubmittingAdd] = React.useState(false);
 
-  const form = useForm<z.infer<typeof addAdminSchema>>({
-    resolver: zodResolver(addAdminSchema),
-    defaultValues: { referralCode: "" },
+  const form = useForm<z.infer<typeof addCommunityAdminSchema>>({
+    resolver: zodResolver(addCommunityAdminSchema),
+    defaultValues: { identifier: "", identifierType: "email" },
   });
+
+  const identifierType = form.watch("identifierType");
 
   const fetchAdmins = React.useCallback(async () => {
     setLoading(true);
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
-        console.error("User not authenticated for admin management:", userError); // Added log
+        console.error("User not authenticated for admin management:", userError);
         toast.error("Veuillez vous connecter pour gérer les administrateurs.");
         return;
       }
@@ -65,9 +76,9 @@ export function ManageAdmins() {
         .eq('id', user.id)
         .single();
 
-      if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-        console.error("Admin role check failed:", profileError); // Added log
-        toast.error("Accès refusé. Vous n'avez pas les permissions d'administrateur.");
+      if (profileError || !profile || profile.role !== 'super_admin') { // Only super_admin can access this page
+        console.error("Admin role check failed:", profileError);
+        toast.error("Accès refusé. Seuls les Super Admins peuvent gérer les administrateurs.");
         return;
       }
       setCurrentAdminRole(profile.role);
@@ -75,10 +86,10 @@ export function ManageAdmins() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email, role, referral_code')
-        .or('role.eq.admin,role.eq.super_admin');
+        .or('role.eq.community_admin,role.eq.super_admin'); // Fetch community_admins and super_admins
 
       if (error) {
-        console.error("Supabase Error fetching admins:", error); // Added log
+        console.error("Supabase Error fetching admins:", error);
         toast.error("Erreur lors du chargement des administrateurs.");
       } else {
         setAdmins(data as AdminProfile[]);
@@ -95,18 +106,13 @@ export function ManageAdmins() {
     fetchAdmins();
   }, [fetchAdmins]);
 
-  const onSubmitAddAdmin = async (values: z.infer<typeof addAdminSchema>) => {
-    if (currentAdminRole !== 'super_admin') {
-      toast.error("Seuls les Super Admins peuvent ajouter de nouveaux administrateurs.");
-      return;
-    }
-
-    const { referralCode } = values;
+  const onSubmitAddCommunityAdmin = async (values: z.infer<typeof addCommunityAdminSchema>) => {
+    setIsSubmittingAdd(true);
     try {
       const response = await fetch('/api/admin/manage-admins/update-role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: referralCode, type: 'referralCode', newRole: 'admin' }),
+        body: JSON.stringify({ identifier: values.identifier, type: values.identifierType, newRole: 'community_admin' }),
       });
       const result = await response.json();
 
@@ -115,20 +121,18 @@ export function ManageAdmins() {
         fetchAdmins(); // Refresh the list
         form.reset();
       } else {
-        console.error("API Error adding admin:", result.error); // Added log
-        toast.error(result.error || "Erreur lors de l'ajout de l'administrateur.");
+        console.error("API Error adding community admin:", result.error);
+        toast.error(result.error || "Erreur lors de l'ajout de l'administrateur de communauté.");
       }
     } catch (err) {
-      console.error("Failed to add admin:", err);
+      console.error("Failed to add community admin:", err);
       toast.error("Une erreur inattendue est survenue.");
+    } finally {
+      setIsSubmittingAdd(false);
     }
   };
 
   const handleRemoveAdmin = async (adminId: string) => {
-    if (currentAdminRole !== 'super_admin') {
-      toast.error("Seuls les Super Admins peuvent supprimer des administrateurs.");
-      return;
-    }
     setDeletingAdminId(adminId);
     try {
       const response = await fetch('/api/admin/manage-admins/update-role', {
@@ -142,7 +146,7 @@ export function ManageAdmins() {
         toast.success(result.message);
         fetchAdmins(); // Refresh the list
       } else {
-        console.error("API Error removing admin:", result.error); // Added log
+        console.error("API Error removing admin:", result.error);
         toast.error(result.error || "Erreur lors de la suppression de l'administrateur.");
       }
     } catch (err) {
@@ -162,48 +166,86 @@ export function ManageAdmins() {
     );
   }
 
+  if (currentAdminRole !== 'super_admin') {
+    return (
+      <div className="container mx-auto p-4 md:p-8 text-center">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <ShieldCheck className="h-16 w-16 text-primary mx-auto mb-4" />
+            <CardTitle className="text-2xl">Accès Refusé</CardTitle>
+            <CardDescription>
+              Seuls les Super Admins peuvent gérer les administrateurs.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      {/* Ajouter un Administrateur */}
+      {/* Ajouter un Administrateur de Communauté */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <PlusCircle className="h-6 w-6" /> Ajouter un Administrateur
+            <PlusCircle className="h-6 w-6" /> Ajouter un Administrateur de Communauté
           </CardTitle>
           <CardDescription>
-            Entrez le code de parrainage d'un utilisateur pour lui attribuer le rôle d'administrateur.
+            Entrez l'identifiant d'un utilisateur pour lui attribuer le rôle d'administrateur de communauté.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitAddAdmin)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmitAddCommunityAdmin)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="referralCode"
-                render={({ field }: { field: ControllerRenderProps<z.infer<typeof addAdminSchema>, "referralCode"> }) => (
+                name="identifierType"
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof addCommunityAdminSchema>, "identifierType"> }) => (
                   <FormItem>
-                    <FormLabel>Code de Parrainage de l'Utilisateur</FormLabel>
+                    <FormLabel>Type d'Identifiant de l'Utilisateur</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez un type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="email">Email</SelectItem>
+                        <SelectItem value="referralCode">Code de Parrainage</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="identifier"
+                render={({ field }: { field: ControllerRenderProps<z.infer<typeof addCommunityAdminSchema>, "identifier"> }) => (
+                  <FormItem>
+                    <FormLabel>Identifiant de l'Utilisateur</FormLabel>
                     <FormControl>
-                      <InputOTP maxLength={5} {...field}>
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                        </InputOTPGroup>
-                      </InputOTP>
+                      {identifierType === 'referralCode' ? (
+                        <InputOTP maxLength={5} {...field}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                      ) : (
+                        <Input placeholder="email@example.com" {...field} />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || form.getValues("referralCode").length < 5 || currentAdminRole !== 'super_admin'}>
-                {form.formState.isSubmitting ? "Ajout en cours..." : "Ajouter comme Admin"}
+              <Button type="submit" className="w-full" disabled={isSubmittingAdd || (identifierType === 'referralCode' && form.getValues("identifier").length < 5)}>
+                {isSubmittingAdd ? "Ajout en cours..." : "Ajouter comme Admin de Communauté"}
               </Button>
-              {currentAdminRole !== 'super_admin' && (
-                <p className="text-sm text-red-500 mt-2">Seuls les Super Admins peuvent ajouter de nouveaux administrateurs.</p>
-              )}
             </form>
           </Form>
         </CardContent>
@@ -218,7 +260,7 @@ export function ManageAdmins() {
             <ShieldCheck className="h-6 w-6" /> Administrateurs Actuels
           </CardTitle>
           <CardDescription>
-            Liste de tous les utilisateurs ayant un rôle d'administrateur ou de super-administrateur.
+            Liste de tous les utilisateurs ayant un rôle d'administrateur de communauté ou de super-administrateur.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -232,11 +274,11 @@ export function ManageAdmins() {
                     <User className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-semibold">{admin.full_name || admin.email}</p>
-                      <p className="text-sm text-muted-foreground">Rôle: {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}</p>
+                      <p className="text-sm text-muted-foreground">Rôle: {admin.role === 'super_admin' ? 'Super Admin' : 'Admin de Communauté'}</p>
                       {admin.referral_code && <p className="text-xs text-muted-foreground">Code: {admin.referral_code}</p>}
                     </div>
                   </div>
-                  {currentAdminRole === 'super_admin' && admin.role !== 'super_admin' && ( // Super admin can remove regular admins
+                  {currentAdminRole === 'super_admin' && admin.role !== 'super_admin' && ( // Super admin can remove community admins
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm" disabled={deletingAdminId === admin.id}>

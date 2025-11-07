@@ -16,11 +16,11 @@ export async function GET(request: Request) {
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-      return NextResponse.json({ error: 'Forbidden: Not an admin' }, { status: 403 });
+    if (profileError || !profile || profile.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Forbidden: Not a Super Admin' }, { status: 403 });
     }
 
-    return NextResponse.json({ message: 'Admin access granted', role: profile.role }, { status: 200 });
+    return NextResponse.json({ message: 'Super Admin access granted', role: profile.role }, { status: 200 });
 
   } catch (error: any) {
     console.error("API route error for admin login check:", error);

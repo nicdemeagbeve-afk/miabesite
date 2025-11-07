@@ -5,7 +5,7 @@ import * as z from 'zod';
 const updateRoleSchema = z.object({
   identifier: z.string().optional(), // referralCode or email
   type: z.enum(['referralCode', 'email', 'userId']), // How to identify the user
-  newRole: z.enum(['user', 'admin', 'super_admin']),
+  newRole: z.enum(['user', 'community_admin', 'super_admin']), // Added community_admin
   userId: z.string().uuid().optional(), // For direct user ID updates
 }).refine(data => {
   // Ensure either identifier or userId is provided based on type
