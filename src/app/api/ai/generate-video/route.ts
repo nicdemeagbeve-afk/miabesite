@@ -42,6 +42,7 @@ export async function POST(request: Request) {
 
   const isCommunityAdmin = profile.role === 'community_admin';
   const isSuperAdmin = profile.role === 'super_admin';
+  let newCoinPoints = profile.coin_points; // Initialize newCoinPoints here
 
   const { data: access, error: accessError } = await supabase
     .from('ai_video_access')
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Fonds insuffisants. Vous avez besoin de ${VIDEO_GENERATION_COST} pièces pour générer une vidéo. Vous avez actuellement ${profile.coin_points} pièces.` }, { status: 403 });
     }
 
-    const newCoinPoints = profile.coin_points - VIDEO_GENERATION_COST;
+    newCoinPoints = profile.coin_points - VIDEO_GENERATION_COST;
 
     const { error: updateCoinsError } = await supabase
       .from('profiles')
