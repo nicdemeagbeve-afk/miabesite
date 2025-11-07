@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, ShieldCheck, Coins, PlusCircle, Home, Settings, MessageSquare, BookOpen, ListFilter } from "lucide-react";
+import { LayoutDashboard, Users, ShieldCheck, Coins, PlusCircle, Home, Settings, MessageSquare, BookOpen, ListFilter, Video } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
 import { useRouter } from "next/navigation";
@@ -39,6 +39,11 @@ export function AdminSidebar({ onLinkClick }: AdminSidebarProps) {
       href: "/admin/community-management",
       icon: <Users className="h-5 w-5" />,
       label: "Gestion des Communautés",
+    },
+    {
+      href: "/admin/ai-video-access", // New link for AI video access management
+      icon: <Video className="h-5 w-5" />,
+      label: "Accès Vidéo IA",
     },
     {
       href: "/dashboard/documentation", // Link to general documentation

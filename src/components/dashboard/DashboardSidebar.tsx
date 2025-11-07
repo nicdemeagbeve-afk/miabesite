@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, ShieldCheck } from "lucide-react"; // Import ShieldCheck icon
+import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, ShieldCheck, Video } from "lucide-react"; // Import ShieldCheck and Video icons
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
@@ -25,12 +25,14 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
 
   const [userRole, setUserRole] = React.useState<string | null>(null);
   const [loadingRole, setLoadingRole] = React.useState(true);
+  const [hasAIVideoAccess, setHasAIVideoAccess] = React.useState(false);
 
   React.useEffect(() => {
-    const fetchUserRole = async () => {
+    const fetchUserPermissions = async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         setUserRole(null);
+        setHasAIVideoAccess(false);
         setLoadingRole(false);
         return;
       }
@@ -47,16 +49,27 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
       } else {
         setUserRole(profile.role);
       }
+
+      // Check AI video access
+      const { data: accessEntry, error: accessEntryError } = await supabase
+        .from('ai_video_access')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      const isAdmin = profile && (profile.role === 'admin' || profile.role === 'super_admin');
+      setHasAIVideoAccess(!!accessEntry || isAdmin);
       setLoadingRole(false);
     };
 
-    fetchUserRole();
+    fetchUserPermissions();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        fetchUserRole();
+        fetchUserPermissions();
       } else if (event === 'SIGNED_OUT') {
         setUserRole(null);
+        setHasAIVideoAccess(false);
       }
     });
 
@@ -186,6 +199,20 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
               {renderNavLink(item, false)}
             </React.Fragment>
           ))}
+
+          {/* AI Video Generator Link */}
+          {hasAIVideoAccess && (
+            <Link href="/dashboard/ai-video-generator" passHref>
+              <div className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                pathname === "/dashboard/ai-video-generator"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-accent hover:text-accent-foreground"
+              )} onClick={onLinkClick}>
+                <Video className="h-5 w-5" /> Générateur Vidéo IA
+              </div>
+            </Link>
+          )}
 
           {subdomain && (
             <>
