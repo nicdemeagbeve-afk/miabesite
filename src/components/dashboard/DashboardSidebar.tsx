@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, ShieldCheck, Coins, PlusCircle, Home, Settings, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, Video } from "lucide-react"; // Import ShieldCheck and Video icons
+import { LayoutDashboard, Users, ShieldCheck, Coins, PlusCircle, Home, Settings, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, Video, User } from "lucide-react"; // Import ShieldCheck, Video, and User icons
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase

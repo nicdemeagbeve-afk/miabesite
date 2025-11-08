@@ -147,7 +147,6 @@ export async function POST(request: Request) {
                   subdomain: { // Optional, for context if AI needs to know which site
                     type: SchemaType.STRING,
                     description: "Le sous-domaine du site web auquel le champ appartient (ex: 'monsite').",
-                    optional: true,
                   },
                 },
                 required: ["current_text", "field_name"],
@@ -173,9 +172,13 @@ export async function POST(request: Request) {
       response = await chat.sendMessage(message);
     }
 
-    const functionCalls = response.functionCalls();
+    // Access function calls from the response object
+    const functionCalls = response.response.candidates?.[0]?.content?.parts?.filter(
+      (part: any) => part.functionCall
+    );
+
     if (functionCalls && functionCalls.length > 0) {
-      const functionCall = functionCalls[0];
+      const functionCall = functionCalls[0].functionCall!; // Added non-null assertion here
 
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
@@ -252,11 +255,14 @@ export async function POST(request: Request) {
         const { current_text, field_name, subdomain } = functionCall.args as { current_text: string; field_name: string; subdomain?: string; };
         const rewritePrompt = `Réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre plus accrocheur, vendeur et marketing. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
         const rewriteResponse = await chat.sendMessage(rewritePrompt);
-        return NextResponse.json({ response: rewriteResponse.response.text() }, { status: 200 });
+        // Access text from the response object
+        const rewrittenText = rewriteResponse.response.candidates?.[0]?.content?.parts?.[0]?.text;
+        return NextResponse.json({ response: rewrittenText }, { status: 200 });
       }
     }
 
-    const text = response.text();
+    // Access text from the response object for regular chat messages
+    const text = response.response.candidates?.[0]?.content?.parts?.[0]?.text;
     return NextResponse.json({ response: text }, { status: 200 });
   } catch (error: any) {
     console.error("API route error for AI chat with Gemini:", error);
