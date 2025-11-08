@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const VIDEO_GENERATION_COST = 30; // Cost in coins
+const VIDEO_GENERATION_COST = 60; // Cost in coins
 
 const videoGenerationSchema = z.object({
   prompt: z.string().min(10, "Le prompt doit contenir au moins 10 caractères.").max(10000, "Le prompt est trop long."),
@@ -235,6 +235,9 @@ export default function AIVideoGeneratorPage() {
             </CardTitle>
             <CardDescription>
               Décrivez la vidéo que vous souhaitez générer avec Sora 2. Coût: {VIDEO_GENERATION_COST} pièces.
+              <p className="text-sm text-muted-foreground mt-2">
+                Actuellement, 2000 pièces équivalent à 4300 XOF, 7.5 USD et 6.5 GBP. Un moyen de paiement sera intégré prochainement.
+              </p>
             </CardDescription>
           </CardHeader>
           <CardContent>

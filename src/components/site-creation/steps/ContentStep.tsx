@@ -14,9 +14,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Image as ImageIcon, LayoutTemplate, BookOpen } from "lucide-react"; // Importation des icônes
 import { toast } from "sonner";
+import { AIRewriteButton } from "@/components/AIRewriteButton"; // Import the new component
 
 export function ContentStep() {
-  const { control } = useFormContext();
+  const { control, watch, setValue } = useFormContext(); // Added watch and setValue
   const maxHeroImageSizeMB = 2; // Max 2MB for hero image
 
   return (
@@ -35,7 +36,14 @@ export function ContentStep() {
           <FormItem>
             <FormLabel>Slogan Accrocheur (Bannière d'Accueil)</FormLabel>
             <FormControl>
-              <Input placeholder="Ex: Votre partenaire pour une maison impeccable." {...field} />
+              <div className="flex gap-2">
+                <Input placeholder="Ex: Votre partenaire pour une maison impeccable." {...field} />
+                <AIRewriteButton
+                  fieldName="heroSlogan"
+                  currentText={field.value}
+                  onRewrite={(newText) => setValue("heroSlogan", newText, { shouldValidate: true })}
+                />
+              </div>
             </FormControl>
             <FormMessage />
             <p className="text-sm text-muted-foreground">
@@ -52,11 +60,18 @@ export function ContentStep() {
           <FormItem>
             <FormLabel className="flex items-center gap-1"><BookOpen className="h-4 w-4 text-muted-foreground" /> Mon Histoire / Ma Mission (Page "À Propos")</FormLabel>
             <FormControl>
-              <Textarea
-                placeholder="Racontez votre parcours, vos valeurs, votre engagement local (max 500 caractères)."
-                className="resize-y min-h-[100px]"
-                {...field}
-              />
+              <div className="flex flex-col gap-2">
+                <Textarea
+                  placeholder="Racontez votre parcours, vos valeurs, votre engagement local (max 500 caractères)."
+                  className="resize-y min-h-[100px]"
+                  {...field}
+                />
+                <AIRewriteButton
+                  fieldName="aboutStory"
+                  currentText={field.value}
+                  onRewrite={(newText) => setValue("aboutStory", newText, { shouldValidate: true })}
+                />
+              </div>
             </FormControl>
             <FormMessage />
             <p className="text-sm text-muted-foreground">

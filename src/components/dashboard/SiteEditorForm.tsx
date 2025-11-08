@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { SiteEditorFormData, siteEditorFormSchema, ProductAndService, Testimonial, Skill } from "@/lib/schemas/site-editor-form-schema"; // Import schema and type, and new types
 import Image from "next/image"; // Import Next.js Image component
+import { AIRewriteButton } from "@/components/AIRewriteButton"; // Import the new component
 
 interface SiteEditorFormProps {
   initialSiteData: SiteEditorFormData;
@@ -451,7 +452,17 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                 render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "heroSlogan"> }) => (
                   <FormItem>
                     <FormLabel>Slogan Accrocheur</FormLabel>
-                    <FormControl><Input placeholder="Ex: Votre partenaire pour une maison impeccable." {...field} /></FormControl>
+                    <FormControl>
+                      <div className="flex gap-2">
+                        <Input placeholder="Ex: Votre partenaire pour une maison impeccable." {...field} />
+                        <AIRewriteButton
+                          fieldName="heroSlogan"
+                          currentText={field.value}
+                          onRewrite={(newText) => field.onChange(newText)}
+                          subdomain={subdomain}
+                        />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -462,7 +473,17 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                 render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, "aboutStory"> }) => (
                   <FormItem>
                     <FormLabel>Mon Histoire / Ma Mission</FormLabel>
-                    <FormControl><Textarea placeholder="Racontez votre parcours, vos valeurs, votre engagement local." className="resize-y min-h-[100px]" {...field} /></FormControl>
+                    <FormControl>
+                      <div className="flex flex-col gap-2">
+                        <Textarea placeholder="Racontez votre parcours, vos valeurs, votre engagement local." className="resize-y min-h-[100px]" {...field} />
+                        <AIRewriteButton
+                          fieldName="aboutStory"
+                          currentText={field.value}
+                          onRewrite={(newText) => field.onChange(newText)}
+                          subdomain={subdomain}
+                        />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -533,7 +554,17 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                     render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `skills.${number}.description`> }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="Détaillez cette compétence." className="resize-y min-h-[60px]" {...field} /></FormControl>
+                        <FormControl>
+                          <div className="flex flex-col gap-2">
+                            <Textarea placeholder="Détaillez cette compétence." className="resize-y min-h-[60px]" {...field} />
+                            <AIRewriteButton
+                              fieldName={`skillDescription-${index}`} // Unique field name for AI context
+                              currentText={field.value}
+                              onRewrite={(newText) => field.onChange(newText)}
+                              subdomain={subdomain}
+                            />
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -641,7 +672,17 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                     render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `productsAndServices.${number}.description`> }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="Ce qui est inclus, la durée, les garanties." className="resize-y min-h-[60px]" {...field} /></FormControl>
+                        <FormControl>
+                          <div className="flex flex-col gap-2">
+                            <Textarea placeholder="Ce qui est inclus, la durée, les garanties." className="resize-y min-h-[60px]" {...field} />
+                            <AIRewriteButton
+                              fieldName={`productDescription-${index}`} // Unique field name for AI context
+                              currentText={field.value}
+                              onRewrite={(newText) => field.onChange(newText)}
+                              subdomain={subdomain}
+                            />
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -749,7 +790,17 @@ export function SiteEditorForm({ initialSiteData, subdomain, siteId }: SiteEdito
                     render={({ field }: { field: ControllerRenderProps<SiteEditorFormData, `testimonials.${number}.quote`> }) => (
                       <FormItem>
                         <FormLabel>Témoignage</FormLabel>
-                        <FormControl><Textarea placeholder="Ce client a dit..." className="resize-y min-h-[80px]" {...field} /></FormControl>
+                        <FormControl>
+                          <div className="flex flex-col gap-2">
+                            <Textarea placeholder="Ce client a dit..." className="resize-y min-h-[80px]" {...field} />
+                            <AIRewriteButton
+                              fieldName={`testimonialQuote-${index}`} // Unique field name for AI context
+                              currentText={field.value}
+                              onRewrite={(newText) => field.onChange(newText)}
+                              subdomain={subdomain}
+                            />
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

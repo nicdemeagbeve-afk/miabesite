@@ -64,10 +64,10 @@ export async function POST(request: Request) {
   const supabase = createClient();
 
   try {
-    const { message, history, current_site_subdomain } = await request.json(); // Receive current_site_subdomain
+    const { message, history, current_site_subdomain, tool_code, tool_args } = await request.json(); // Added tool_code and tool_args
 
-    if (!message) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    if (!message && !tool_code) { // Allow direct tool calls without a message
+      return NextResponse.json({ error: 'Message or tool_code is required' }, { status: 400 });
     }
 
     if (!genAI) {
@@ -75,21 +75,15 @@ export async function POST(request: Request) {
     }
 
     const systemInstruction = `
-      Vous êtes un assistant IA utile pour Miabesite, une plateforme de création et de gestion de sites web.
-      Votre objectif est d'aider les utilisateurs avec des questions et des tâches *strictement liées aux services de Miabesite,
-      à la création de sites web, à la gestion de sites, aux fonctionnalités, au design, à l'édition de contenu,
-      et à tout autre aspect concernant directement la plateforme*.
-      Si un utilisateur pose une question qui est en dehors de ce domaine (par exemple, des connaissances générales,
-      des conseils personnels, des sujets non liés), vous devez poliment refuser de répondre et le rediriger
-      vers des questions concernant Miabesite. Ne vous engagez pas dans des conversations hors sujet.
-      Vous pouvez utiliser les outils disponibles pour aider l'utilisateur.
+      Vous êtes Maître Control (MC), un assistant IA expert pour Miabesite, une plateforme de création et de gestion de sites web.
+      Votre objectif principal est d'aider les utilisateurs à créer des sites web avec des accroches percutantes, des textes marketing et des designs attrayants.
+      Vous devez guider les utilisateurs dans la conception de leur site, que ce soit à travers le wizard de création ou en répondant à leurs questions spécifiques.
+      Vos réponses doivent être cohérentes, concises, basées sur les données disponibles (y compris la documentation de Miabesite) et orientées marketing.
+      Ne vous engagez pas dans des conversations hors sujet.
       Lorsque vous fournissez des informations, assurez-vous qu'elles sont claires, concises et bien formatées pour une lisibilité parfaite.
       - Utilisez des paragraphes pour organiser les idées.
       - Utilisez des sauts de ligne pour séparer les informations importantes.
       Soyez extrêmement bref et rapide dans vos réponses, ne donnez que les informations essentielles sans paragraphes longs, listes à puces ou caractères spéciaux comme les tirets ou les astérisques.
-      Si l'utilisateur demande des statistiques pour 'chaque' site ou pour 'tous' ses sites après avoir listé ses sites,
-      vous devez appeler l'outil 'get_site_stats' pour chaque sous-domaine listé et compiler les résultats dans une réponse unique et bien formatée.
-      Si l'utilisateur demande de réécrire un texte pour le rendre plus accrocheur, plus vendeur ou plus marketing, utilisez l'outil 'rewrite_site_text'.
       Pour les tâches complexes comme la création de nouveaux sites, la modification de votre profil (y compris les téléchargements d'images et les mots de passe),
       ou les paramètres avancés comme la liaison de domaines personnalisés ou l'exportation de code, vous devez informer l'utilisateur que ces tâches
       nécessitent une interaction directe avec l'interface utilisateur ou des processus spécifiques.
@@ -97,6 +91,7 @@ export async function POST(request: Request) {
       Par exemple, pour créer un site, dites : "Je ne peux pas créer un site directement pour vous, mais vous pouvez le faire facilement en allant sur la page 'Créer un site' de votre tableau de bord."
       Pour modifier le profil, dites : "Je ne peux pas modifier votre profil directement, mais vous pouvez le faire sur la page 'Profil & Paramètres' de votre tableau de bord."
       Pour les fonctionnalités avancées comme la liaison de domaine ou l'exportation de code, dites : "Ces fonctionnalités avancées sont prévues pour la version 2 de Miabesite et ne sont pas encore disponibles. Vous pouvez consulter la page 'Gestion Avancée' de votre site pour plus d'informations."
+      La génération de vidéos IA coûte 60 pièces. Actuellement, 2000 pièces équivalent à 4300 XOF, 7.5 USD et 6.5 GBP. Un moyen de paiement sera intégré prochainement.
 
       ${current_site_subdomain ? `
       L'utilisateur est actuellement sur le site avec le sous-domaine '${current_site_subdomain}'.
@@ -136,29 +131,26 @@ export async function POST(request: Request) {
               },
             },
             {
-              name: "rewrite_site_text",
-              description: "Réécrit un champ de texte spécifique d'un site web pour le rendre plus accrocheur, plus vendeur ou plus marketing. Les champs disponibles sont : 'heroSlogan', 'aboutStory', 'productDescription' (pour un produit spécifique), 'testimonialQuote' (pour un témoignage spécifique), 'skillDescription' (pour une compétence spécifique).",
+              name: "generate_rewritten_text", // New tool for text rewriting
+              description: "Génère une version plus accrocheuse, vendeuse ou marketing d'un texte donné pour un champ spécifique du site. Le texte généré sera retourné à l'utilisateur pour qu'il puisse l'utiliser.",
               parameters: {
                 type: SchemaType.OBJECT,
                 properties: {
-                  subdomain: {
+                  current_text: {
                     type: SchemaType.STRING,
-                    description: "Le sous-domaine du site web à modifier (ex: 'monsite').",
+                    description: "Le texte actuel du champ à réécrire.",
                   },
                   field_name: {
                     type: SchemaType.STRING,
                     description: "Le nom du champ de texte à réécrire (ex: 'heroSlogan', 'aboutStory', 'productDescription', 'testimonialQuote', 'skillDescription').",
                   },
-                  current_text: {
+                  subdomain: { // Optional, for context if AI needs to know which site
                     type: SchemaType.STRING,
-                    description: "Le texte actuel du champ à réécrire.",
-                  },
-                  new_text: {
-                    type: SchemaType.STRING,
-                    description: "Le nouveau texte réécrit par l'IA, plus accrocheur et vendeur.",
+                    description: "Le sous-domaine du site web auquel le champ appartient (ex: 'monsite').",
+                    optional: true,
                   },
                 },
-                required: ["subdomain", "field_name", "current_text", "new_text"],
+                required: ["current_text", "field_name"],
               },
             },
           ],
@@ -170,8 +162,16 @@ export async function POST(request: Request) {
       history: history || [],
     });
 
-    const result = await chat.sendMessage(message);
-    const response = result.response;
+    let response;
+    if (tool_code === "generate_rewritten_text" && tool_args) {
+      // If it's a direct tool call from the frontend for rewriting text
+      const { current_text, field_name, subdomain } = tool_args;
+      const rewritePrompt = `Réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre plus accrocheur, vendeur et marketing. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
+      response = await chat.sendMessage(rewritePrompt);
+    } else {
+      // Normal chat message
+      response = await chat.sendMessage(message);
+    }
 
     const functionCalls = response.functionCalls();
     if (functionCalls && functionCalls.length > 0) {
@@ -212,11 +212,9 @@ export async function POST(request: Request) {
           });
         }
         
-        // Directly return the formatted text
         return NextResponse.json({ response: responseText }, { status: 200 });
 
       } else if (functionCall.name === "get_site_stats") {
-        // Prioritize subdomain from functionCall.args, then current_site_subdomain
         const subdomain = (functionCall.args as { subdomain?: string }).subdomain || current_site_subdomain;
 
         if (!subdomain) {
@@ -243,7 +241,6 @@ export async function POST(request: Request) {
 
         const statsData = await apiResponse.json();
 
-        // Format the stats data directly into a readable string
         const formattedStats = `Voici les statistiques pour le site ${subdomain} : \n` +
                                `Ventes totales : ${statsData.totalSales} \n` +
                                `Visites totales : ${statsData.totalVisits} \n` +
@@ -251,32 +248,11 @@ export async function POST(request: Request) {
         
         return NextResponse.json({ response: formattedStats }, { status: 200 });
 
-      } else if (functionCall.name === "rewrite_site_text") {
-        // Prioritize subdomain from functionCall.args, then current_site_subdomain
-        const subdomain = (functionCall.args as { subdomain?: string }).subdomain || current_site_subdomain;
-        const { field_name, new_text } = functionCall.args as { subdomain?: string; field_name: keyof SiteEditorFormData; current_text: string; new_text: string; };
-
-        if (!subdomain || !field_name || !new_text) {
-          return NextResponse.json({ response: "Veuillez spécifier le sous-domaine, le nom du champ et le nouveau texte." }, { status: 200 });
-        }
-
-        // Validate field_name to prevent arbitrary updates
-        const allowedFields: (keyof SiteEditorFormData)[] = ['heroSlogan', 'aboutStory']; // Add other fields as needed
-        if (!allowedFields.includes(field_name)) {
-          return NextResponse.json({ response: `Le champ '${field_name}' ne peut pas être réécrit directement par l'IA. Veuillez choisir parmi : ${allowedFields.join(', ')}.` }, { status: 200 });
-        }
-
-        try {
-          const updates: Partial<SiteEditorFormData> = { [field_name]: new_text };
-          await updateSiteData(supabase, user.id, subdomain, updates);
-          const toolResponse = await chat.sendMessage([
-            { functionResponse: { name: "rewrite_site_text", response: { success: true, message: `Le champ '${field_name}' du site "${subdomain}" a été réécrit avec succès.` } } },
-          ]);
-          return NextResponse.json({ response: toolResponse.response.text() }, { status: 200 });
-        } catch (error: any) {
-          console.error("Error rewriting site text:", error);
-          return NextResponse.json({ response: `Désolé, je n'ai pas pu réécrire le texte du site "${subdomain}". ${error.message}` }, { status: 200 });
-        }
+      } else if (functionCall.name === "generate_rewritten_text") {
+        const { current_text, field_name, subdomain } = functionCall.args as { current_text: string; field_name: string; subdomain?: string; };
+        const rewritePrompt = `Réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre plus accrocheur, vendeur et marketing. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
+        const rewriteResponse = await chat.sendMessage(rewritePrompt);
+        return NextResponse.json({ response: rewriteResponse.response.text() }, { status: 200 });
       }
     }
 
