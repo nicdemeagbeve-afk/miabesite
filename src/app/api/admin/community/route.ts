@@ -31,10 +31,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Invalid data', errors: validation.error.flatten() }, { status: 400 });
   }
 
-  const { name, description, utility, positioningDomain } = validation.data;
+  const { name, description, utility, positioningDomain, template_1, template_2, category, is_public } = validation.data;
 
   try {
-    const joinCode = await generateUniqueCommunityJoinCode(supabase);
+    let joinCode: string | null = null;
+    if (!is_public) {
+      joinCode = await generateUniqueCommunityJoinCode(supabase);
+    }
 
     const { data, error } = await supabase
       .from('communities')
@@ -42,7 +45,11 @@ export async function POST(request: Request) {
         name,
         description,
         utility,
-        positioning_domain: positioningDomain, // Assurez-vous que le nom de la colonne correspond à votre DB
+        positioning_domain: positioningDomain,
+        template_1,
+        template_2,
+        category,
+        is_public,
         join_code: joinCode,
         owner_id: user.id, // L'administrateur qui crée la communauté en est le propriétaire initial
       })

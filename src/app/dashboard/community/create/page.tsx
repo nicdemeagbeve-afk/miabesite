@@ -28,7 +28,7 @@ const communityFormSchema = z.object({
   template_1: z.string().min(1, "Veuillez choisir le premier template premium."),
   template_2: z.string().min(1, "Veuillez choisir le deuxième template premium."),
   category: z.string().min(1, "Veuillez choisir une catégorie pour votre communauté."),
-  is_public: z.boolean().default(true), // New: Public/Private toggle
+  is_public: z.boolean().default(true), // Default to public
 }).refine(data => data.template_1 !== data.template_2, {
   message: "Les deux templates choisis doivent être différents.",
   path: ["template_2"],
@@ -46,6 +46,7 @@ export default function CreateCommunityPage() {
   const [hasEnoughPoints, setHasEnoughPoints] = React.useState(false);
   const [userCoinPoints, setUserCoinPoints] = React.useState(0);
   const [generatedJoinCode, setGeneratedJoinCode] = React.useState<string | null>(null);
+  const [userRole, setUserRole] = React.useState<string | null>(null); // New state for user role
 
   const form = useForm<CommunityFormData>({
     resolver: zodResolver(communityFormSchema),
@@ -61,7 +62,7 @@ export default function CreateCommunityPage() {
 
   const isPublic = form.watch("is_public");
 
-  const fetchUserPoints = React.useCallback(async () => {
+  const fetchUserPointsAndRole = React.useCallback(async () => {
     setLoading(true);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -79,6 +80,21 @@ export default function CreateCommunityPage() {
         const points = result.coinPoints || 0;
         setUserCoinPoints(points);
         setHasEnoughPoints(points >= COMMUNITY_UNLOCK_POINTS);
+
+        // Fetch user role from profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          console.error("Error fetching user profile role:", profileError);
+          setUserRole(null);
+        } else {
+          setUserRole(profile.role);
+        }
+
       } else {
         toast.error(result.error || "Erreur lors du chargement de vos points de parrainage.");
       }
@@ -91,11 +107,11 @@ export default function CreateCommunityPage() {
   }, [supabase, router]);
 
   React.useEffect(() => {
-    fetchUserPoints();
-  }, [fetchUserPoints]);
+    fetchUserPointsAndRole();
+  }, [fetchUserPointsAndRole]);
 
   const onSubmit: SubmitHandler<CommunityFormData> = async (values) => {
-    if (!hasEnoughPoints) {
+    if (!hasEnoughPoints && userRole !== 'super_admin') { // Super admins can bypass point requirement
       toast.error("Vous n'avez pas assez de pièces pour créer une communauté.");
       return;
     }
@@ -123,7 +139,7 @@ export default function CreateCommunityPage() {
 
       if (response.ok) {
         toast.success(result.message);
-        router.push(`/dashboard/communities/${result.communityId}`); // Redirect to the new community's page
+        router.push(`/dashboard/my-communities`); // Redirect to user's communities page
       } else {
         toast.error(result.error || "Erreur lors de la création de la communauté.");
       }
@@ -137,12 +153,12 @@ export default function CreateCommunityPage() {
     return (
       <div className="container mx-auto p-4 md:p-8 flex items-center justify-center min-h-[calc(100vh-100px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-2 text-lg text-muted-foreground">Vérification de vos pièces...</p>
+        <p className="ml-2 text-lg text-muted-foreground">Vérification de vos pièces et rôle...</p>
       </div>
     );
   }
 
-  if (!hasEnoughPoints) {
+  if (!hasEnoughPoints && userRole !== 'super_admin') { // Super admins can bypass point requirement
     return (
       <div className="container mx-auto p-4 md:p-8 text-center">
         <Card className="w-full max-w-md mx-auto">

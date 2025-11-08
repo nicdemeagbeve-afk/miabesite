@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     let query = supabase
       .from('communities')
       .select('*, community_members(count)') // Select communities and count members
-      .or(`is_public.eq.true,owner_id.eq.${user.id}`); // User can see public communities or their own
+      .or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // User can see public communities, their own, or communities they are a member of
 
     if (searchTerm) {
       query = query.ilike('name', `%${searchTerm}%`);

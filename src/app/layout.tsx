@@ -24,7 +24,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
-        <link rel="icon" href="/favicon.ico" /> {/* Add this line */}
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
         <ThemeProvider
@@ -34,14 +34,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ConditionalHeader /> {/* Render the new client component here */}
+          <ConditionalHeader />
           {children}
-          <Toaster /> {/* Render Toaster globally */}
-          <CookieConsentBanner /> {/* Render CookieConsentBanner globally */}
+          <Toaster />
+          <CookieConsentBanner />
           <div className="fixed bottom-6 left-6 z-50">
-            <PushNotificationInitializer /> {/* Add the initializer here */}
+            <PushNotificationInitializer />
           </div>
-          <ServiceWorkerRegistrar /> {/* Ajoutez le composant ici */}
+          <ServiceWorkerRegistrar />
         </ThemeProvider>
       </body>
     </html>

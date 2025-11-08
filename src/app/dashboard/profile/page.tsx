@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare, CalendarIcon, Loader2 } from "lucide-react";
+import { User as UserIcon, Upload, Lock, Mail, Phone, Globe, MessageSquare, CalendarIcon, Loader2, ShieldCheck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
@@ -568,6 +568,19 @@ export default function ProfilePage() {
                 <MessageSquare className="mr-2 h-5 w-5" /> Support WhatsApp
               </a>
             </Button>
+            {profileData?.role === 'super_admin' && (
+              <>
+                <Separator />
+                <h3 className="text-xl font-semibold mb-4">Accès Admin</h3>
+                <Link href="/admin/overview" passHref>
+                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <div>
+                      <ShieldCheck className="mr-2 h-5 w-5" /> Accéder au Tableau de Bord Admin
+                    </div>
+                  </Button>
+                </Link>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
