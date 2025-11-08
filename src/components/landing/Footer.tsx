@@ -2,8 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image"; // Import Image component
-import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
+import Image from "next/image";
+import { getSupabaseStorageUrl } from "@/lib/utils";
 
 export function Footer() {
   return (
@@ -23,6 +23,9 @@ export function Footer() {
           <Link href="/legal" className="hover:text-primary transition-colors">
             Légal & Confidentialité
           </Link>
+          <a href="#contact" className="hover:text-primary transition-colors">
+            Contact
+          </a>
         </nav>
       </div>
       <div className="container mx-auto text-center text-xs text-muted-foreground mt-6">

@@ -6,11 +6,12 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { ExamplesSection } from "@/components/landing/ExamplesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { Footer } from "@/components/landing/Footer";
 import { PricingSection } from "@/components/landing/PricingSection";
-import { useSearchParams } from "next/navigation"; // Importez useSearchParams ici
-import React from "react"; // Importez React si vous utilisez React.useEffect
-import { toast } from "sonner"; // Importez toast et Toaster si vous les utilisez
+import { ContactSection } from "@/components/landing/ContactSection"; // Import the new ContactSection
+import { Footer } from "@/components/landing/Footer";
+import { useSearchParams } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
 
 export default function HomePageClient() {
   const searchParams = useSearchParams();
@@ -32,6 +33,7 @@ export default function HomePageClient() {
         <TestimonialsSection />
         <FAQSection />
         <PricingSection />
+        <ContactSection /> {/* Add the new ContactSection here */}
       </main>
       <Footer />
     </div>
