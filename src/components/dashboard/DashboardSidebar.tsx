@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Pencil, Settings, PlusCircle, Home, User, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, ShieldCheck, Video } from "lucide-react"; // Import ShieldCheck and Video icons
+import { LayoutDashboard, Users, ShieldCheck, Coins, PlusCircle, Home, Settings, MessageSquare, Edit, Mail as MailIcon, BookOpen, Gift, Users as UsersIcon, ListFilter, Video } from "lucide-react"; // Import ShieldCheck and Video icons
 import { UserProfileButton } from "./UserProfileButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
@@ -21,7 +21,7 @@ export function DashboardSidebar({ subdomain, onLinkClick }: DashboardSidebarPro
   const pathname = usePathname();
   const supabase = createClient();
   const router = useRouter();
-  const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482";
+  const supportWhatsAppNumber = "+22870832482";
 
   const [userRole, setUserRole] = React.useState<string | null>(null);
   const [loadingRole, setLoadingRole] = React.useState(true);

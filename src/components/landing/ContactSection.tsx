@@ -109,7 +109,7 @@ export function ContactSection() {
             <MessageSquare className="h-5 w-5 text-green-500" /> Support WhatsApp: +228 70 83 24 82
           </p>
           <p className="flex items-center justify-center gap-2">
-            <Mail className="h-5 w-5 text-blue-500" /> Email: contact@miabesite.site
+            <Mail className="h-5 w-5 text-blue-500" /> Email: welcome@app:miabesite.site
           </p>
           <p className="flex items-center justify-center gap-2">
             <MapPin className="h-5 w-5 text-gray-500" /> Localisation: Lomé, Togo

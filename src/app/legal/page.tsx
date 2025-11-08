@@ -31,7 +31,7 @@ export default function LegalPage() {
               <p><strong>Incubateur Entreprise :</strong> House Of Innovation</p>
               <p><strong>Statut :</strong> Étudiant Autodidacte en Développement Web et Gestion de Projet</p>
               <p><strong>Nationalité :</strong> Togolais</p>
-              <p><strong>Contact :</strong> contact@miabesite.site</p>
+              <p><strong>Contact :</strong> welcome@app:miabesite.site</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">2. Hébergement</h3>
@@ -112,7 +112,7 @@ export default function LegalPage() {
                 <li><strong>Droit à la portabilité :</strong> Recevoir vos données dans un format structuré et les transmettre à un autre responsable de traitement.</li>
                 <li><strong>Droit de retirer votre consentement :</strong> À tout moment, sans affecter la licéité du traitement basé sur le consentement effectué avant ce retrait.</li>
               </ul>
-              <p>Pour exercer ces droits, veuillez nous contacter à contact@miabesite.site.</p>
+              <p>Pour exercer ces droits, veuillez nous contacter à welcome@app:miabesite.site.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">6. Durée de Conservation</h3>
@@ -126,7 +126,7 @@ export default function LegalPage() {
               <h3 className="text-lg font-semibold text-foreground">8. Contact DPO</h3>
               <p>Pour toute question relative à la protection de vos données, vous pouvez contacter notre Délégué à la Protection des Données (DPO) :</p>
               <p><strong>Nicodème Ayao AGBEVE</strong></p>
-              <p><strong>Email :</strong> contact@miabesite.site</p>
+              <p><strong>Email :</strong> welcome@app:miabesite.site</p>
             </div>
           </CardContent>
         </Card>

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { AIRewriteButton } from "@/components/AIRewriteButton"; // Import the new component
 
 const skillIcons = [
   { value: "Wrench", label: "Clé à molette" },
@@ -44,7 +45,7 @@ const getLucideIcon = (iconName: string) => {
 };
 
 export function SkillsStep() {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext(); // Added setValue
   const { fields, append, remove } = useFieldArray({
     control,
     name: "skills",
@@ -111,11 +112,18 @@ export function SkillsStep() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Expliquez brièvement ce que cette compétence implique."
-                      className="resize-y min-h-[60px]"
-                      {...field}
-                    />
+                    <div className="flex flex-col gap-2">
+                      <Textarea
+                        placeholder="Expliquez brièvement ce que cette compétence implique."
+                        className="resize-y min-h-[60px]"
+                        {...field}
+                      />
+                      <AIRewriteButton
+                        fieldName={`skillDescription-${index}`} // Unique field name for AI context
+                        currentText={field.value}
+                        onRewrite={(newText) => setValue(`skills.${index}.description`, newText, { shouldValidate: true })}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

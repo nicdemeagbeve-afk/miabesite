@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import { AIRewriteButton } from "@/components/AIRewriteButton"; // Import the new component
 
 const currencies = ["XOF", "USD", "EUR", "GBP", "GHS"];
 const actionButtons = [
@@ -32,7 +33,7 @@ const actionButtons = [
 ];
 
 export function ProductsServicesStep() {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext(); // Added setValue
   const { fields, append, remove } = useFieldArray({
     control,
     name: "productsAndServices",
@@ -145,11 +146,18 @@ export function ProductsServicesStep() {
                 <FormItem>
                   <FormLabel>Description Détaillée</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Ce qui est inclus, la durée, les garanties (max 200 caractères)."
-                      className="resize-y min-h-[60px]"
-                      {...field}
-                    />
+                    <div className="flex flex-col gap-2">
+                      <Textarea
+                        placeholder="Ce qui est inclus, la durée, les garanties (max 200 caractères)."
+                        className="resize-y min-h-[60px]"
+                        {...field}
+                      />
+                      <AIRewriteButton
+                        fieldName={`productDescription-${index}`} // Unique field name for AI context
+                        currentText={field.value}
+                        onRewrite={(newText) => setValue(`productsAndServices.${index}.description`, newText, { shouldValidate: true })}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
