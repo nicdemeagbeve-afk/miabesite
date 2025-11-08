@@ -64,7 +64,7 @@ export function AdminLoginForm() {
       return;
     }
 
-    // After successful login, check if the user has an admin role
+    // After successful login, check if the user has a super_admin role
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       toast.error("Erreur lors de la récupération des informations utilisateur.");
@@ -78,13 +78,14 @@ export function AdminLoginForm() {
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
-      toast.error("Accès refusé. Vous n'avez pas les permissions d'administrateur.");
-      await supabase.auth.signOut(); // Log out non-admin users
+    // Strict check: only 'super_admin' can log in via this form
+    if (profileError || !profile || profile.role !== 'super_admin') {
+      toast.error("Accès refusé. Vous n'avez pas les permissions de Super Administrateur.");
+      await supabase.auth.signOut(); // Log out non-super_admin users
       return;
     }
 
-    toast.success("Connexion administrateur réussie ! Redirection vers le tableau de bord admin...");
+    toast.success("Connexion Super Administrateur réussie ! Redirection vers le tableau de bord admin...");
     router.push("/admin/overview");
     router.refresh();
   }
@@ -94,7 +95,7 @@ export function AdminLoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <ShieldCheck className="h-16 w-16 text-primary mx-auto mb-4" />
-          <CardTitle className="text-2xl">Connexion Administrateur</CardTitle>
+          <CardTitle className="text-2xl">Connexion Super Administrateur</CardTitle>
           <CardDescription>
             Connectez-vous à l'interface d'administration.
           </CardDescription>
@@ -109,7 +110,7 @@ export function AdminLoginForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin@email.com" {...field} />
+                      <Input placeholder="superadmin@email.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,7 +130,7 @@ export function AdminLoginForm() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Connexion en cours..." : "Se connecter en tant qu'Admin"}
+                {form.formState.isSubmitting ? "Connexion en cours..." : "Se connecter en tant que Super Admin"}
               </Button>
             </form>
           </Form>
