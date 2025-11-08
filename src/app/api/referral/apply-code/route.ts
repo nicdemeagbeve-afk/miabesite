@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import * as z from 'zod';
 
 const applyCodeSchema = z.object({
-  referrerCode: z.string().length(5, "Le code de parrainage doit contenir 5 chiffres."),
+  referrerCode: z.string().length(6, "Le code de parrainage doit contenir 6 caractères."),
 });
 
 export async function POST(request: Request) {

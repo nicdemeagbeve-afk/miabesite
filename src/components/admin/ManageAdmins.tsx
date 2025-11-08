@@ -35,6 +35,14 @@ import {
 const addCommunityAdminSchema = z.object({
   identifier: z.string().min(1, "L'identifiant est requis."),
   identifierType: z.enum(['referralCode', 'email']),
+}).refine(data => {
+  if (data.identifierType === 'referralCode' && data.identifier && data.identifier.length !== 6) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Le code de parrainage doit contenir 6 caractères.",
+  path: ["identifier"],
 });
 
 interface AdminProfile {
@@ -226,13 +234,14 @@ export function ManageAdmins() {
                     <FormLabel>Identifiant de l'Utilisateur</FormLabel>
                     <FormControl>
                       {identifierType === 'referralCode' ? (
-                        <InputOTP maxLength={5} {...field}>
+                        <InputOTP maxLength={6} {...field}>
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
                             <InputOTPSlot index={2} />
                             <InputOTPSlot index={3} />
                             <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
                           </InputOTPGroup>
                         </InputOTP>
                       ) : (
@@ -243,7 +252,7 @@ export function ManageAdmins() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmittingAdd || (identifierType === 'referralCode' && form.getValues("identifier").length < 5)}>
+              <Button type="submit" className="w-full" disabled={isSubmittingAdd || (identifierType === 'referralCode' && form.getValues("identifier").length < 6)}>
                 {isSubmittingAdd ? "Ajout en cours..." : "Ajouter comme Admin de Communauté"}
               </Button>
             </form>

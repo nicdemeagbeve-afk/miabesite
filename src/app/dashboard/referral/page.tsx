@@ -18,11 +18,11 @@ import Link from "next/link"; // Import Link
 
 // Schemas for forms
 const applyCodeSchema = z.object({
-  referrerCode: z.string().length(5, "Le code doit contenir 5 chiffres."),
+  referrerCode: z.string().length(6, "Le code doit contenir 6 caractères."),
 });
 
 const transferCoinsSchema = z.object({
-  recipientCode: z.string().length(5, "Le code du destinataire doit contenir 5 chiffres."),
+  recipientCode: z.string().length(6, "Le code du destinataire doit contenir 6 caractères."),
   amount: z.coerce.number().int().min(1, "Le montant doit être au moins de 1 point."),
 });
 
@@ -261,13 +261,14 @@ export default function ReferralPage() {
                         <FormItem>
                           <FormLabel>Code de Parrainage</FormLabel>
                           <FormControl>
-                            <InputOTP maxLength={5} {...field}>
+                            <InputOTP maxLength={6} {...field}>
                               <InputOTPGroup>
                                 <InputOTPSlot index={0} />
                                 <InputOTPSlot index={1} />
                                 <InputOTPSlot index={2} />
                                 <InputOTPSlot index={3} />
                                 <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
                               </InputOTPGroup>
                             </InputOTP>
                           </FormControl>
@@ -275,7 +276,7 @@ export default function ReferralPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={applyCodeForm.formState.isSubmitting || applyCodeForm.getValues("referrerCode").length < 5}>
+                    <Button type="submit" className="w-full" disabled={applyCodeForm.formState.isSubmitting || applyCodeForm.getValues("referrerCode").length < 6}>
                       {applyCodeForm.formState.isSubmitting ? "Application..." : "Appliquer le code"}
                     </Button>
                   </form>
@@ -304,13 +305,14 @@ export default function ReferralPage() {
                       <FormItem>
                         <FormLabel>Code de Parrainage du Destinataire</FormLabel>
                         <FormControl>
-                          <InputOTP maxLength={5} {...field}>
+                          <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
                               <InputOTPSlot index={0} />
                               <InputOTPSlot index={1} />
                               <InputOTPSlot index={2} />
                               <InputOTPSlot index={3} />
                               <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
                             </InputOTPGroup>
                           </InputOTP>
                         </FormControl>
@@ -331,7 +333,7 @@ export default function ReferralPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={transferCoinsForm.formState.isSubmitting || transferCoinsForm.getValues("recipientCode").length < 5 || transferCoinsForm.getValues("amount") <= 0 || transferCoinsForm.getValues("amount") > (referralStatus?.coinPoints || 0)}>
+                  <Button type="submit" className="w-full" disabled={transferCoinsForm.formState.isSubmitting || transferCoinsForm.getValues("recipientCode").length < 6 || transferCoinsForm.getValues("amount") <= 0 || transferCoinsForm.getValues("amount") > (referralStatus?.coinPoints || 0)}>
                     {transferCoinsForm.formState.isSubmitting ? "Transfert en cours..." : "Transférer les pièces"}
                   </Button>
                 </form>

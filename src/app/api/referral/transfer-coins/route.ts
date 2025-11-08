@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import * as z from 'zod';
 
 const transferCoinsSchema = z.object({
-  recipientCode: z.string().length(5, "Le code du destinataire doit contenir 5 chiffres."),
+  recipientCode: z.string().length(6, "Le code du destinataire doit contenir 6 caractères."),
   amount: z.number().int().min(1, "Le montant doit être au moins de 1 point."),
 });
 

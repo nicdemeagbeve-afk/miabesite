@@ -28,6 +28,14 @@ const transferCoinsSchema = z.object({
   identifierType: z.enum(['referralCode', 'email']),
   amount: z.coerce.number().int().min(1, "Le montant doit être au moins de 1 pièce."),
   description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional().or(z.literal('')),
+}).refine(data => {
+  if (data.identifierType === 'referralCode' && data.recipientIdentifier && data.recipientIdentifier.length !== 6) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Le code de parrainage doit contenir 6 caractères.",
+  path: ["recipientIdentifier"],
 });
 
 interface CoinTransaction {
@@ -195,13 +203,14 @@ export function CoinManagement() {
                     <FormLabel>Identifiant du Destinataire</FormLabel>
                     <FormControl>
                       {recipientIdentifierType === 'referralCode' ? (
-                        <InputOTP maxLength={5} {...field}>
+                        <InputOTP maxLength={6} {...field}>
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
                             <InputOTPSlot index={2} />
                             <InputOTPSlot index={3} />
                             <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
                           </InputOTPGroup>
                         </InputOTP>
                       ) : (
@@ -238,7 +247,7 @@ export function CoinManagement() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmittingTransfer || (recipientIdentifierType === 'referralCode' && form.getValues("recipientIdentifier").length < 5) || amountValue <= 0}>
+              <Button type="submit" className="w-full" disabled={isSubmittingTransfer || (recipientIdentifierType === 'referralCode' && form.getValues("recipientIdentifier").length < 6) || amountValue <= 0}>
                 {isSubmittingTransfer ? "Transfert en cours..." : "Transférer les Pièces"}
               </Button>
             </form>

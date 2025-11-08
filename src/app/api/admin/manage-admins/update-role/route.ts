@@ -16,6 +16,14 @@ const updateRoleSchema = z.object({
 }, {
   message: "Un identifiant (code de parrainage, email ou ID utilisateur) est requis.",
   path: ["identifier"],
+}).refine(data => {
+  if (data.type === 'referralCode' && data.identifier && data.identifier.length !== 6) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Le code de parrainage doit contenir 6 caractères.",
+  path: ["identifier"],
 });
 
 export async function POST(request: Request) {

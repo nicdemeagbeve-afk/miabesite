@@ -36,6 +36,14 @@ import {
 const manageAccessSchema = z.object({
   identifier: z.string().min(1, "L'identifiant est requis."),
   identifierType: z.enum(['referralCode', 'email']),
+}).refine(data => {
+  if (data.identifierType === 'referralCode' && data.identifier && data.identifier.length !== 6) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Le code de parrainage doit contenir 6 caractères.",
+  path: ["identifier"],
 });
 
 interface UserAccess {
@@ -303,13 +311,14 @@ export default function AIVideoAccessManagementPage() {
                       <FormLabel>Identifiant de l'Utilisateur</FormLabel>
                       <FormControl>
                         {identifierType === 'referralCode' ? (
-                          <InputOTP maxLength={5} {...field}>
+                          <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
                               <InputOTPSlot index={0} />
                               <InputOTPSlot index={1} />
                               <InputOTPSlot index={2} />
                               <InputOTPSlot index={3} />
                               <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
                             </InputOTPGroup>
                           </InputOTP>
                         ) : (
@@ -320,7 +329,7 @@ export default function AIVideoAccessManagementPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isSubmitting || (identifierType === 'referralCode' && form.getValues("identifier").length < 5)}>
+                <Button type="submit" className="w-full" disabled={isSubmitting || (identifierType === 'referralCode' && form.getValues("identifier").length < 6)}>
                   {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Video className="mr-2 h-4 w-4" />}
                   {isSubmitting ? "Octroi en cours..." : "Accorder l'accès"}
                 </Button>

@@ -46,12 +46,12 @@ export async function generateUniqueCommunityJoinCode(supabase: SupabaseClient):
   return code;
 }
 
-// Fonction pour générer un code de parrainage unique (5 chiffres)
+// Fonction pour générer un code de parrainage unique (6 caractères alphanumériques)
 export async function generateUniqueReferralCode(supabase: SupabaseClient): Promise<string> {
   let code: string = '';
   let isUnique = false;
   while (!isUnique) {
-    code = generateRandomNumericCode(5); // Génère un code de 5 chiffres
+    code = generateRandomAlphanumericCode(6); // Génère un code de 6 caractères alphanumériques
     const { data, error } = await supabase
       .from('profiles')
       .select('referral_code')

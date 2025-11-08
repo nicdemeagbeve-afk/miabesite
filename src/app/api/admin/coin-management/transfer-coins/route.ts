@@ -7,6 +7,14 @@ const transferCoinsSchema = z.object({
   identifierType: z.enum(['referralCode', 'email']),
   amount: z.number().int().min(1, "Le montant doit être au moins de 1 pièce."),
   description: z.string().max(200, "La description ne peut pas dépasser 200 caractères.").optional().or(z.literal('')),
+}).refine(data => {
+  if (data.identifierType === 'referralCode' && data.recipientIdentifier && data.recipientIdentifier.length !== 6) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Le code de parrainage doit contenir 6 caractères.",
+  path: ["recipientIdentifier"],
 });
 
 export async function POST(request: Request) {
