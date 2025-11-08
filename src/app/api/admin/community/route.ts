@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       joinCode = await generateUniqueCommunityJoinCode(supabase);
     }
 
-    const { data, error } = await supabase
+    const { data: newCommunity, error: insertError } = await supabase
       .from('communities')
       .insert({
         name,
@@ -51,17 +51,17 @@ export async function POST(request: Request) {
         category,
         is_public,
         join_code: joinCode,
-        owner_id: user.id, // L'administrateur qui crée la communauté en est le propriétaire initial
+        owner_id: user.id,
       })
       .select()
       .single();
 
-    if (error) {
-      console.error("Erreur Supabase lors de l'insertion de la communauté:", error);
-      return NextResponse.json({ message: `Failed to create community: ${error.message}` }, { status: 500 });
+    if (insertError) {
+      console.error("Erreur Supabase lors de l'insertion de la communauté:", insertError);
+      return NextResponse.json({ message: `Failed to create community: ${insertError.message}` }, { status: 500 });
     }
 
-    return NextResponse.json({ message: 'Community created successfully', community: data }, { status: 201 });
+    return NextResponse.json({ message: 'Community created successfully', community: newCommunity }, { status: 201 });
 
   } catch (error: any) {
     console.error("Erreur inattendue lors de la création de la communauté:", error);
