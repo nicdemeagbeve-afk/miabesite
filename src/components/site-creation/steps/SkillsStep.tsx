@@ -44,14 +44,17 @@ const getLucideIcon = (iconName: string) => {
   return icons[iconName] || Wrench; // Default to Wrench if not found
 };
 
-export function SkillsStep() {
+interface SkillsStepProps {
+  templateType: string;
+}
+
+export function SkillsStep({ templateType }: SkillsStepProps) {
   const { control, watch, setValue } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "skills",
   });
 
-  const templateType = watch('templateType'); // Watch the templateType
   const maxSkills = 10;
 
   // Add an empty skill field if the list is empty
@@ -69,7 +72,6 @@ export function SkillsStep() {
     }
   }, [fields, watch, append, maxSkills]);
 
-  const isEcommerceTemplate = templateType === 'ecommerce' || templateType === 'artisan-ecommerce';
   const isPortfolioTemplate = templateType === 'service-portfolio' || templateType === 'professional-portfolio';
 
   return (
@@ -80,9 +82,7 @@ export function SkillsStep() {
       <p className="text-center text-muted-foreground">
         {isPortfolioTemplate
           ? "Mettez en avant vos domaines d'expertise et votre savoir-faire (10 maximum)."
-          : isEcommerceTemplate
-            ? "Listez vos compétences secondaires ou les services associés à vos produits (optionnel, 10 maximum)."
-            : "Mettez en avant vos domaines d'expertise (10 maximum)."}
+          : "Mettez en avant vos domaines d'expertise (10 maximum)."}
       </p>
 
       <div className="space-y-8">

@@ -295,16 +295,20 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
 
   // Dynamically filter steps based on templateType
   const filteredSteps = React.useMemo(() => {
+    const baseSteps = [
+      { id: "essentialDesign", title: "Infos Essentielles & Design", component: EssentialDesignStep, schema: essentialDesignStepSchema },
+      { id: "content", title: "Contenu (Pages Clés)", component: ContentStep, schema: contentStepSchema },
+      { id: "skills", title: "Compétences / Expertise", component: SkillsStep, schema: skillsStepSchema },
+      { id: "productsServices", title: "Produits & Services", component: ProductsServicesStep, schema: productsServicesStepSchema },
+      { id: "configurationNetwork", title: "Configuration et Réseaux", component: ConfigurationNetworkStep, schema: configurationNetworkStepSchema },
+    ];
+
     if (templateType === 'ecommerce' || templateType === 'artisan-ecommerce') {
-      // E-commerce templates: show products/services, hide skills
-      return allSteps.filter(step => step.id !== 'skills');
-    } else if (templateType === 'service-portfolio' || templateType === 'professional-portfolio' || templateType === 'default') {
-      // Portfolio and Default templates: show both skills and products/services
-      return allSteps;
+      // For e-commerce, hide the 'skills' step
+      return baseSteps.filter(step => step.id !== 'skills');
     }
-    // Fallback for unknown templateType or initial state (e.g., before template is selected)
-    // Show all steps by default if no specific template is chosen yet, or if it's 'default'
-    return allSteps;
+    // For portfolio, default, or any other template, show all steps
+    return baseSteps;
   }, [templateType]);
 
   // Reset currentStep if templateType changes
@@ -571,7 +575,7 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
           <WizardProgress currentStep={currentStep} totalSteps={filteredSteps.length} />
           <Form {...methods}> {/* Use Form component here */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-              <CurrentStepComponent />
+              <CurrentStepComponent templateType={templateType} />
               <WizardNavigation
                 currentStep={currentStep}
                 totalSteps={filteredSteps.length}

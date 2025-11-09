@@ -32,14 +32,17 @@ const actionButtons = [
   { value: "contact", label: "Contacter" },
 ];
 
-export function ProductsServicesStep() {
+interface ProductsServicesStepProps {
+  templateType: string;
+}
+
+export function ProductsServicesStep({ templateType }: ProductsServicesStepProps) {
   const { control, watch, setValue } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "productsAndServices",
   });
 
-  const templateType = watch('templateType'); // Watch the templateType
   const maxProducts = 5; // Increased max to 5 for more customization
   const maxProductImageSizeMB = 1; // Max 1MB for product image
 

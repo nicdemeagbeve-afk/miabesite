@@ -268,18 +268,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {productsAndServicesToDisplay.map((product, index) => {
                 const currentQuantity = quantities[index] || 1; // Use index for quantity
-                const productDetails = encodeURIComponent(`${product.title} - Quantité: ${currentQuantity} - Prix: ${product.price || 'Prix non spécifié'} ${product.currency || ''}`);
-                let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20votre%20offre%20:%20${productDetails}.`;
-
-                if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
-                  // For email form, we'll just direct to the contact section and rely on user to specify
-                  // Or, if we had a dedicated product inquiry form, we could pre-fill.
-                  // For now, WhatsApp is the most direct way to pass structured info.
-                  contactLink = `#contact`; // Direct to contact form
-                } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
-                  contactLink = `tel:${siteData.secondaryPhoneNumber}`;
-                }
-
+                
                 return (
                   <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3">
                     {product.image && (
@@ -287,7 +276,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
                     )}
                     <h3 className="text-lg font-semibold text-gray-800">{product.title}</h3>
                     <p className="text-muted-foreground text-xs">{product.description}</p>
-                    {product.price && (
+                    {product.price !== undefined && (
                       <p className={cn("text-xl font-bold", secondaryColorTextClass)}>
                         {product.price} {product.currency}
                       </p>
