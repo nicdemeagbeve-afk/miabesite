@@ -31,6 +31,11 @@ interface Message {
   service_interested: string | null;
   message: string;
   read_status: boolean;
+  // New fields
+  product_name: string | null;
+  product_price: number | null;
+  product_currency: string | null;
+  quantity: number | null;
 }
 
 interface MessagesListProps {
@@ -179,6 +184,15 @@ export function MessagesList({ siteId }: MessagesListProps) {
                   <p className="text-sm text-gray-700 mb-2">
                     <span className="font-medium">Intéressé par :</span> {message.service_interested}
                   </p>
+                )}
+                {message.product_name && (
+                  <div className="text-sm text-gray-700 mb-2 p-2 border rounded-md bg-gray-50">
+                    <p><span className="font-medium">Commande :</span> {message.product_name}</p>
+                    {message.quantity && <p><span className="font-medium">Quantité :</span> {message.quantity}</p>}
+                    {message.product_price !== null && message.product_price !== undefined && (
+                      <p><span className="font-medium">Prix :</span> {message.product_price} {message.product_currency}</p>
+                    )}
+                  </div>
                 )}
                 <p className="text-gray-800 leading-relaxed mb-4">{message.message}</p>
                 <div className="flex justify-end gap-2">

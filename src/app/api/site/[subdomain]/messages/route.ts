@@ -18,7 +18,7 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid message data provided', details: validationResult.error.flatten() }, { status: 400 });
     }
 
-    const { sender_name, sender_email, sender_phone, service_interested, message } = validationResult.data;
+    const { sender_name, sender_email, sender_phone, service_interested, message, product_name, product_price, product_currency, quantity } = validationResult.data;
 
     // 1. Get site_id from subdomain
     const { data: siteData, error: siteError } = await supabase
@@ -59,6 +59,11 @@ export async function POST(
         sender_phone: sender_phone || null,
         service_interested: service_interested || null,
         message,
+        // Insert new fields
+        product_name: product_name || null,
+        product_price: product_price || null,
+        product_currency: product_currency || null,
+        quantity: quantity || null,
       })
       .select();
 

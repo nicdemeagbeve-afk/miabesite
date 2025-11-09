@@ -14,6 +14,7 @@ interface EcommerceTemplateProps {
 }
 
 export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProps) {
+  const [quantities, setQuantities] = React.useState<{ [index: number]: number }>({}); // New state for quantities, using index
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
   const [cartCount, setCartCount] = React.useState(0);
@@ -21,8 +22,12 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
     name: '',
     phone: '',
     email: '',
-    service: '', // For services section contact
+    service: '', // This will hold product title + quantity + price
     message: '',
+    product_name: '',
+    product_price: undefined as number | undefined,
+    product_currency: '',
+    quantity: undefined as number | undefined,
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -57,6 +62,15 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Initialize quantities for existing products
+  React.useEffect(() => {
+    const initialQuantities: { [index: number]: number } = {};
+    siteData.productsAndServices?.forEach((_, index) => {
+      initialQuantities[index] = 1;
+    });
+    setQuantities(initialQuantities);
+  }, [siteData.productsAndServices]);
+
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
@@ -79,6 +93,36 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleProductOrder = (product: any, index: number, quantity: number) => { // Added index
+    const productDetails = `${product.title} (Quantité: ${quantity}) - Prix: ${product.price || 'Non spécifié'} ${product.currency || ''}`;
+
+    if (siteData.contactButtonAction === 'whatsapp') {
+      const whatsappLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20votre%20offre%20:%20${encodeURIComponent(productDetails)}.`;
+      window.open(whatsappLink, "_blank");
+    } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
+      window.location.href = `tel:${siteData.secondaryPhoneNumber}`;
+    } else if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
+      setFormData(prev => ({
+        ...prev,
+        service: productDetails, // Pre-fill service_interested with product details
+        product_name: product.title,
+        product_price: product.price,
+        product_currency: product.currency,
+        quantity: quantity,
+        message: `Je souhaite commander : ${product.title} (Quantité: ${quantity}).`, // Pre-fill message
+      }));
+      // Smooth scroll to contact section
+      const targetElement = document.querySelector('#contact');
+      if (targetElement) {
+        const offset = 80;
+        window.scrollTo({
+          top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
+          behavior: 'smooth',
+        });
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -95,6 +139,10 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           sender_phone: formData.phone,
           service_interested: formData.service,
           message: formData.message,
+          product_name: formData.product_name || undefined,
+          product_price: formData.product_price || undefined,
+          product_currency: formData.product_currency || undefined,
+          quantity: formData.quantity || undefined,
         }),
       });
 
@@ -104,7 +152,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         toast.error(result.error || "Erreur lors de l'envoi du message.");
       } else {
         toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
-        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+        setFormData({ name: '', phone: '', email: '', service: '', message: '', product_name: '', product_price: undefined, product_currency: '', quantity: undefined }); // Clear form
       }
     } catch (error) {
       console.error("Failed to submit contact form:", error);
@@ -235,34 +283,48 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Produits</h2> {/* Adjusted text size and mb for mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
-              {products.map((product, index) => (
-                <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
-                    {product.image ? (
-                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Store className="h-10 w-10" /> {/* Adjusted size for mobile */}
+              {products.map((product, index) => {
+                const currentQuantity = quantities[index] || 1; // Use index for quantity
+                return (
+                  <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
+                    <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
+                      {product.image ? (
+                        <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          <Store className="h-10 w-10" /> {/* Adjusted size for mobile */}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4"> {/* Adjusted padding for mobile */}
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
+                      <p className="text-gray-600 text-xs mb-4">{product.description}</p> {/* Ensured text-xs for smaller screens */}
+                      {product.price !== undefined && (
+                        <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
+                          {product.price} {product.currency}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <label htmlFor={`quantity-${index}`} className="sr-only">Quantité</label>
+                        <input
+                          type="number"
+                          id={`quantity-${index}`}
+                          min="1"
+                          value={currentQuantity}
+                          onChange={(e) => setQuantities(prev => ({ ...prev, [index]: parseInt(e.target.value) || 1 }))}
+                          className="w-16 text-center border rounded-md py-1 text-sm"
+                        />
                       </div>
-                    )}
+                      <button
+                        onClick={() => handleProductOrder(product, index, currentQuantity)}
+                        className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
+                      >
+                        Ajouter au panier
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-4"> {/* Adjusted padding for mobile */}
-                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
-                    <p className="text-gray-600 text-xs mb-4">{product.description}</p> {/* Ensured text-xs for smaller screens */}
-                    {product.price !== undefined && (
-                      <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
-                        {product.price} {product.currency}
-                      </p>
-                    )}
-                    <button
-                      onClick={() => handleAddToCart(product.title)}
-                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300", primaryColorClass, primaryColorHoverBgClass)}
-                    >
-                      Ajouter au panier
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -275,15 +337,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Services</h2> {/* Adjusted text size and mb for mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {services.map((service, index) => {
-                const serviceDetails = encodeURIComponent(`${service.title} - ${service.price || 'Prix non spécifié'} ${service.currency || ''}`);
-                let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20le%20service%20${serviceDetails}.`;
-
-                if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
-                  contactLink = `#contact`; // Direct to contact form
-                } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
-                  contactLink = `tel:${siteData.secondaryPhoneNumber}`;
-                }
-
+                const currentQuantity = quantities[index] || 1; // Use index for quantity
                 return (
                   <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
                     <div className="h-40 overflow-hidden"> {/* Adjusted height for mobile */}
@@ -303,20 +357,23 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                           {service.price} {service.currency}
                         </p>
                       )}
-                      <Link
-                        href={contactLink}
-                        target={siteData.contactButtonAction === 'whatsapp' ? "_blank" : "_self"}
-                        rel="noopener noreferrer"
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <label htmlFor={`service-quantity-${index}`} className="sr-only">Quantité</label>
+                        <input
+                          type="number"
+                          id={`service-quantity-${index}`}
+                          min="1"
+                          value={currentQuantity}
+                          onChange={(e) => setQuantities(prev => ({ ...prev, [index]: parseInt(e.target.value) || 1 }))}
+                          className="w-16 text-center border rounded-md py-1 text-sm"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleProductOrder(service, index, currentQuantity)}
                         className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")}
-                        onClick={(e) => {
-                          if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
-                            setFormData(prev => ({ ...prev, service: service.title }));
-                            handleSmoothScroll(e, '#contact');
-                          }
-                        }}
                       >
                         {service.actionButton === 'quote' ? 'Demander un devis' : service.actionButton === 'book' ? 'Réserver' : 'Contacter'}
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 );

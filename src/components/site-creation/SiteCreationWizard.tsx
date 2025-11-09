@@ -155,11 +155,12 @@ const configurationNetworkStepSchema = z.object({
 });
 
 
-const steps: {
+// Define all possible steps
+const allSteps: {
   id: string;
   title: string;
   component: React.ComponentType<any>;
-  schema: z.ZodObject<any>; // Make this more specific to ZodObject
+  schema: z.ZodObject<any>;
 }[] = [
   {
     id: "essentialDesign",
@@ -286,25 +287,46 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     handleSubmit,
     trigger,
     formState: { isSubmitting, errors }, // Get errors from formState
+    watch, // Watch function
+    setValue, // setValue function
   } = methods;
+
+  const templateType = watch('templateType'); // Watch the templateType from the form
+
+  // Dynamically filter steps based on templateType
+  const filteredSteps = React.useMemo(() => {
+    if (templateType === 'ecommerce' || templateType === 'artisan-ecommerce') {
+      // E-commerce templates: show products/services, hide skills
+      return allSteps.filter(step => step.id !== 'skills');
+    } else if (templateType === 'service-portfolio' || templateType === 'professional-portfolio' || templateType === 'default') {
+      // Portfolio and Default templates: show both skills and products/services
+      return allSteps;
+    }
+    // Fallback for unknown templateType or initial state (e.g., before template is selected)
+    // Show all steps by default if no specific template is chosen yet, or if it's 'default'
+    return allSteps;
+  }, [templateType]);
+
+  // Reset currentStep if templateType changes
+  React.useEffect(() => {
+    setCurrentStep(0);
+  }, [templateType]);
 
   // Set the templateType value in the form if it comes from initialSiteData
   React.useEffect(() => {
     if (initialSiteData?.templateType) {
-      methods.setValue('templateType', initialSiteData.templateType);
+      setValue('templateType', initialSiteData.templateType);
     }
-  }, [initialSiteData?.templateType, methods]);
+  }, [initialSiteData?.templateType, setValue]);
 
 
-  // Determine if the current step is valid based on its schema and current errors
-  const currentStepSchema = steps[currentStep].schema as z.ZodObject<any>;
+  const currentStepSchema = filteredSteps[currentStep].schema as z.ZodObject<any>;
   const currentStepFieldNames = Object.keys(currentStepSchema.shape) as (keyof WizardFormData)[];
 
-  // Check if any field in the current step has an error
   const isCurrentStepValid = !currentStepFieldNames.some(fieldName => errors[fieldName]);
 
   const handleNext = async () => {
-    if (currentStep >= steps.length - 1) return;
+    if (currentStep >= filteredSteps.length - 1) return; // Use filteredSteps.length
 
     // Trigger validation for only the current step's fields
     const result = await trigger(currentStepFieldNames);
@@ -319,6 +341,8 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
   const handlePrevious = () => {
     setCurrentStep((prev) => prev - 1);
   };
+
+  const CurrentStepComponent = filteredSteps.length > 0 ? filteredSteps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;
 
   const handleFileUpload = async (file: File, path: string, siteIdentifier: string): Promise<string | null> => {
     if (!file) return null;
@@ -540,19 +564,19 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     }
   };
 
-  const CurrentStepComponent = steps.length > 0 ? steps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;
+  const CurrentStepComponent = filteredSteps.length > 0 ? filteredSteps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted py-12">
       <Card className="w-full max-w-2xl p-6">
         <CardContent>
-          <WizardProgress currentStep={currentStep} totalSteps={steps.length} />
+          <WizardProgress currentStep={currentStep} totalSteps={filteredSteps.length} />
           <Form {...methods}> {/* Use Form component here */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <CurrentStepComponent />
               <WizardNavigation
                 currentStep={currentStep}
-                totalSteps={steps.length}
+                totalSteps={filteredSteps.length}
                 onNext={handleNext}
                 onPrevious={handlePrevious}
                 isSubmitting={isSubmitting}

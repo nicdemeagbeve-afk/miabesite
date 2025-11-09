@@ -16,12 +16,17 @@ interface DefaultTemplateProps {
 }
 
 export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
+  const [quantities, setQuantities] = React.useState<{ [index: number]: number }>({}); // New state for quantities, using index
   const [formData, setFormData] = React.useState({
     name: '',
     phone: '',
     email: '',
-    service: '',
+    service: '', // This will hold product title + quantity + price
     message: '',
+    product_name: '',
+    product_price: undefined as number | undefined,
+    product_currency: '',
+    quantity: undefined as number | undefined,
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -56,6 +61,15 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Initialize quantities for existing products
+  React.useEffect(() => {
+    const initialQuantities: { [index: number]: number } = {};
+    siteData.productsAndServices?.forEach((_, index) => {
+      initialQuantities[index] = 1;
+    });
+    setQuantities(initialQuantities);
+  }, [siteData.productsAndServices]);
+
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
@@ -71,6 +85,36 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleProductOrder = (product: any, index: number, quantity: number) => { // Added index
+    const productDetails = `${product.title} (Quantité: ${quantity}) - Prix: ${product.price || 'Non spécifié'} ${product.currency || ''}`;
+
+    if (siteData.contactButtonAction === 'whatsapp') {
+      const whatsappLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20votre%20offre%20:%20${encodeURIComponent(productDetails)}.`;
+      window.open(whatsappLink, "_blank");
+    } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
+      window.location.href = `tel:${siteData.secondaryPhoneNumber}`;
+    } else if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
+      setFormData(prev => ({
+        ...prev,
+        service: productDetails, // Pre-fill service_interested with product details
+        product_name: product.title,
+        product_price: product.price,
+        product_currency: product.currency,
+        quantity: quantity,
+        message: `Je souhaite commander : ${product.title} (Quantité: ${quantity}).`, // Pre-fill message
+      }));
+      // Smooth scroll to contact section
+      const targetElement = document.querySelector('#contact');
+      if (targetElement) {
+        const offset = 80;
+        window.scrollTo({
+          top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
+          behavior: 'smooth',
+        });
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +133,10 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
           sender_phone: formData.phone,
           service_interested: formData.service,
           message: formData.message,
+          product_name: formData.product_name || undefined,
+          product_price: formData.product_price || undefined,
+          product_currency: formData.product_currency || undefined,
+          quantity: formData.quantity || undefined,
         }),
       });
 
@@ -98,7 +146,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
         toast.error(result.error || "Erreur lors de l'envoi du message.");
       } else {
         toast.success("Message envoyé avec succès ! Nous vous recontacterons bientôt.");
-        setFormData({ name: '', phone: '', email: '', service: '', message: '' }); // Clear form
+        setFormData({ name: '', phone: '', email: '', service: '', message: '', product_name: '', product_price: undefined, product_currency: '', quantity: undefined }); // Clear form
       }
     } catch (error) {
       console.error("Failed to submit contact form:", error);
@@ -219,7 +267,8 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Offres</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {productsAndServicesToDisplay.map((product, index) => {
-                const productDetails = encodeURIComponent(`${product.title} - ${product.price || 'Prix non spécifié'} ${product.currency || ''}`);
+                const currentQuantity = quantities[index] || 1; // Use index for quantity
+                const productDetails = encodeURIComponent(`${product.title} - Quantité: ${currentQuantity} - Prix: ${product.price || 'Prix non spécifié'} ${product.currency || ''}`);
                 let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20votre%20offre%20:%20${productDetails}.`;
 
                 if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
@@ -243,20 +292,23 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
                         {product.price} {product.currency}
                       </p>
                     )}
-                    <Link
-                      href={contactLink}
-                      target={siteData.contactButtonAction === 'whatsapp' ? "_blank" : "_self"}
-                      rel="noopener noreferrer"
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <label htmlFor={`quantity-${index}`} className="sr-only">Quantité</label>
+                      <input
+                        type="number"
+                        id={`quantity-${index}`}
+                        min="1"
+                        value={currentQuantity}
+                        onChange={(e) => setQuantities(prev => ({ ...prev, [index]: parseInt(e.target.value) || 1 }))}
+                        className="w-16 text-center border rounded-md py-1 text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={() => handleProductOrder(product, index, currentQuantity)}
                       className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-white transition-colors duration-300 bg-green-500 hover:bg-green-600 w-full")}
-                      onClick={(e) => {
-                        if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
-                          setFormData(prev => ({ ...prev, service: product.title }));
-                          handleSmoothScroll(e, '#contact');
-                        }
-                      }}
                     >
                       <MessageSquare className="h-4 w-4" /> {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
-                    </Link>
+                    </button>
                   </div>
                 );
               })}
