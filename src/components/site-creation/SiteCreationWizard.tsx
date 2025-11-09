@@ -564,8 +564,6 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     }
   };
 
-  const CurrentStepComponent = filteredSteps.length > 0 ? filteredSteps[currentStep].component : () => <p className="text-center text-muted-foreground">Aucune étape définie pour le moment.</p>;
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted py-12">
       <Card className="w-full max-w-2xl p-6">

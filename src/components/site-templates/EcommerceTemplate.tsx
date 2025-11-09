@@ -40,6 +40,9 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
   const secondaryColorTextClass = `text-${siteData.secondaryColor}-500`;
   const secondaryColorHoverBgClass = `hover:bg-${siteData.secondaryColor}-600`;
 
+  const accentColorClass = `bg-${siteData.secondaryColor}-500`;
+  const accentColorTextClass = `text-${siteData.secondaryColor}-500`; // Fixed: Added missing definition
+
   const sectionsVisibility = siteData.sectionsVisibility || {
     showHero: true,
     showAbout: true,
@@ -427,7 +430,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
                     {testimonial.avatar ? (
                       <Image src={testimonial.avatar} alt="Client" width={40} height={40} className="rounded-full object-cover border-2 border-gray-200" />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"> {/* Adjusted size for mobile */}
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <User className="h-5 w-5" /> {/* Adjusted size for mobile */}
                       </div>
                     )}
