@@ -105,8 +105,8 @@ export function ContactSection() {
           </form>
         </div>
         <div className="mt-8 space-y-4 text-muted-foreground">
-          <p className="flex items-center justify-center gap-2">
-            <MessageSquare className="h-5 w-5 text-green-500" /> Support WhatsApp: +228 70 83 24 82
+          <p className="flex items-center justify-center gap-2 text-green-600 font-semibold">
+            <MessageSquare className="h-5 w-5" /> Support WhatsApp: +228 70 83 24 82
           </p>
           <p className="flex items-center justify-center gap-2">
             <Mail className="h-5 w-5 text-blue-500" /> Email: welcome@app:miabesite.site

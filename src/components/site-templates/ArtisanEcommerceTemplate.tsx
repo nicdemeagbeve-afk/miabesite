@@ -317,10 +317,10 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
             <h2 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">{siteData.heroSlogan}</h2> {/* Adjusted text size for mobile */}
             <p className="text-base md:text-xl mb-8 opacity-90">{siteData.aboutStory}</p> {/* Adjusted text size for mobile */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center"> {/* Adjusted gap for mobile */}
-              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-base bg-white text-red-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto", primaryColorTextClass)}> {/* Adjusted padding, text size, and width for mobile */}
+              <a href="#produits" onClick={(e) => handleSmoothScroll(e, '#produits')} className={cn("inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-base bg-white text-green-600 hover:bg-gray-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto")}> {/* Adjusted padding, text size, and width for mobile */}
                 <ShoppingCart className="h-5 w-5" /> Voir les produits
               </a>
-              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-base bg-transparent border-2 border-white text-white hover:bg-white hover:text-red-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto"> {/* Adjusted padding, text size, and width for mobile */}
+              <a href="#services" onClick={(e) => handleSmoothScroll(e, '#services')} className="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-bold text-base bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg w-full sm:w-auto"> {/* Adjusted padding, text size, and width for mobile */}
                 <Wrench className="h-5 w-5" /> Découvrir les services
               </a>
             </div>
@@ -461,7 +461,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
                     <li className="flex items-center gap-2"><Check className={cn("h-4 w-4", successColorTextClass)} /> 3 propositions de design</li> {/* Adjusted size for mobile */}
                     <li className="flex items-center gap-2"><Check className={cn("h-4 w-4", successColorTextClass)} /> Ajustements illimités</li> {/* Adjusted size for mobile */}
                   </ul>
-                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`} target="_blank" rel="noopener noreferrer" className={cn("w-full py-2.5 rounded-lg font-bold text-white text-sm transition-colors duration-300 flex items-center justify-center gap-2", secondaryColorClass, secondaryColorHoverBgClass)}> {/* Adjusted padding and text size for mobile */}
+                  <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`} target="_blank" rel="noopener noreferrer" className={cn("w-full py-2.5 rounded-lg font-bold text-white text-sm transition-colors duration-300 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600")}> {/* Adjusted padding and text size for mobile */}
                     <ShoppingCart className="h-4 w-4" /> {service.actionButton === 'quote' && 'Demander un devis'}
                     {service.actionButton === 'book' && 'Réserver ce service'}
                     {service.actionButton === 'contact' && 'Contacter pour ce service'}
@@ -565,7 +565,7 @@ export function ArtisanEcommerceTemplate({ siteData, subdomain }: ArtisanEcommer
                     </a>
                   )}
                   {siteData.whatsappNumber && (
-                    <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-blue-500 transition-colors"> {/* Adjusted size for mobile */}
+                    <a href={`https://wa.me/${siteData.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-green-500 transition-colors"> {/* Adjusted size for mobile */}
                       <MessageSquare className="h-5 w-5" /> {/* Adjusted size for mobile */}
                     </a>
                   )}

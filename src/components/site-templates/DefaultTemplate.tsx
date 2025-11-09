@@ -195,7 +195,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
             href={`https://wa.me/${siteData.whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-base text-white transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-[#25D366] hover:bg-[#128C7E] w-full sm:w-auto")}
+            className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-lg font-bold text-base text-white transition-colors duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg bg-green-500 hover:bg-green-600 w-full sm:w-auto")}
           >
             <MessageSquare className="h-5 w-5" /> Contactez-nous sur WhatsApp
           </Link>
@@ -234,7 +234,7 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
                     href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-white transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E] w-full")}
+                    className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-white transition-colors duration-300 bg-green-500 hover:bg-green-600 w-full")}
                   >
                     <MessageSquare className="h-4 w-4" /> {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
                   </Link>
