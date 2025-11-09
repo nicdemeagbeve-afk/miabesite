@@ -401,7 +401,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
         <section id="skills" className="py-12 bg-gray-100 px-4"> {/* Adjusted padding for mobile */}
           <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Compétences</h2> {/* Adjusted text size and mb for mobile */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Adjusted gap and grid for mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {skillsToDisplay.map((skill, index) => {
                 const IconComponent = getLucideIcon(skill.icon || "Wrench"); // Default icon
                 return (
