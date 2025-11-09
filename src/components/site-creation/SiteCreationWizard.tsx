@@ -306,11 +306,8 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
     if (templateType === 'ecommerce' || templateType === 'artisan-ecommerce') {
       // For e-commerce, hide the 'skills' step
       return baseSteps.filter(step => step.id !== 'skills');
-    } else if (templateType === 'service-portfolio' || templateType === 'professional-portfolio') {
-      // For portfolio, hide the 'productsServices' step
-      return baseSteps.filter(step => step.id !== 'productsServices');
     }
-    // For default or any other template, show all steps
+    // For portfolio, default, or any other template, show all steps
     return baseSteps;
   }, [templateType]);
 
