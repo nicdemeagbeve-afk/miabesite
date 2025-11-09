@@ -1,5 +1,20 @@
 import { NextResponse } from 'next/server';
 
+// NOTE IMPORTANTE :
+// La transcription audio réelle nécessite l'intégration d'un service de reconnaissance vocale (Speech-to-Text) tiers.
+// Des exemples de services incluent :
+// - Google Cloud Speech-to-Text
+// - AWS Transcribe
+// - Azure Cognitive Services Speech
+// - OpenAI Whisper (via leur API)
+
+// Pour une implémentation réelle, vous devrez :
+// 1. Installer la bibliothèque cliente du service STT choisi (ex: `@google-cloud/speech`).
+// 2. Configurer les informations d'authentification (clés API, identifiants de service)
+//    via des variables d'environnement (ex: `GOOGLE_APPLICATION_CREDENTIALS` ou `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).
+// 3. Remplacer la logique de simulation ci-dessous par un appel réel à l'API du service STT.
+//    Cela impliquera généralement d'envoyer le 'audioFile' (Blob) au service et de traiter sa réponse.
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -9,22 +24,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
     }
 
-    // --- SIMULATION DE LA TRANSCRIPTION VOCALE ---
-    // Dans une application réelle, vous intégreriez ici un service de reconnaissance vocale (STT)
-    // comme Google Cloud Speech-to-Text, AWS Transcribe, ou un autre fournisseur.
-    // Cela impliquerait :
-    // 1. L'envoi du 'audioFile' au service STT.
-    // 2. La gestion de la réponse du service STT.
-    // 3. L'extraction du texte transcrit.
+    // --- DÉBUT DE LA LOGIQUE DE TRANSCRIPTION RÉELLE (EXEMPLE CONCEPTUEL) ---
+    // if (process.env.ENABLE_REAL_STT === 'true' && process.env.STT_API_KEY) {
+    //   // Exemple avec un service STT hypothétique
+    //   // const sttService = new RealSTTService(process.env.STT_API_KEY);
+    //   // const transcriptionResult = await sttService.transcribe(audioFile);
+    //   // return NextResponse.json({ transcribedText: transcriptionResult.text }, { status: 200 });
+    //   console.warn("La transcription réelle est activée mais le service STT n'est pas implémenté.");
+    // }
+    // --- FIN DE LA LOGIQUE DE TRANSCRIPTION RÉELLE (EXEMPLE CONCEPTUEL) ---
 
-    // Pour cette démonstration, nous allons renvoyer un texte de substitution.
-    // Vous pouvez imaginer que le contenu de l'audio était :
-    const simulatedTranscription = "Bonjour l'IA, peux-tu lister mes sites s'il te plaît ?";
-    // Ou une transcription plus dynamique basée sur l'heure, etc.
-    // const dynamicSimulatedTranscription = `Ceci est une transcription simulée de votre audio à ${new Date().toLocaleTimeString('fr-FR')}.`;
-
+    // --- SIMULATION DE LA TRANSCRIPTION VOCALE (ACTUELLEMENT UTILISÉE) ---
     console.log("Audio file received. Simulating transcription...");
-    console.log("Simulated transcription:", simulatedTranscription);
+    const simulatedTranscription = "Bonjour l'IA, peux-tu lister mes sites s'il te plaît ?";
+    // Vous pouvez rendre cette simulation plus dynamique si vous le souhaitez
+    // const dynamicSimulatedTranscription = `Ceci est une transcription simulée de votre audio à ${new Date().toLocaleTimeString('fr-FR')}.`;
 
     return NextResponse.json({ transcribedText: simulatedTranscription }, { status: 200 });
 

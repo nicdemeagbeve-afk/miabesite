@@ -4,13 +4,20 @@ import { createClient } from '@/lib/supabase/server';
 import { SiteEditorFormData } from '@/lib/schemas/site-editor-form-schema'; // Import SiteEditorFormData type
 import { SupabaseClient } from '@supabase/supabase-js'; // Import SupabaseClient type
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEYS_LIST = process.env.GEMINI_API_KEYS_LIST; // Expecting comma-separated keys
+const geminiApiKeys = GEMINI_API_KEYS_LIST ? GEMINI_API_KEYS_LIST.split(',') : [];
 
-if (!GEMINI_API_KEY) {
-  console.error("GEMINI_API_KEY n'est pas définie dans les variables d'environnement.");
+let currentApiKeyIndex = 0;
+
+function getNextGeminiClient(): GoogleGenerativeAI | null {
+  if (geminiApiKeys.length === 0) {
+    console.error("GEMINI_API_KEYS_LIST n'est pas définie ou est vide dans les variables d'environnement.");
+    return null;
+  }
+  const apiKey = geminiApiKeys[currentApiKeyIndex];
+  currentApiKeyIndex = (currentApiKeyIndex + 1) % geminiApiKeys.length; // Round-robin
+  return new GoogleGenerativeAI(apiKey);
 }
-
-const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 /**
  * Helper function to fetch, update, and save site_data in Supabase.
@@ -70,6 +77,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Message or tool_code is required' }, { status: 400 });
     }
 
+    const genAI = getNextGeminiClient();
     if (!genAI) {
       return NextResponse.json({ error: 'L\'API Gemini n\'est pas configurée. Veuillez vérifier la clé API.' }, { status: 500 });
     }
@@ -165,7 +173,7 @@ export async function POST(request: Request) {
     if (tool_code === "generate_rewritten_text" && tool_args) {
       // If it's a direct tool call from the frontend for rewriting text
       const { current_text, field_name, subdomain } = tool_args;
-      const rewritePrompt = `Réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre plus accrocheur, vendeur et marketing. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
+      const rewritePrompt = `En tant que Maître Market, réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre extrêmement accrocheur, vendeur et marketing, tout en conservant l'idée générale et le contexte de l'utilisateur. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
       response = await chat.sendMessage(rewritePrompt);
     } else {
       // Normal chat message
@@ -253,7 +261,7 @@ export async function POST(request: Request) {
 
       } else if (functionCall.name === "generate_rewritten_text") {
         const { current_text, field_name, subdomain } = functionCall.args as { current_text: string; field_name: string; subdomain?: string; };
-        const rewritePrompt = `Réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre plus accrocheur, vendeur et marketing. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
+        const rewritePrompt = `En tant que Maître Market, réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre extrêmement accrocheur, vendeur et marketing, tout en conservant l'idée générale et le contexte de l'utilisateur. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
         const rewriteResponse = await chat.sendMessage(rewritePrompt);
         // Access text from the response object
         const rewrittenText = rewriteResponse.response.candidates?.[0]?.content?.parts?.[0]?.text;
