@@ -524,6 +524,14 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
         </p>
       </footer>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
+      >
+        <ChevronUp className="h-5 w-5" />
+      </button>
     </div>
   );
 }
