@@ -104,12 +104,12 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
     e.preventDefault();
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
-      const offset = 80;
+      const offset = 80; // Adjust offset as needed for fixed header
       window.scrollTo({
         top: targetElement.getBoundingClientRect().top + window.pageYOffset - offset,
         behavior: 'smooth',
       });
-      setIsMobileMenuOpen(false);
+      setIsMobileMenuOpen(false); // Close mobile menu after clicking a link
     }
   };
 
@@ -528,10 +528,10 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
                     </div>
                     <div>
                       <label htmlFor="service" className="block text-gray-700 font-medium mb-1 text-sm">Service intéressé</label> {/* Adjusted text size for mobile */}
-                      <select id="service" name="service" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.service} onChange={handleChange}> {/* Adjusted padding and text size for mobile */}
+                      <select id="service" name="service" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" value={formData.service} onChange={handleChange}>
                         <option value="">Sélectionnez un service</option>
-                        {siteData.productsAndServices.map((product: any, idx: number) => (
-                          <option key={idx} value={product.title}>{product.title}</option>
+                        {siteData.productsAndServices.filter(item => item.actionButton !== 'buy').map((service: any, idx: number) => (
+                          <option key={idx} value={service.title}>{service.title}</option>
                         ))}
                       </select>
                     </div>
@@ -550,41 +550,11 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         </section>
       )}
 
-      <footer id="contact" className={cn("py-12 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
-          <div className="text-center sm:text-left">
-            <Link href="/" className="font-bold text-lg"> {/* Adjusted text size for mobile */}
-              {siteData.publicName}
-            </Link>
-            <p className="text-xs text-gray-300 mt-2"> {/* Ensured text-xs for smaller screens */}
-              {siteData.heroSlogan}
-            </p>
-          </div>
-          <div className="flex gap-4">
-            {siteData.facebookLink && (
-              <a href={siteData.facebookLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Facebook className="h-5 w-5" /> {/* Adjusted size for mobile */}
-              </a>
-            )}
-            {siteData.instagramLink && (
-              <a href={siteData.instagramLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                <Instagram className="h-5 w-5" /> {/* Adjusted size for mobile */}
-              </a>
-            )}
-          </div>
-        </div>
-        <div className="container px-4 md:px-6 text-center text-xs text-gray-400 mt-6">
+      <footer className={cn("py-6 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
+        <p className="text-xs text-gray-400"> {/* Ensured text-xs for smaller screens */}
           © {new Date().getFullYear()} {siteData.publicName}. Tous droits réservés.
-        </div>
+        </p>
       </footer>
-
-      {/* Back to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
-      >
-        <ChevronUp className="h-5 w-5" />
-      </button>
     </div>
   );
 }
