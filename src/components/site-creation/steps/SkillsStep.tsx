@@ -45,12 +45,13 @@ const getLucideIcon = (iconName: string) => {
 };
 
 export function SkillsStep() {
-  const { control, watch, setValue } = useFormContext(); // Added setValue
+  const { control, watch, setValue } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "skills",
   });
 
+  const templateType = watch('templateType'); // Watch the templateType
   const maxSkills = 10;
 
   // Add an empty skill field if the list is empty
@@ -68,13 +69,20 @@ export function SkillsStep() {
     }
   }, [fields, watch, append, maxSkills]);
 
+  const isEcommerceTemplate = templateType === 'ecommerce' || templateType === 'artisan-ecommerce';
+  const isPortfolioTemplate = templateType === 'service-portfolio' || templateType === 'professional-portfolio';
+
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
         <Wrench className="h-6 w-6 text-primary" /> Compétences / Expertise
       </h3>
       <p className="text-center text-muted-foreground">
-        Mettez en avant vos domaines d'expertise (10 maximum).
+        {isPortfolioTemplate
+          ? "Mettez en avant vos domaines d'expertise et votre savoir-faire (10 maximum)."
+          : isEcommerceTemplate
+            ? "Listez vos compétences secondaires ou les services associés à vos produits (optionnel, 10 maximum)."
+            : "Mettez en avant vos domaines d'expertise (10 maximum)."}
       </p>
 
       <div className="space-y-8">

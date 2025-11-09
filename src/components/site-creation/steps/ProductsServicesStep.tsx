@@ -33,13 +33,14 @@ const actionButtons = [
 ];
 
 export function ProductsServicesStep() {
-  const { control, watch, setValue } = useFormContext(); // Added setValue
+  const { control, watch, setValue } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "productsAndServices",
   });
 
-  const maxProducts = 3;
+  const templateType = watch('templateType'); // Watch the templateType
+  const maxProducts = 5; // Increased max to 5 for more customization
   const maxProductImageSizeMB = 1; // Max 1MB for product image
 
   // Add an empty product field if the list is empty
@@ -57,17 +58,24 @@ export function ProductsServicesStep() {
     }
   }, [fields, watch, append, maxProducts]);
 
+  const isEcommerceTemplate = templateType === 'ecommerce' || templateType === 'artisan-ecommerce';
+  const isPortfolioTemplate = templateType === 'service-portfolio' || templateType === 'professional-portfolio';
+
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
         <ShoppingCart className="h-6 w-6 text-primary" /> Produits & Services
       </h3>
       <p className="text-center text-muted-foreground">
-        Présentez vos offres phares (3 maximum).
+        {isEcommerceTemplate
+          ? "Présentez vos produits et services phares (5 maximum)."
+          : isPortfolioTemplate
+            ? "Décrivez vos services ou réalisations principales (5 maximum)."
+            : "Présentez vos offres phares (5 maximum)."}
       </p>
 
       <div className="space-y-8">
-        {fields.map((item: Record<string, any>, index: number) => ( // Explicitly type item and index
+        {fields.map((item: Record<string, any>, index: number) => (
           <div key={item.id} className="border p-4 rounded-md space-y-4 relative">
             {fields.length > 1 && (index < fields.length -1 || (index === fields.length -1 && watch(`productsAndServices.${index}.title`) === "")) && (
               <Button
@@ -86,7 +94,7 @@ export function ProductsServicesStep() {
               name={`productsAndServices.${index}.title`}
               render={({ field }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.title`> }) => (
                 <FormItem>
-                  <FormLabel>Titre du Produit/Service</FormLabel>
+                  <FormLabel>Titre du {isEcommerceTemplate ? "Produit/Service" : "Service/Réalisation"}</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Formation Digitale Débutant" {...field} />
                   </FormControl>
@@ -168,7 +176,7 @@ export function ProductsServicesStep() {
               name={`productsAndServices.${index}.image`}
               render={({ field: { value, onChange, ...fieldProps } }: { field: ControllerRenderProps<FieldValues, `productsAndServices.${number}.image`> }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-muted-foreground" /> Image du Produit/Service (Optionnel)</FormLabel>
+                  <FormLabel className="flex items-center gap-1"><ImageIcon className="h-4 w-4 text-muted-foreground" /> Image du {isEcommerceTemplate ? "Produit/Service" : "Service/Réalisation"} (Optionnel)</FormLabel>
                   <FormControl>
                     <Input
                       {...fieldProps}

@@ -218,28 +218,48 @@ export function DefaultTemplate({ siteData, subdomain }: DefaultTemplateProps) {
           <div className="container mx-auto max-w-5xl">
             <h2 className={cn("text-2xl md:text-3xl font-bold mb-12", primaryColorTextClass)}>Nos Offres</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {productsAndServicesToDisplay.map((product, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3">
-                  {product.image && (
-                    <Image src={product.image} alt={product.title} width={120} height={80} className="mx-auto mb-4 object-cover rounded-md" />
-                  )}
-                  <h3 className="text-lg font-semibold text-gray-800">{product.title}</h3>
-                  <p className="text-muted-foreground text-xs">{product.description}</p>
-                  {product.price && (
-                    <p className={cn("text-xl font-bold", secondaryColorTextClass)}>
-                      {product.price} {product.currency}
-                    </p>
-                  )}
-                  <Link
-                    href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-white transition-colors duration-300 bg-green-500 hover:bg-green-600 w-full")}
-                  >
-                    <MessageSquare className="h-4 w-4" /> {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
-                  </Link>
-                </div>
-              ))}
+              {productsAndServicesToDisplay.map((product, index) => {
+                const productDetails = encodeURIComponent(`${product.title} - ${product.price || 'Prix non spécifié'} ${product.currency || ''}`);
+                let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20votre%20offre%20:%20${productDetails}.`;
+
+                if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
+                  // For email form, we'll just direct to the contact section and rely on user to specify
+                  // Or, if we had a dedicated product inquiry form, we could pre-fill.
+                  // For now, WhatsApp is the most direct way to pass structured info.
+                  contactLink = `#contact`; // Direct to contact form
+                } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
+                  contactLink = `tel:${siteData.secondaryPhoneNumber}`;
+                }
+
+                return (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4 space-y-3">
+                    {product.image && (
+                      <Image src={product.image} alt={product.title} width={120} height={80} className="mx-auto mb-4 object-cover rounded-md" />
+                    )}
+                    <h3 className="text-lg font-semibold text-gray-800">{product.title}</h3>
+                    <p className="text-muted-foreground text-xs">{product.description}</p>
+                    {product.price && (
+                      <p className={cn("text-xl font-bold", secondaryColorTextClass)}>
+                        {product.price} {product.currency}
+                      </p>
+                    )}
+                    <Link
+                      href={contactLink}
+                      target={siteData.contactButtonAction === 'whatsapp' ? "_blank" : "_self"}
+                      rel="noopener noreferrer"
+                      className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-white transition-colors duration-300 bg-green-500 hover:bg-green-600 w-full")}
+                      onClick={(e) => {
+                        if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
+                          setFormData(prev => ({ ...prev, service: product.title }));
+                          handleSmoothScroll(e, '#contact');
+                        }
+                      }}
+                    >
+                      <MessageSquare className="h-4 w-4" /> {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

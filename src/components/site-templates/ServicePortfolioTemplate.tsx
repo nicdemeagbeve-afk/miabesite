@@ -286,30 +286,48 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted grid and gap for mobile */}
-              {siteData.productsAndServices.map((product: any, index: number) => (
-                <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
-                    {product.image ? (
-                      <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
-                      </div>
-                    )}
+              {siteData.productsAndServices.map((product: any, index: number) => {
+                const serviceDetails = encodeURIComponent(`${product.title} - ${product.price || 'Prix non spécifié'} ${product.currency || ''}`);
+                let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20le%20service%20${serviceDetails}.`;
+
+                if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
+                  contactLink = `#contact`; // Direct to contact form
+                } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
+                  contactLink = `tel:${siteData.secondaryPhoneNumber}`;
+                }
+
+                return (
+                  <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
+                    <div className="h-48 overflow-hidden"> {/* Adjusted height for mobile */}
+                      {product.image ? (
+                        <Image src={product.image} alt={product.title} width={300} height={192} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4"> {/* Adjusted padding for mobile */}
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
+                      {product.price !== undefined && (
+                        <div className={cn("text-xl font-bold mb-4", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
+                          {product.price} {product.currency}
+                        </div>
+                      )}
+                      <Link href={contactLink} target={siteData.contactButtonAction === 'whatsapp' ? "_blank" : "_self"} rel="noopener noreferrer" className={cn("inline-block px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 w-full", secondaryColorClass, secondaryColorHoverBgClass)}
+                        onClick={(e) => {
+                          if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
+                            setFormData(prev => ({ ...prev, service: product.title }));
+                            handleSmoothScroll(e, '#contact');
+                          }
+                        }}
+                      >
+                        {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
+                      </Link>
+                    </div>
                   </div>
-                  <div className="p-4"> {/* Adjusted padding for mobile */}
-                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.title}</h3> {/* Adjusted text size for mobile */}
-                    {product.price !== undefined && (
-                      <div className={cn("text-xl font-bold mb-4", primaryColorTextClass)}> {/* Adjusted text size for mobile */}
-                        {product.price} {product.currency}
-                      </div>
-                    )}
-                    <a href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20${product.title}`} target="_blank" rel="noopener noreferrer" className={cn("inline-block px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 w-full", secondaryColorClass, secondaryColorHoverBgClass)}> {/* Adjusted padding, text size, and width for mobile */}
-                      {product.actionButton === 'buy' ? 'Acheter' : product.actionButton === 'quote' ? 'Demander un devis' : product.actionButton === 'book' ? 'Réserver' : 'Contacter'}
-                    </a>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -485,7 +503,6 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         </section>
       )}
 
-      {/* Footer */}
       <footer id="contact" className={cn("py-12 text-white px-4", primaryColorDarkBgClass)}> {/* Adjusted padding for mobile */}
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"> {/* Removed px-4 md:px-6, using container mx-auto */}
           <div className="text-center sm:text-left">
@@ -519,7 +536,7 @@ export function ServicePortfolioTemplate({ siteData, subdomain }: ServicePortfol
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className={cn("fixed bottom-6 right-6 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300", secondaryColorClass, secondaryColorHoverBgClass, showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4')}
       >
-        <ChevronUp className="h-5 w-5" /> {/* Adjusted size for mobile */}
+        <ChevronUp className="h-5 w-5" />
       </button>
     </div>
   );

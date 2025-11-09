@@ -274,36 +274,53 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
           <div className="container mx-auto max-w-5xl"> {/* Removed px-4 md:px-6, using container mx-auto */}
             <h2 className={cn("text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12", primaryColorTextClass)}>Nos Services</h2> {/* Adjusted text size and mb for mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
-              {services.map((service, index) => (
-                <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
-                  <div className="h-40 overflow-hidden"> {/* Adjusted height for mobile */}
-                    {service.image ? (
-                      <Image src={service.image} alt={service.title} width={300} height={160} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
-                      </div>
-                    )}
+              {services.map((service, index) => {
+                const serviceDetails = encodeURIComponent(`${service.title} - ${service.price || 'Prix non spécifié'} ${service.currency || ''}`);
+                let contactLink = `https://wa.me/${siteData.whatsappNumber}?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20le%20service%20${serviceDetails}.`;
+
+                if (siteData.contactButtonAction === 'emailForm' && siteData.email) {
+                  contactLink = `#contact`; // Direct to contact form
+                } else if (siteData.contactButtonAction === 'phoneNumber' && siteData.secondaryPhoneNumber) {
+                  contactLink = `tel:${siteData.secondaryPhoneNumber}`;
+                }
+
+                return (
+                  <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2">
+                    <div className="h-40 overflow-hidden"> {/* Adjusted height for mobile */}
+                      {service.image ? (
+                        <Image src={service.image} alt={service.title} width={300} height={160} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          <Wrench className="h-10 w-10" /> {/* Adjusted size for mobile */}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4"> {/* Adjusted padding for mobile */}
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800">{service.title}</h3> {/* Adjusted text size for mobile */}
+                      <p className="text-gray-600 text-xs mb-4">{service.description}</p> {/* Ensured text-xs for smaller screens */}
+                      {service.price !== undefined && (
+                        <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
+                          {service.price} {service.currency}
+                        </p>
+                      )}
+                      <Link
+                        href={contactLink}
+                        target={siteData.contactButtonAction === 'whatsapp' ? "_blank" : "_self"}
+                        rel="noopener noreferrer"
+                        className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")}
+                        onClick={(e) => {
+                          if (siteData.contactButtonAction === 'emailForm' && siteData.showContactForm) {
+                            setFormData(prev => ({ ...prev, service: service.title }));
+                            handleSmoothScroll(e, '#contact');
+                          }
+                        }}
+                      >
+                        {service.actionButton === 'quote' ? 'Demander un devis' : service.actionButton === 'book' ? 'Réserver' : 'Contacter'}
+                      </Link>
+                    </div>
                   </div>
-                  <div className="p-4"> {/* Adjusted padding for mobile */}
-                    <h3 className="text-lg font-semibold mb-2 text-gray-800">{service.title}</h3> {/* Adjusted text size for mobile */}
-                    <p className="text-gray-600 text-xs mb-4">{service.description}</p> {/* Ensured text-xs for smaller screens */}
-                    {service.price !== undefined && (
-                      <p className={cn("text-xl font-bold mb-4", secondaryColorTextClass)}> {/* Adjusted text size for mobile */}
-                        {service.price} {service.currency}
-                      </p>
-                    )}
-                    <Link
-                      href={`https://wa.me/${siteData.whatsappNumber}?text=Je%20suis%20intéressé%20par%20le%20service%20${service.title}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn("w-full px-4 py-2 rounded-lg font-bold text-white text-sm transition-colors duration-300 bg-[#25D366] hover:bg-[#128C7E]")}
-                    >
-                      {service.actionButton === 'quote' ? 'Demander un devis' : service.actionButton === 'book' ? 'Réserver' : 'Contacter'}
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -347,7 +364,7 @@ export function EcommerceTemplate({ siteData, subdomain }: EcommerceTemplateProp
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Adjusted gap and grid for mobile */}
               {testimonialsToDisplay.map((testimonial, index) => (
                 <div key={index} className="bg-white rounded-lg p-6 shadow-lg relative"> {/* Adjusted padding for mobile */}
-                  <span className={cn("absolute top-2 left-4 text-5xl font-serif opacity-10", primaryColorTextClass)}>&ldquo;</span> {/* Adjusted text size for mobile */}
+                  <span className={cn("absolute top-2 left-4 text-5xl font-serif opacity-10", accentColorTextClass)}>&ldquo;</span> {/* Adjusted text size for mobile */}
                   <p className="text-base italic mb-4 relative z-10">{testimonial.quote}</p> {/* Adjusted text size for mobile */}
                   <div className="flex items-center gap-4">
                     {testimonial.avatar ? (
