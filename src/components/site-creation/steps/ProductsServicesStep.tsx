@@ -67,7 +67,7 @@ export function ProductsServicesStep({ templateType }: ProductsServicesStepProps
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-center flex items-center justify-center gap-2">
-        <ShoppingCart className="h-6 w-6 text-primary" /> Produits & Services
+        <ShoppingCart className="h-6 w-6 text-primary" /> {isEcommerceTemplate ? "Produits & Services" : "Services & Réalisations"}
       </h3>
       <p className="text-center text-muted-foreground">
         {isEcommerceTemplate

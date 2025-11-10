@@ -295,20 +295,15 @@ export function SiteCreationWizard({ initialSiteData }: SiteCreationWizardProps)
 
   // Dynamically filter steps based on templateType
   const filteredSteps = React.useMemo(() => {
-    const baseSteps = [
-      { id: "essentialDesign", title: "Infos Essentielles & Design", component: EssentialDesignStep, schema: essentialDesignStepSchema },
-      { id: "content", title: "Contenu (Pages Clés)", component: ContentStep, schema: contentStepSchema },
-      { id: "skills", title: "Compétences / Expertise", component: SkillsStep, schema: skillsStepSchema },
-      { id: "productsServices", title: "Produits & Services", component: ProductsServicesStep, schema: productsServicesStepSchema },
-      { id: "configurationNetwork", title: "Configuration et Réseaux", component: ConfigurationNetworkStep, schema: configurationNetworkStepSchema },
-    ];
-
     if (templateType === 'ecommerce' || templateType === 'artisan-ecommerce') {
-      // For e-commerce, hide the 'skills' step
-      return baseSteps.filter(step => step.id !== 'skills');
+      // For e-commerce, show products/services, hide skills
+      return allSteps.filter(step => step.id !== 'skills');
+    } else if (templateType === 'service-portfolio' || templateType === 'professional-portfolio') {
+      // For portfolio, show skills and products/services (as portfolio items)
+      return allSteps;
     }
-    // For portfolio, default, or any other template, show all steps
-    return baseSteps;
+    // For default or any other template, show all steps
+    return allSteps;
   }, [templateType]);
 
   // Reset currentStep if templateType changes
