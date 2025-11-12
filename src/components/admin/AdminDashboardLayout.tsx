@@ -5,7 +5,6 @@ import { AdminSidebar } from "./AdminSidebar";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-// import { useIsMobile } from "@/hooks/use-mobile"; // Removed useIsMobile hook
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { createClient } from "@/lib/supabase/client"; // Import client-side Supabase
 import { useRouter } from "next/navigation";
@@ -18,23 +17,9 @@ interface AdminDashboardLayoutProps {
 }
 
 export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
-  // const isMobile = useIsMobile(); // Removed useIsMobile hook
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const supabase = createClient();
   const router = useRouter();
-
-  // The handleLogout function is now handled by the LogoutButton component itself
-  // const handleLogout = async () => {
-  //   const { error } = await supabase.auth.signOut();
-  //   if (error) {
-  //     toast.error("Erreur lors de la déconnexion.");
-  //     console.error("Logout error:", error);
-  //   } else {
-  //     toast.success("Déconnexion réussie. Retour à la page de connexion utilisateur.");
-  //     router.push("/login");
-  //     router.refresh();
-  //   }
-  // };
 
   return (
     <div className="flex min-h-screen bg-muted/40">
