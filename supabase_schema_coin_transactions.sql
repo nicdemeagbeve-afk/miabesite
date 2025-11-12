@@ -1,22 +1,10 @@
-CREATE TABLE coin_transactions (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at timestamp with time zone DEFAULT now(),
-  sender_id uuid REFERENCES auth.users(id) ON DELETE SET NULL, -- Peut être NULL si l'admin crédite
-  recipient_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
-  amount integer NOT NULL CHECK (amount > 0),
-  transaction_type text NOT NULL CHECK (transaction_type IN ('referral_bonus', 'transfer', 'admin_credit', 'admin_debit')),
-  description text
+-- Table pour l'historique des transactions de pièces
+CREATE TABLE IF NOT EXISTS coin_transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sender_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL, -- Peut être NULL si l'admin est l'expéditeur (système)
+    recipient_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    amount INT NOT NULL,
+    transaction_type TEXT NOT NULL, -- 'referral_bonus', 'admin_credit', 'admin_debit', 'community_creation_cost', 'ai_video_generation', etc.
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
-
-ALTER TABLE coin_transactions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view their own coin transactions."
-  ON coin_transactions FOR SELECT
-  USING (auth.uid() = sender_id OR auth.uid() = recipient_id);
-
--- Admin policy for viewing all transactions (assuming admin role check in RLS)
-CREATE POLICY "Admins can view all coin transactions."
-  ON coin_transactions FOR SELECT
-  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role IN ('admin', 'super_admin')));
-
--- No INSERT/UPDATE/DELETE policies for users, transactions are created by system/admin APIs

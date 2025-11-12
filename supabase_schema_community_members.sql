@@ -1,22 +1,8 @@
-CREATE TABLE community_members (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  community_id uuid REFERENCES communities(id) ON DELETE CASCADE,
-  user_id uuid REFERENCES auth.users ON DELETE CASCADE,
-  joined_at timestamp with time zone DEFAULT now(),
-
-  UNIQUE (community_id, user_id) -- Un utilisateur ne peut être membre qu'une fois par communauté
+-- Table pour les membres de communauté
+CREATE TABLE IF NOT EXISTS community_members (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    UNIQUE (community_id, user_id) -- Un utilisateur ne peut rejoindre une communauté qu'une seule fois
 );
-
-ALTER TABLE community_members ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Community members are viewable by members or community owner."
-  ON community_members FOR SELECT
-  USING (auth.uid() = user_id OR EXISTS (SELECT 1 FROM communities WHERE communities.id = community_members.community_id AND communities.owner_id = auth.uid()));
-
-CREATE POLICY "Users can insert their own community memberships."
-  ON community_members FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete their own community memberships."
-  ON community_members FOR DELETE
-  USING (auth.uid() = user_id);
