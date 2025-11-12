@@ -19,11 +19,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.supabase.miabesite.site', // ✅ Ajout du wildcard pour le sous-domaine personnalisé Supabase
-      },
-      {
-        protocol: 'https',
-        hostname: 'supabase.miabesite.site', // ✅ Ajout du domaine racine pour Supabase
+        hostname: '**.miabesite.site', // ✅ Ajout du wildcard pour couvrir tous les sous-domaines de miabesite.site
       },
       {
         protocol: 'https',
