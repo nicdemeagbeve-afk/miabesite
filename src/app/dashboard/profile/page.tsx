@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
+import { cn } from "@/lib/utils"; // Removed generateUniqueReferralCode as it's now in SQL trigger
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Le nom complet est requis.").optional().or(z.literal('')),
@@ -91,76 +91,43 @@ export default function ProfilePage() {
     if (currentUser) {
       setUser(currentUser);
 
-      let currentProfile = null;
-
-      // Try to fetch data from the 'profiles' table
+      // Tenter de récupérer le profil. Le trigger SQL devrait l'avoir créé.
       const { data: fetchedProfile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', currentUser.id)
         .single();
 
-      if (profileError && profileError.code === 'PGRST116') { // PGRST116 means "no rows found"
-        console.warn("No profile found for user, creating one...");
-        // If no profile exists, create one
-        let referralCode: string | null = null;
-        try {
-          referralCode = await generateUniqueReferralCode(supabase);
-        } catch (codeError: any) {
-          console.error("Failed to generate referral code for existing user:", codeError);
-          toast.error(`Erreur lors de la génération du code de parrainage: ${codeError.message}`);
-        }
-
-        const { data: newProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: currentUser.id,
-            full_name: currentUser.user_metadata?.full_name || currentUser.email,
-            first_name: currentUser.user_metadata?.first_name || '',
-            last_name: currentUser.user_metadata?.last_name || '',
-            date_of_birth: currentUser.user_metadata?.date_of_birth || null,
-            phone_number: currentUser.user_metadata?.phone_number || '',
-            whatsapp_number: currentUser.user_metadata?.phone_number || '', // Default to phone_number
-            expertise: currentUser.user_metadata?.expertise || '',
-            avatar_url: currentUser.user_metadata?.avatar_url || null,
-            referral_code: referralCode,
-            coin_points: 0,
-            referral_count: 0,
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error creating new profile for existing user:", insertError);
-          toast.error(`Erreur lors de la création du profil: ${insertError.message}`);
-          setLoading(false);
-          return;
-        }
-        currentProfile = newProfile;
-        toast.success("Votre profil a été créé avec succès !");
+      if (profileError && profileError.code === 'PGRST116') {
+        // Si le profil n'est pas trouvé, cela indique un problème avec le trigger ou la propagation.
+        // Le frontend ne devrait pas tenter de le créer ici, mais plutôt signaler l'erreur.
+        console.error("Profil manquant pour l'utilisateur après connexion. Le trigger SQL n'a pas créé le profil ou il y a un problème RLS.");
+        toast.error("Votre profil n'a pas pu être chargé. Veuillez réessayer de vous connecter.");
+        await supabase.auth.signOut(); // Déconnecter l'utilisateur pour forcer une nouvelle tentative
+        router.push("/login");
+        setLoading(false);
+        return;
       } else if (profileError) {
         console.error("Error fetching profile data:", profileError);
         toast.error("Erreur lors du chargement des données du profil.");
         setLoading(false);
         return;
-      } else {
-        currentProfile = fetchedProfile;
       }
 
-      setProfileData(currentProfile); // Set the state with the fetched or newly created profile
-      setAvatarPreview(currentProfile?.avatar_url || null);
+      setProfileData(fetchedProfile); // Set the state with the fetched profile
+      setAvatarPreview(fetchedProfile?.avatar_url || null);
 
-      const fetchedDateOfBirth = currentProfile?.date_of_birth ? new Date(currentProfile.date_of_birth) : null;
+      const fetchedDateOfBirth = fetchedProfile?.date_of_birth ? new Date(fetchedProfile.date_of_birth) : null;
       form.reset({
-        fullName: currentProfile?.full_name || "",
+        fullName: fetchedProfile?.full_name || "",
         email: currentUser.email || "",
-        whatsappNumber: currentProfile?.whatsapp_number || "",
-        secondaryPhoneNumber: currentProfile?.secondary_phone_number || "",
+        whatsappNumber: fetchedProfile?.whatsapp_number || "",
+        secondaryPhoneNumber: fetchedProfile?.secondary_phone_number || "",
         dateOfBirth: fetchedDateOfBirth,
         newPassword: "",
         confirmNewPassword: "",
         profilePicture: undefined,
-        expertise: currentProfile?.expertise || "",
+        expertise: fetchedProfile?.expertise || "",
       });
       
       if (fetchedDateOfBirth && isValid(fetchedDateOfBirth)) {
@@ -177,7 +144,7 @@ export default function ProfilePage() {
       setDateInput("");
     }
     setLoading(false);
-  }, [supabase, router, form]); // Removed profileData from dependencies
+  }, [supabase, router, form]);
 
   React.useEffect(() => {
     fetchUserProfile();
@@ -199,7 +166,7 @@ export default function ProfilePage() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase, fetchUserProfile]); // Removed profileData from dependencies
+  }, [supabase, fetchUserProfile]);
 
   // Synchronize dateInput with form.watch("dateOfBirth")
   React.useEffect(() => {

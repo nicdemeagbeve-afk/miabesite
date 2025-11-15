@@ -120,7 +120,7 @@ CREATE POLICY "Users can update their own profile." ON public.profiles
 
 -- Politiques pour les rôles administratifs (utilisant service_role pour éviter la récursion)
 -- Ces politiques permettent aux super_admins d'accéder à TOUS les profils.
--- Pour les community_admins, ils peuvent voir les profils, mais pas les modifier directement via RLS ici.
+-- Pour les community_admins, ils peuvent voir les profils (y compris les leurs).
 -- La modification des rôles par un community_admin devrait être gérée par une fonction RPC ou une API.
 CREATE POLICY "Super admins can manage all profiles." ON public.profiles
   FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));

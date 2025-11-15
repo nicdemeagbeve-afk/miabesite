@@ -2,14 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { generateUniqueReferralCode } from "@/lib/utils"; // Importez la fonction
 import { toast } from "sonner"; // Pour notifier l'utilisateur
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Menu } from "lucide-react"; // Import Menu icon for mobile toggle
 import { Button } from "@/components/ui/button"; // Import Button for mobile toggle
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
-// import { useIsMobile } from "@/hooks/use-mobile"; // Removed useIsMobile hook
 import { usePathname } from "next/navigation"; // Import usePathname
 import { ThemeToggle } from "@/components/ThemeToggle"; // Import ThemeToggle
 import { PWAInstallButton } from "@/components/PWAInstallButton"; // Import PWAInstallButton
@@ -17,13 +15,11 @@ import { LogoutButton } from "@/components/LogoutButton"; // Import LogoutButton
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  // subdomain?: string; // No longer needed as a prop, will be derived internally
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const supabase = createClient();
   const [isCheckingProfile, setIsCheckingProfile] = useState(true);
-  // const isMobile = useIsMobile(); // Removed useIsMobile hook
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const pathname = usePathname();
 
@@ -33,7 +29,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const currentSubdomain = subdomainMatch ? subdomainMatch[1] : undefined;
 
   useEffect(() => {
-    const checkAndCreateProfile = async () => {
+    const checkProfileExistence = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -41,7 +37,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       if (user) {
         console.log("Utilisateur connecté:", user.id);
 
-        // 1. Vérifier si un profil existe déjà
+        // Tenter de récupérer le profil. Le trigger SQL devrait l'avoir créé.
         const { data: profile, error: fetchProfileError } = await supabase
           .from("profiles")
           .select("id")
@@ -50,51 +46,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         console.log("Résultat de la récupération du profil:", { profile, fetchProfileError });
 
-        // Gérer les erreurs de récupération du profil
-        if (fetchProfileError) {
-          if (fetchProfileError.code === 'PGRST116') {
-            // C'est le code pour "aucune ligne trouvée", ce qui est attendu si le profil n'existe pas encore.
-            console.log("Aucun profil trouvé pour l'utilisateur (PGRST116), procéder à la création.");
-          } else {
-            // C'est une erreur réelle de base de données lors de la récupération
-            console.error("Erreur réelle lors de la récupération du profil:", fetchProfileError);
-            toast.error(`Erreur lors de la vérification du profil: ${fetchProfileError.message || 'Erreur inconnue'}`);
-            setIsCheckingProfile(false);
-            return;
-          }
-        }
-
-        // 2. Si aucun profil n'est trouvé (data est null), en créer un
-        if (!profile) { // Cette condition est vraie si profile est null (soit PGRST116, soit aucune donnée)
-          console.log("Profil manquant pour l'utilisateur, tentative de création...");
-          toast.info("Mise à jour de votre compte en cours...");
-
-          const newReferralCode = await generateUniqueReferralCode(supabase);
-          const initialCoinPoints = 50;
-
-          const { error: insertError } = await supabase.from("profiles").insert({
-            id: user.id,
-            full_name: user.user_metadata?.full_name || user.email,
-            first_name: user.user_metadata?.first_name,
-            last_name: user.user_metadata?.last_name,
-            avatar_url: user.user_metadata?.avatar_url,
-            role: "user",
-            referral_code: newReferralCode,
-            coin_points: initialCoinPoints,
-            referral_count: 0,
-            // IMPORTANT: Assurez-vous d'inclure des valeurs pour TOUTES les colonnes NOT NULL de votre table 'profiles'.
-            // Si d'autres colonnes NOT NULL existent et ne sont pas listées ici, l'insertion échouera.
-            // Par exemple, si vous avez une colonne 'created_at' NOT NULL, elle doit être gérée (par défaut dans la DB ou ici).
-          });
-
-          if (insertError) {
-            console.error("Erreur détaillée lors de la CRÉATION du profil:", insertError);
-            toast.error(`Échec de la création du profil: ${insertError.message || 'Erreur inconnue'}`);
-          } else {
-            console.log("Profil créé avec succès pour l'utilisateur.");
-            toast.success("Bienvenue ! Votre compte a été mis à jour avec un code de parrainage et des pièces bonus.");
-            window.location.reload();
-          }
+        if (fetchProfileError && fetchProfileError.code === 'PGRST116') {
+          // Si le profil n'est pas trouvé (PGRST116), cela signifie que le trigger n'a pas encore eu le temps de s'exécuter
+          // ou qu'il y a un problème. Nous affichons un message et rafraîchissons.
+          console.warn("Profil manquant pour l'utilisateur. Le trigger devrait le créer. Rafraîchissement...");
+          toast.info("Mise à jour de votre compte en cours. Veuillez patienter...");
+          // Un rechargement complet peut aider à s'assurer que le trigger s'exécute et que les données sont disponibles.
+          window.location.reload();
+        } else if (fetchProfileError) {
+          // C'est une erreur réelle de base de données lors de la récupération
+          console.error("Erreur réelle lors de la récupération du profil:", fetchProfileError);
+          toast.error(`Erreur lors de la vérification du profil: ${fetchProfileError.message || 'Erreur inconnue'}`);
         } else {
           console.log("Profil existant trouvé pour l'utilisateur.");
         }
@@ -104,11 +66,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       setIsCheckingProfile(false);
     };
 
-    checkAndCreateProfile();
+    checkProfileExistence();
   }, []); // Le tableau vide assure que l'effet ne s'exécute qu'une seule fois
 
   if (isCheckingProfile) {
-    return <div>Vérification de votre compte...</div>; // Ou un spinner de chargement
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-muted">
+        <p className="text-lg text-muted-foreground">Vérification de votre compte...</p>
+      </div>
+    );
   }
 
   return (

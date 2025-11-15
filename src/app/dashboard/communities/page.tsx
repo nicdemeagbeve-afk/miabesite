@@ -42,6 +42,7 @@ interface Community {
   is_public: boolean;
   join_code: string | null;
   owner_id: string;
+  owner_name: string; // Added owner_name
   member_count?: number; // Will be fetched separately or counted
   is_member?: boolean; // Client-side flag
 }
@@ -59,6 +60,7 @@ export default function CommunitiesPage() {
   const [selectedCategory, setSelectedCategory] = React.useState("all");
   const [joiningCommunityId, setJoiningCommunityId] = React.useState<string | null>(null);
   const [isSubmittingJoin, setIsSubmittingJoin] = React.useState(false);
+  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null); // To check if user is owner
 
   const joinForm = useForm<z.infer<typeof joinCommunitySchema>>({
     resolver: zodResolver(joinCommunitySchema),
@@ -74,27 +76,14 @@ export default function CommunitiesPage() {
       router.push("/login");
       return;
     }
+    setCurrentUserId(user.id);
 
     try {
       const response = await fetch(`/api/communities?search=${searchTerm}&category=${selectedCategory}`);
       const result = await response.json();
 
       if (response.ok) {
-        // For each community, check if the current user is a member
-        const communitiesWithMembership = await Promise.all(result.communities.map(async (comm: Community) => {
-          const { count, error: memberError } = await supabase
-            .from('community_members')
-            .select('id', { count: 'exact' })
-            .eq('community_id', comm.id)
-            .eq('user_id', user.id);
-
-          if (memberError) {
-            console.error("Error checking membership:", memberError);
-            return { ...comm, is_member: false };
-          }
-          return { ...comm, is_member: (count || 0) > 0 };
-        }));
-        setCommunities(communitiesWithMembership);
+        setCommunities(result.communities);
       } else {
         toast.error(result.error || "Erreur lors du chargement des communautés.");
       }
@@ -206,6 +195,9 @@ export default function CommunitiesPage() {
                 <CardDescription className="text-sm text-muted-foreground">
                   Catégorie: {community.category}
                 </CardDescription>
+                <p className="text-xs text-muted-foreground">
+                  Créée par: {community.owner_name} {community.owner_id === currentUserId && "(Vous)"}
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-gray-700 line-clamp-3">{community.objectives}</p>

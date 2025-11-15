@@ -16,8 +16,19 @@ export async function GET(request: Request) {
   try {
     let query = supabase
       .from('communities')
-      .select('*, community_members(count)') // Select communities and count members
-      .or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // User can see public communities, their own, or communities they are a member of
+      .select(`
+        id,
+        name,
+        objectives,
+        category,
+        is_public,
+        join_code,
+        owner_id,
+        profiles!communities_owner_id_fkey(full_name, email) -- Fetch owner's name/email
+      `);
+
+    // User can see public communities, their own, or communities they are a member of
+    query = query.or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`);
 
     if (searchTerm) {
       query = query.ilike('name', `%${searchTerm}%`);
@@ -59,6 +70,7 @@ export async function GET(request: Request) {
 
       return {
         ...comm,
+        owner_name: comm.profiles?.full_name || comm.profiles?.email || 'Inconnu',
         member_count: memberCount || 0,
         is_member: (isMemberCount || 0) > 0,
       };

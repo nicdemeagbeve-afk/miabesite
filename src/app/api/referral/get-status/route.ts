@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { generateUniqueReferralCode } from '@/lib/utils'; // Import the utility function
 
 export async function GET(request: Request) {
   const supabase = createClient();
@@ -12,56 +11,27 @@ export async function GET(request: Request) {
   }
 
   try {
-    let { data: profile, error: profileError } = await supabase
+    // Le trigger SQL handle_new_user() est maintenant responsable de la création du profil.
+    // Ici, nous nous contentons de le récupérer.
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('referral_code, referral_count, coin_points, referred_by, full_name') // Removed 'email' from select
+      .select('referral_code, referral_count, coin_points, referred_by, full_name')
       .eq('id', user.id)
       .single();
 
-    // If profile not found, create it
-    if (profileError && profileError.code === 'PGRST116') { // PGRST116 means "no rows found"
-      console.warn(`API /referral/get-status: No profile found for user ${user.id}, attempting to create one.`);
-      
-      let referralCode: string | null = null;
-      try {
-        referralCode = await generateUniqueReferralCode(supabase);
-      } catch (codeError: any) {
-        console.error("API /referral/get-status: Failed to generate referral code for new user:", codeError);
-        return NextResponse.json({ error: `Erreur lors de la génération du code de parrainage: ${codeError.message}` }, { status: 500 });
-      }
-
-      const { data: newProfile, error: insertError } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          full_name: user.user_metadata?.full_name || user.email,
-          first_name: user.user_metadata?.first_name || '',
-          last_name: user.user_metadata?.last_name || '',
-          date_of_birth: user.user_metadata?.date_of_birth || null,
-          phone_number: user.user_metadata?.phone_number || '',
-          whatsapp_number: user.user_metadata?.phone_number || '', // Default to phone_number
-          expertise: user.user_metadata?.expertise || '',
-          avatar_url: user.user_metadata?.avatar_url || null,
-          referral_code: referralCode,
-          coin_points: 0,
-          referral_count: 0,
-        })
-        .select('referral_code, referral_count, coin_points, referred_by, full_name') // Removed 'email' from select
-        .single();
-
-      if (insertError) {
-        console.error("API /referral/get-status: Error creating new profile:", insertError);
-        return NextResponse.json({ error: insertError.message || 'Erreur lors de la création du profil.' }, { status: 500 });
-      }
-      profile = newProfile; // Use the newly created profile
+    if (profileError && profileError.code === 'PGRST116') {
+      // Si le profil n'est pas trouvé, cela indique un problème avec le trigger ou la propagation.
+      // Le frontend devrait gérer cela en demandant un rechargement ou une reconnexion.
+      console.error(`API /referral/get-status: No profile found for user ${user.id}. Trigger might be delayed or failed.`);
+      return NextResponse.json({ error: 'Profil utilisateur non trouvé. Veuillez réessayer de vous connecter.' }, { status: 404 });
     } else if (profileError) {
       console.error("API /referral/get-status: Error fetching existing profile:", profileError);
       return NextResponse.json({ error: profileError.message || 'Erreur lors du chargement du profil.' }, { status: 500 });
     }
 
     if (!profile) {
-        console.error("API /referral/get-status: Profile is null after fetch and attempted creation.");
-        return NextResponse.json({ error: 'Profil non trouvé après tentative de création.' }, { status: 404 });
+        console.error("API /referral/get-status: Profile is null after fetch.");
+        return NextResponse.json({ error: 'Profil non trouvé après tentative de récupération.' }, { status: 404 });
     }
 
     let referrerInfo = null;

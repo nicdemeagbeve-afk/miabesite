@@ -35,7 +35,14 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
         .eq('id', user.id)
         .single();
 
-      if (profileError) {
+      if (profileError && profileError.code === 'PGRST116') {
+        // If profile not found, it means the trigger hasn't run or there's a delay.
+        // Fallback to email and log a warning.
+        console.warn("Profile not found for user, falling back to email. Trigger might be delayed.");
+        setUserName(user.email || null);
+        setUserEmail(user.email || null);
+        setUserAvatarUrl(null);
+      } else if (profileError) {
         console.error("Error fetching profile data:", profileError);
         // Fallback to auth.user.email if profile data is not available
         setUserName(user.email || null);

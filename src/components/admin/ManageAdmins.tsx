@@ -75,6 +75,7 @@ export function ManageAdmins() {
       if (userError || !user) {
         console.error("User not authenticated for admin management:", userError);
         toast.error("Veuillez vous connecter pour gérer les administrateurs.");
+        setLoading(false);
         return;
       }
 
@@ -87,14 +88,16 @@ export function ManageAdmins() {
       if (profileError || !profile || profile.role !== 'super_admin') { // Only super_admin can access this page
         console.error("Admin role check failed:", profileError);
         toast.error("Accès refusé. Seuls les Super Admins peuvent gérer les administrateurs.");
+        setLoading(false);
         return;
       }
       setCurrentAdminRole(profile.role);
 
+      // Fetch all profiles that are either 'community_admin' or 'super_admin'
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email, role, referral_code')
-        .or('role.eq.community_admin,role.eq.super_admin'); // Fetch community_admins and super_admins
+        .or('role.eq.community_admin,role.eq.super_admin');
 
       if (error) {
         console.error("Supabase Error fetching admins:", error);
