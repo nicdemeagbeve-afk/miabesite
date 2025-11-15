@@ -76,7 +76,7 @@ CREATE POLICY "Community admins can view profiles." ON public.profiles
 
 -- Table: public.communities
 CREATE TABLE public.communities (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     owner_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     name text NOT NULL,
@@ -117,7 +117,7 @@ CREATE POLICY "Super admins can manage all communities." ON public.communities
 
 -- Table: public.community_members
 CREATE TABLE public.community_members (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     community_id uuid REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -149,7 +149,7 @@ CREATE POLICY "Super admins can manage all community memberships." ON public.com
 
 -- Table: public.coin_transactions
 CREATE TABLE public.coin_transactions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     sender_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL, -- Peut être NULL si l'admin est le "sender" logique
     recipient_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -178,7 +178,7 @@ CREATE POLICY "Super admins can manage all coin transactions." ON public.coin_tr
 
 -- Table: public.ai_video_access
 CREATE TABLE public.ai_video_access (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
     granted_by uuid REFERENCES public.profiles(id) ON DELETE SET NULL -- L'admin qui a accordé l'accès
@@ -199,7 +199,7 @@ CREATE POLICY "Super admins can manage AI video access." ON public.ai_video_acce
 
 -- Table: public.sites
 CREATE TABLE public.sites (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     subdomain text UNIQUE NOT NULL,
@@ -241,7 +241,7 @@ CREATE POLICY "Super admins can manage all sites." ON public.sites
 
 -- Table: public.site_analytics
 CREATE TABLE public.site_analytics (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     last_updated timestamp with time zone DEFAULT now() NOT NULL,
     site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL UNIQUE,
@@ -276,7 +276,7 @@ CREATE POLICY "Super admins can manage all site analytics." ON public.site_analy
 
 -- Table: public.site_messages
 CREATE TABLE public.site_messages (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL,
     sender_name text,
@@ -312,7 +312,7 @@ CREATE POLICY "Super admins can manage all site messages." ON public.site_messag
 
 -- Table: public.push_subscriptions
 CREATE TABLE public.push_subscriptions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     subscription jsonb NOT NULL -- Contient l'endpoint, keys (p256dh, auth), expirationTime
