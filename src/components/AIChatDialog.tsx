@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 interface AIChatDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  initialMessage?: Message | null; // New prop for initial message
 }
 
 interface Message {
@@ -30,7 +31,7 @@ interface Message {
   functionResponse?: { name: string; response: any };
 }
 
-export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
+export function AIChatDialog({ isOpen, onClose, initialMessage }: AIChatDialogProps) {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [input, setInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -52,6 +53,14 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
   };
 
   React.useEffect(scrollToBottom, [messages]);
+
+  // Effect to handle initial message injection
+  React.useEffect(() => {
+    if (initialMessage && messages.length === 0) {
+      setMessages([initialMessage]);
+    }
+  }, [initialMessage, messages.length]);
+
 
   const startRecording = async () => {
     try {
@@ -197,7 +206,7 @@ export function AIChatDialog({ isOpen, onClose }: AIChatDialogProps) {
                 )}
                 <div
                   className={cn(
-                    "max-w-[70%] p-3 rounded-lg shadow-sm",
+                    "max-w-[70%] p-3 rounded-lg shadow-sm whitespace-pre-wrap", // Added whitespace-pre-wrap
                     msg.sender === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-background text-foreground border'

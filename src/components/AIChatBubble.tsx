@@ -4,9 +4,18 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot } from 'lucide-react';
 import { AIChatDialog } from './AIChatDialog'; // Import the chat dialog
+import { useAIChatTrigger } from '@/hooks/use-ai-chat-trigger'; // Import the new hook
 
 export function AIChatBubble() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const initialMessage = useAIChatTrigger(); // Get the triggered message
+
+  // Automatically open the chat if an initial message is triggered and the chat is not already open
+  React.useEffect(() => {
+    if (initialMessage && !isOpen) {
+      setIsOpen(true);
+    }
+  }, [initialMessage, isOpen]);
 
   return (
     <>
@@ -19,7 +28,7 @@ export function AIChatBubble() {
         <Bot className="h-7 w-7" />
         <span className="sr-only">Ouvrir le chat IA</span>
       </Button>
-      <AIChatDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <AIChatDialog isOpen={isOpen} onClose={() => setIsOpen(false)} initialMessage={initialMessage} />
     </>
   );
 }
