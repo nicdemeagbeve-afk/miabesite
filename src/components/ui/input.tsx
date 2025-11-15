@@ -25,6 +25,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           ref={ref}
           {...props}
+          // Add autocomplete attribute for password fields
+          autoComplete={isPassword ? "new-password" : props.autoComplete}
         />
         {isPassword && (
           <button

@@ -14,15 +14,20 @@ export async function GET(request: Request) {
   const category = searchParams.get('category') || 'all';
 
   try {
-    // Fetch communities and check membership status in one go using a lateral join or similar structure
-    // Since we cannot use complex joins easily in the API route without a custom function,
-    // we will fetch the communities and rely on the RLS to filter what the user can see.
-    // We will fetch the member count separately for simplicity and robustness against RLS issues.
-    
+    // 1. Fetch all communities that are public OR where the current user is the owner.
+    // RLS should handle filtering based on membership for private communities.
     let query = supabase
       .from('communities')
-      .select('*, community_members(user_id)') // Select all community fields and the list of member user_ids
-      .or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // RLS should handle this filtering
+      .select(`
+        id,
+        name,
+        objectives,
+        category,
+        is_public,
+        join_code,
+        owner_id,
+        community_members(user_id)
+      `);
 
     if (searchTerm) {
       query = query.ilike('name', `%${searchTerm}%`);
@@ -39,19 +44,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Erreur lors du chargement des communautés.' }, { status: 500 });
     }
 
-    // Process communities to calculate member count and check if user is a member
-    const communitiesWithDetails = communities.map((comm: any) => {
-      const members = comm.community_members || [];
-      const memberCount = members.length;
-      const isMember = members.some((member: { user_id: string }) => member.user_id === user.id);
+    // 2. Process communities to calculate member count and check if user is a member
+    const communitiesWithDetails = communities
+      .filter((comm: any) => comm.is_public || comm.owner_id === user.id || (comm.community_members && comm.community_members.some((member: { user_id: string }) => member.user_id === user.id)))
+      .map((comm: any) => {
+        const members = comm.community_members || [];
+        const memberCount = members.length;
+        const isMember = members.some((member: { user_id: string }) => member.user_id === user.id);
 
-      return {
-        ...comm,
-        member_count: memberCount,
-        is_member: isMember,
-        community_members: undefined, // Remove the raw list of members
-      };
-    });
+        return {
+          id: comm.id,
+          name: comm.name,
+          objectives: comm.objectives,
+          category: comm.category,
+          is_public: comm.is_public,
+          join_code: comm.join_code,
+          owner_id: comm.owner_id,
+          member_count: memberCount,
+          is_member: isMember,
+        };
+      });
 
     return NextResponse.json({ communities: communitiesWithDetails }, { status: 200 });
 
