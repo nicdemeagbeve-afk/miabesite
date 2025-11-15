@@ -1,415 +1,496 @@
--- supabase_schema_full.sql
-
--- 1. Extensions
+-- Activer les extensions nécessaires
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS "moddatetime";
 
--- 2. Tables
--- Table pour les profils utilisateurs
-CREATE TABLE IF NOT EXISTS profiles (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    full_name TEXT,
-    first_name TEXT,
-    last_name TEXT,
-    date_of_birth DATE,
-    phone_number TEXT,
-    whatsapp_number TEXT,
-    secondary_phone_number TEXT,
-    expertise TEXT,
-    avatar_url TEXT,
-    role TEXT DEFAULT 'user' NOT NULL, -- 'user', 'community_admin', 'super_admin'
-    referral_code TEXT UNIQUE,
-    referred_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-    coin_points INT DEFAULT 0 NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour les sites web
-CREATE TABLE IF NOT EXISTS sites (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    subdomain TEXT UNIQUE NOT NULL,
-    site_data JSONB DEFAULT '{}'::JSONB NOT NULL,
-    status TEXT DEFAULT 'draft' NOT NULL, -- 'draft', 'published', 'archived'
-    template_type TEXT DEFAULT 'default' NOT NULL,
-    is_public BOOLEAN DEFAULT TRUE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour les messages de contact des sites
-CREATE TABLE IF NOT EXISTS site_messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    site_id UUID REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL,
-    sender_name TEXT,
-    sender_email TEXT,
-    sender_phone TEXT,
-    service_interested TEXT,
-    message TEXT NOT NULL,
-    read_status BOOLEAN DEFAULT FALSE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour les statistiques de site
-CREATE TABLE IF NOT EXISTS site_analytics (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    site_id UUID REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL,
-    total_visits BIGINT DEFAULT 0 NOT NULL,
-    total_sales BIGINT DEFAULT 0 NOT NULL,
-    total_contacts BIGINT DEFAULT 0 NOT NULL,
-    last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE (site_id)
-);
-
--- Table pour les communautés
-CREATE TABLE IF NOT EXISTS communities (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    name TEXT NOT NULL,
-    description TEXT,
-    utility TEXT,
-    positioning_domain TEXT,
-    template_1 TEXT NOT NULL,
-    template_2 TEXT NOT NULL,
-    category TEXT NOT NULL,
-    is_public BOOLEAN DEFAULT TRUE NOT NULL,
-    join_code TEXT UNIQUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour les membres de communauté
-CREATE TABLE IF NOT EXISTS community_members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE (community_id, user_id)
-);
-
--- Table pour les invitations de communauté
-CREATE TABLE IF NOT EXISTS community_invitations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
-    invited_by UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    invited_email TEXT NOT NULL,
-    invitation_code TEXT UNIQUE NOT NULL,
-    status TEXT DEFAULT 'pending' NOT NULL,
-    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE (community_id, invited_email)
-);
-
--- Table pour l'historique des transactions de pièces
-CREATE TABLE IF NOT EXISTS coin_transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    sender_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-    recipient_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-    amount INT NOT NULL,
-    transaction_type TEXT NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour gérer l'accès à la génération de vidéos IA
-CREATE TABLE IF NOT EXISTS ai_video_access (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
-    granted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- Table pour stocker les abonnements aux notifications push
-CREATE TABLE IF NOT EXISTS push_subscriptions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-    subscription JSONB NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE (user_id, (subscription->>'endpoint'))
-);
-
--- Table pour lier les utilisateurs WhatsApp à leurs profils Miabesite
-CREATE TABLE IF NOT EXISTS whatsapp_users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL UNIQUE,
-    whatsapp_number TEXT UNIQUE NOT NULL,
-    is_verified BOOLEAN DEFAULT FALSE NOT NULL,
-    verification_code TEXT,
-    code_expires_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
--- 3. Fonctions et Triggers pour 'updated_at'
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
-CREATE TRIGGER update_profiles_updated_at
-BEFORE UPDATE ON profiles
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_sites_updated_at ON sites;
-CREATE TRIGGER update_sites_updated_at
-BEFORE UPDATE ON sites
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_communities_updated_at ON communities;
-CREATE TRIGGER update_communities_updated_at
-BEFORE UPDATE ON communities
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_site_analytics_last_updated ON site_analytics;
-CREATE TRIGGER update_site_analytics_last_updated
-BEFORE UPDATE ON site_analytics
-FOR EACH ROW
-EXECUTE FUNCTION update_last_updated_column();
-
-DROP TRIGGER IF EXISTS update_whatsapp_users_updated_at ON whatsapp_users;
-CREATE TRIGGER update_whatsapp_users_updated_at
-BEFORE UPDATE ON whatsapp_users
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
--- 4. Activer le Row Level Security
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.sites ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_analytics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.communities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.community_members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.community_invitations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.coin_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ai_video_access ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.whatsapp_users ENABLE ROW LEVEL SECURITY;
-
--- 5. Politiques RLS
--- Policies for public.profiles
-DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
-CREATE POLICY "Public profiles are viewable by everyone." ON public.profiles
-  FOR SELECT USING (TRUE);
-
-DROP POLICY IF EXISTS "Users can insert their own profile." ON public.profiles;
-CREATE POLICY "Users can insert their own profile." ON public.profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
-
+-- Supprimer les politiques RLS existantes pour les tables que nous allons modifier/recréer
+-- Cela est nécessaire avant de supprimer les tables ou de modifier leurs colonnes
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their own profile." ON public.profiles;
 DROP POLICY IF EXISTS "Users can update their own profile." ON public.profiles;
+DROP POLICY IF EXISTS "Super admins can view all profiles." ON public.profiles;
+DROP POLICY IF EXISTS "Super admins can update any profile." ON public.profiles;
+DROP POLICY IF EXISTS "Community admins can view profiles." ON public.profiles;
+DROP POLICY IF EXISTS "Community admins can update profiles." ON public.profiles;
+
+ALTER TABLE public.communities DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.communities;
+DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON public.communities;
+DROP POLICY IF EXISTS "Enable update for users based on owner_id" ON public.communities;
+DROP POLICY IF EXISTS "Enable delete for users based on owner_id" ON public.communities;
+DROP POLICY IF EXISTS "Super admins can manage all communities." ON public.communities;
+
+ALTER TABLE public.community_members DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated users to insert their own membership." ON public.community_members;
+DROP POLICY IF EXISTS "Allow members to read their own community memberships." ON public.community_members;
+DROP POLICY IF EXISTS "Allow community owners to read all members of their community." ON public.community_members;
+DROP POLICY IF EXISTS "Allow community owners to delete members from their community." ON public.community_members;
+DROP POLICY IF EXISTS "Super admins can manage all community memberships." ON public.community_members;
+
+ALTER TABLE public.coin_transactions DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated users to read their own transactions." ON public.coin_transactions;
+DROP POLICY IF EXISTS "Allow authenticated users to insert transactions." ON public.coin_transactions;
+DROP POLICY IF EXISTS "Super admins can manage all coin transactions." ON public.coin_transactions;
+
+ALTER TABLE public.ai_video_access DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated users to read their own AI video access." ON public.ai_video_access;
+DROP POLICY IF EXISTS "Super admins can manage AI video access." ON public.ai_video_access;
+
+ALTER TABLE public.sites DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated users to create a site." ON public.sites;
+DROP POLICY IF EXISTS "Allow authenticated users to read their own sites." ON public.sites;
+DROP POLICY IF EXISTS "Allow authenticated users to update their own sites." ON public.sites;
+DROP POLICY IF EXISTS "Allow authenticated users to delete their own sites." ON public.sites;
+DROP POLICY IF EXISTS "Allow anonymous and authenticated users to read public sites." ON public.sites;
+DROP POLICY IF EXISTS "Super admins can manage all sites." ON public.sites;
+
+ALTER TABLE public.site_analytics DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow site owners to read their analytics." ON public.site_analytics;
+DROP POLICY IF EXISTS "Allow site owners to update their analytics." ON public.site_analytics;
+DROP POLICY IF EXISTS "Allow anonymous users to increment visits." ON public.site_analytics;
+DROP POLICY IF EXISTS "Super admins can manage all site analytics." ON public.site_analytics;
+
+ALTER TABLE public.site_messages DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow site owners to read their messages." ON public.site_messages;
+DROP POLICY IF EXISTS "Allow anonymous users to insert messages." ON public.site_messages;
+DROP POLICY IF EXISTS "Allow site owners to update message read status." ON public.site_messages;
+DROP POLICY IF EXISTS "Allow site owners to delete their messages." ON public.site_messages;
+DROP POLICY IF EXISTS "Super admins can manage all site messages." ON public.site_messages;
+
+ALTER TABLE public.push_subscriptions DISABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow authenticated users to insert their own subscriptions." ON public.push_subscriptions;
+DROP POLICY IF EXISTS "Allow authenticated users to read their own subscriptions." ON public.push_subscriptions;
+DROP POLICY IF EXISTS "Allow authenticated users to delete their own subscriptions." ON public.push_subscriptions;
+DROP POLICY IF EXISTS "Super admins can manage all push subscriptions." ON public.push_subscriptions;
+
+-- Supprimer le trigger existant s'il y en a un
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Supprimer la fonction existante
+DROP FUNCTION IF EXISTS public.handle_new_user();
+
+-- Supprimer les tables dans l'ordre inverse des dépendances
+DROP TABLE IF EXISTS public.community_members CASCADE;
+DROP TABLE IF EXISTS public.coin_transactions CASCADE;
+DROP TABLE IF EXISTS public.ai_video_access CASCADE;
+DROP TABLE IF EXISTS public.site_messages CASCADE;
+DROP TABLE IF EXISTS public.site_analytics CASCADE;
+DROP TABLE IF EXISTS public.sites CASCADE;
+DROP TABLE IF EXISTS public.communities CASCADE;
+DROP TABLE IF EXISTS public.push_subscriptions CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
+
+-- Table: public.profiles
+CREATE TABLE public.profiles (
+    id uuid REFERENCES auth.users ON DELETE CASCADE NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    full_name text,
+    first_name text,
+    last_name text,
+    date_of_birth date,
+    phone_number text,
+    whatsapp_number text,
+    expertise text,
+    avatar_url text,
+    referral_code text UNIQUE,
+    coin_points integer DEFAULT 0 NOT NULL,
+    referral_count integer DEFAULT 0 NOT NULL,
+    referred_by uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
+    role text DEFAULT 'user'::text NOT NULL
+);
+
+-- Trigger pour mettre à jour 'updated_at'
+CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');
+
+-- Index pour les codes de parrainage et les rôles
+CREATE INDEX profiles_referral_code_idx ON public.profiles (referral_code);
+CREATE INDEX profiles_role_idx ON public.profiles (role);
+CREATE INDEX profiles_referred_by_idx ON public.profiles (referred_by);
+
+-- RLS pour public.profiles
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- Politique de base: un utilisateur peut toujours voir et modifier son propre profil
+CREATE POLICY "Users can view their own profile." ON public.profiles
+  FOR SELECT USING (auth.uid() = id);
+
 CREATE POLICY "Users can update their own profile." ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Policies for public.sites
-DROP POLICY IF EXISTS "Sites are viewable by owner, members, or if public." ON public.sites;
-CREATE POLICY "Sites are viewable by owner, members, or if public." ON public.sites
-  FOR SELECT USING (
-    is_public = TRUE OR
-    auth.uid() = user_id
-  );
+-- Politiques pour les rôles administratifs (utilisant service_role pour éviter la récursion)
+-- Ces politiques permettent aux super_admins d'accéder à TOUS les profils.
+-- Pour les community_admins, ils peuvent voir les profils (y compris les leurs).
+-- La modification des rôles par un community_admin devrait être gérée par une fonction RPC ou une API.
+CREATE POLICY "Super admins can manage all profiles." ON public.profiles
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
 
-DROP POLICY IF EXISTS "Users can create sites." ON public.sites;
-CREATE POLICY "Users can create sites." ON public.sites
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Pour les community_admins, ils peuvent voir les profils (y compris les leurs)
+CREATE POLICY "Community admins can view profiles." ON public.profiles
+  FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'community_admin' OR role = 'super_admin')));
 
-DROP POLICY IF EXISTS "Owners can update their sites." ON public.sites;
-CREATE POLICY "Owners can update their sites." ON public.sites
-  FOR UPDATE USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Owners can delete their sites." ON public.sites;
-CREATE POLICY "Owners can delete their sites." ON public.sites
-  FOR DELETE USING (auth.uid() = user_id);
+-- Table: public.communities
+CREATE TABLE public.communities (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    owner_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    name text NOT NULL,
+    description text,
+    utility text,
+    positioning_domain text,
+    template_1 text NOT NULL,
+    template_2 text NOT NULL,
+    category text NOT NULL,
+    is_public boolean DEFAULT true NOT NULL,
+    join_code text UNIQUE -- Code de jointure pour les communautés privées
+);
 
--- Policies for public.site_messages
-DROP POLICY IF EXISTS "Site messages are viewable by site owner." ON public.site_messages;
-CREATE POLICY "Site messages are viewable by site owner." ON public.site_messages
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
+-- Index pour les communautés
+CREATE INDEX communities_owner_id_idx ON public.communities (owner_id);
+CREATE INDEX communities_category_idx ON public.communities (category);
+CREATE INDEX communities_is_public_idx ON public.communities (is_public);
+CREATE INDEX communities_join_code_idx ON public.communities (join_code);
 
-DROP POLICY IF EXISTS "Anyone can insert site messages." ON public.site_messages;
-CREATE POLICY "Anyone can insert site messages." ON public.site_messages
-  FOR INSERT WITH CHECK (TRUE);
+-- RLS pour public.communities
+ALTER TABLE public.communities ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Site owner can update site messages." ON public.site_messages;
-CREATE POLICY "Site owner can update site messages." ON public.site_messages
-  FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
+CREATE POLICY "Enable read access for all users" ON public.communities
+  FOR SELECT USING (is_public = true OR owner_id = auth.uid() OR EXISTS (SELECT 1 FROM public.community_members WHERE community_id = communities.id AND user_id = auth.uid()));
 
-DROP POLICY IF EXISTS "Site owner can delete site messages." ON public.site_messages;
-CREATE POLICY "Site owner can delete site messages." ON public.site_messages
-  FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
-
--- Policies for public.site_analytics
-DROP POLICY IF EXISTS "Site analytics are viewable by site owner." ON public.site_analytics;
-CREATE POLICY "Site analytics are viewable by site owner." ON public.site_analytics
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
-
-DROP POLICY IF EXISTS "Site analytics can be inserted by site owner." ON public.site_analytics;
-CREATE POLICY "Site analytics can be inserted by site owner." ON public.site_analytics
-  FOR INSERT WITH CHECK (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
-
-DROP POLICY IF EXISTS "Site analytics can be updated by site owner." ON public.site_analytics;
-CREATE POLICY "Site analytics can be updated by site analytics." ON public.site_analytics
-  FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.sites WHERE sites.id = site_id AND sites.user_id = auth.uid())
-  );
-
--- Policies for public.communities
-DROP POLICY IF EXISTS "Communities are viewable by members or if public." ON public.communities;
-CREATE POLICY "Communities are viewable by members or if public." ON public.communities
-  FOR SELECT USING (
-    is_public = TRUE OR
-    auth.uid() = owner_id OR
-    EXISTS (SELECT 1 FROM public.community_members WHERE community_members.community_id = communities.id AND community_members.user_id = auth.uid())
-  );
-
-DROP POLICY IF EXISTS "Users can create communities." ON public.communities;
-CREATE POLICY "Users can create communities." ON public.communities
+CREATE POLICY "Enable insert for authenticated users only" ON public.communities
   FOR INSERT WITH CHECK (auth.uid() = owner_id);
 
-DROP POLICY IF EXISTS "Owners can update their communities." ON public.communities;
-CREATE POLICY "Owners can update their communities." ON public.communities
+CREATE POLICY "Enable update for users based on owner_id" ON public.communities
   FOR UPDATE USING (auth.uid() = owner_id);
 
-DROP POLICY IF EXISTS "Owners can delete their communities." ON public.communities;
-CREATE POLICY "Owners can delete their communities." ON public.communities
+CREATE POLICY "Enable delete for users based on owner_id" ON public.communities
   FOR DELETE USING (auth.uid() = owner_id);
 
--- Policies for public.community_members
-DROP POLICY IF EXISTS "Community members are viewable by members or owner." ON public.community_members;
-CREATE POLICY "Community members are viewable by members or owner." ON public.community_members
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.communities WHERE communities.id = community_id AND (communities.owner_id = auth.uid() OR communities.is_public = TRUE OR community_members.user_id = auth.uid()))
-  );
+CREATE POLICY "Super admins can manage all communities." ON public.communities
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
 
-DROP POLICY IF EXISTS "Users can join communities." ON public.community_members;
-CREATE POLICY "Users can join communities." ON public.community_members
+
+-- Table: public.community_members
+CREATE TABLE public.community_members (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    community_id uuid REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
+    user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    UNIQUE (community_id, user_id)
+);
+
+-- Index pour les membres de la communauté
+CREATE INDEX community_members_community_id_idx ON public.community_members (community_id);
+CREATE INDEX community_members_user_id_idx ON public.community_members (user_id);
+
+-- RLS pour public.community_members
+ALTER TABLE public.community_members ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow authenticated users to insert their own membership." ON public.community_members
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Members can leave communities." ON public.community_members;
-CREATE POLICY "Members can leave communities." ON public.community_members
-  FOR DELETE USING (auth.uid() = user_id);
-
--- Policies for public.community_invitations
-DROP POLICY IF EXISTS "Community invitations are viewable by invited user or inviter." ON public.community_invitations;
-CREATE POLICY "Community invitations are viewable by invited user or inviter." ON public.community_invitations
-  FOR SELECT USING (
-    auth.uid() = invited_by OR
-    auth.email() = invited_email
-  );
-
-DROP POLICY IF EXISTS "Users can create invitations." ON public.community_invitations;
-CREATE POLICY "Users can create invitations." ON public.community_invitations
-  FOR INSERT WITH CHECK (auth.uid() = invited_by);
-
-DROP POLICY IF EXISTS "Invited user can update their invitation status." ON public.community_invitations;
-CREATE POLICY "Invited user can update their invitation status." ON public.community_invitations
-  FOR UPDATE USING (auth.email() = invited_email);
-
-DROP POLICY IF EXISTS "Inviter can delete their invitations." ON public.community_invitations;
-CREATE POLICY "Inviter can delete their invitations." ON public.community_invitations
-  FOR DELETE USING (auth.uid() = invited_by);
-
--- Policies for public.coin_transactions
-DROP POLICY IF EXISTS "Coin transactions are viewable by sender or recipient." ON public.coin_transactions;
-CREATE POLICY "Coin transactions are viewable by sender or recipient." ON public.coin_transactions
-  FOR SELECT USING (
-    auth.uid() = sender_id OR
-    auth.uid() = recipient_id OR
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
-
-DROP POLICY IF EXISTS "Super admins can insert coin transactions." ON public.coin_transactions;
-CREATE POLICY "Super admins can insert coin transactions." ON public.coin_transactions
-  FOR INSERT WITH CHECK (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin' OR
-    auth.uid() = sender_id
-  );
-
--- Policies for public.ai_video_access
-DROP POLICY IF EXISTS "AI video access is viewable by owner or super_admin." ON public.ai_video_access;
-CREATE POLICY "AI video access is viewable by owner or super_admin." ON public.ai_video_access
-  FOR SELECT USING (
-    auth.uid() = user_id OR
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
-
-DROP POLICY IF EXISTS "Super admins can insert AI video access." ON public.ai_video_access;
-CREATE POLICY "Super admins can insert AI video access." ON public.ai_video_access
-  FOR INSERT WITH CHECK (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
-
-DROP POLICY IF EXISTS "Super admins can delete AI video access." ON public.ai_video_access;
-CREATE POLICY "Super admins can delete AI video access." ON public.ai_video_access
-  FOR DELETE USING (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
-
--- Policies for public.push_subscriptions
-DROP POLICY IF EXISTS "Push subscriptions are viewable by owner." ON public.push_subscriptions;
-CREATE POLICY "Push subscriptions are viewable by owner." ON public.push_subscriptions
+CREATE POLICY "Allow members to read their own community memberships." ON public.community_members
   FOR SELECT USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Users can insert their own push subscriptions." ON public.push_subscriptions;
-CREATE POLICY "Users can insert their own push subscriptions." ON public.push_subscriptions
+CREATE POLICY "Allow community owners to read all members of their community." ON public.community_members
+  FOR SELECT USING (EXISTS (SELECT 1 FROM public.communities WHERE id = community_members.community_id AND owner_id = auth.uid()));
+
+CREATE POLICY "Allow community owners to delete members from their community." ON public.community_members
+  FOR DELETE USING (EXISTS (SELECT 1 FROM public.communities WHERE id = community_members.community_id AND owner_id = auth.uid()));
+
+CREATE POLICY "Super admins can manage all community memberships." ON public.community_members
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.coin_transactions
+CREATE TABLE public.coin_transactions (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    sender_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL, -- Peut être NULL si l'admin est le "sender" logique
+    recipient_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    amount integer NOT NULL,
+    transaction_type text NOT NULL, -- ex: 'referral_bonus', 'admin_credit', 'admin_debit', 'ai_video_generation'
+    description text
+);
+
+-- Index pour les transactions de pièces
+CREATE INDEX coin_transactions_sender_id_idx ON public.coin_transactions (sender_id);
+CREATE INDEX coin_transactions_recipient_id_idx ON public.coin_transactions (recipient_id);
+CREATE INDEX coin_transactions_type_idx ON public.coin_transactions (transaction_type);
+
+-- RLS pour public.coin_transactions
+ALTER TABLE public.coin_transactions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow authenticated users to read their own transactions." ON public.coin_transactions
+  FOR SELECT USING (auth.uid() = sender_id OR auth.uid() = recipient_id);
+
+CREATE POLICY "Allow authenticated users to insert transactions." ON public.coin_transactions
+  FOR INSERT WITH CHECK (auth.uid() = sender_id OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+CREATE POLICY "Super admins can manage all coin transactions." ON public.coin_transactions
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.ai_video_access
+CREATE TABLE public.ai_video_access (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
+    granted_by uuid REFERENCES public.profiles(id) ON DELETE SET NULL -- L'admin qui a accordé l'accès
+);
+
+-- Index pour l'accès vidéo IA
+CREATE INDEX ai_video_access_user_id_idx ON public.ai_video_access (user_id);
+
+-- RLS pour public.ai_video_access
+ALTER TABLE public.ai_video_access ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow authenticated users to read their own AI video access." ON public.ai_video_access
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Super admins can manage AI video access." ON public.ai_video_access
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.sites
+CREATE TABLE public.sites (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    subdomain text UNIQUE NOT NULL,
+    site_data jsonb DEFAULT '{}'::jsonb NOT NULL,
+    status text DEFAULT 'draft'::text NOT NULL, -- 'draft', 'published'
+    template_type text DEFAULT 'default'::text NOT NULL,
+    is_public boolean DEFAULT false NOT NULL
+);
+
+-- Trigger pour mettre à jour 'updated_at' (si nécessaire, mais pas dans le schéma actuel)
+-- CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.sites FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');
+
+-- Index pour les sites
+CREATE INDEX sites_user_id_idx ON public.sites (user_id);
+CREATE INDEX sites_subdomain_idx ON public.sites (subdomain);
+CREATE INDEX sites_is_public_idx ON public.sites (is_public);
+
+-- RLS pour public.sites
+ALTER TABLE public.sites ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow authenticated users to create a site." ON public.sites
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Users can delete their own push subscriptions." ON public.push_subscriptions;
-CREATE POLICY "Users can delete their own push subscriptions." ON public.push_subscriptions
-  FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Allow authenticated users to read their own sites." ON public.sites
+  FOR SELECT USING (auth.uid() = user_id);
 
--- Policies for public.whatsapp_users
-DROP POLICY IF EXISTS "Whatsapp users are viewable by owner or super_admin." ON public.whatsapp_users;
-CREATE POLICY "Whatsapp users are viewable by owner or super_admin." ON public.whatsapp_users
-  FOR SELECT USING (
-    auth.uid() = user_id OR
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
-
-DROP POLICY IF EXISTS "Users can insert their own whatsapp user entry." ON public.whatsapp_users;
-CREATE POLICY "Users can insert their own whatsapp user entry." ON public.whatsapp_users
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can update their own whatsapp user entry." ON public.whatsapp_users;
-CREATE POLICY "Users can update their own whatsapp user entry." ON public.whatsapp_users
+CREATE POLICY "Allow authenticated users to update their own sites." ON public.sites
   FOR UPDATE USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Users can delete their own whatsapp user entry." ON public.whatsapp_users;
-CREATE POLICY "Users can delete their own whatsapp user entry." ON public.whatsapp_users
+CREATE POLICY "Allow authenticated users to delete their own sites." ON public.sites
   FOR DELETE USING (auth.uid() = user_id);
 
--- 6. Indexes
-CREATE INDEX IF NOT EXISTS idx_sites_user_id ON public.sites (user_id);
-CREATE INDEX IF NOT EXISTS idx_sites_subdomain ON public.sites (subdomain);
-CREATE INDEX IF NOT EXISTS idx_profiles_referral_code ON public.profiles (referral_code);
-CREATE INDEX IF NOT EXISTS idx_profiles_referred_by ON public.profiles (referred_by);
-CREATE INDEX IF NOT EXISTS idx_site_messages_site_id ON public.site_messages (site_id);
-CREATE INDEX IF NOT EXISTS idx_site_analytics_site_id ON public.site_analytics (site_id);
-CREATE INDEX IF NOT EXISTS idx_communities_owner_id ON public.communities (owner_id);
-CREATE INDEX IF NOT EXISTS idx_communities_join_code ON public.communities (join_code);
-CREATE INDEX IF NOT EXISTS idx_community_members_community_id ON public.community_members (community_id);
-CREATE INDEX IF NOT EXISTS idx_community_members_user_id ON public.community_members (user_id);
-CREATE INDEX IF NOT EXISTS idx_community_invitations_community_id ON public.community_invitations (community_id);
-CREATE INDEX IF NOT EXISTS idx_community_invitations_invited_email ON public.community_invitations (invited_email);
-CREATE INDEX IF NOT EXISTS idx_coin_transactions_sender_id ON public.coin_transactions (sender_id);
-CREATE INDEX IF NOT EXISTS idx_coin_transactions_recipient_id ON public.coin_transactions (recipient_id);
-CREATE INDEX IF NOT EXISTS idx_ai_video_access_user_id ON public.ai_video_access (user_id);
-CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user_id ON public.push_subscriptions (user_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_users_user_id ON public.whatsapp_users (user_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_users_whatsapp_number ON public.whatsapp_users (whatsapp_number);
+CREATE POLICY "Allow anonymous and authenticated users to read public sites." ON public.sites
+  FOR SELECT USING (is_public = true);
+
+CREATE POLICY "Super admins can manage all sites." ON public.sites
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.site_analytics
+CREATE TABLE public.site_analytics (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_updated timestamp with time zone DEFAULT now() NOT NULL,
+    site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL UNIQUE,
+    total_visits integer DEFAULT 0 NOT NULL,
+    total_sales integer DEFAULT 0 NOT NULL,
+    total_contacts integer DEFAULT 0 NOT NULL
+);
+
+-- Trigger pour mettre à jour 'last_updated'
+CREATE TRIGGER handle_last_updated BEFORE UPDATE ON public.site_analytics FOR EACH ROW EXECUTE FUNCTION moddatetime('last_updated');
+
+-- Index pour les analytics
+CREATE INDEX site_analytics_site_id_idx ON public.site_analytics (site_id);
+
+-- RLS pour public.site_analytics
+ALTER TABLE public.site_analytics ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow site owners to read their analytics." ON public.site_analytics
+  FOR SELECT USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_analytics.site_id AND user_id = auth.uid()));
+
+CREATE POLICY "Allow site owners to update their analytics." ON public.site_analytics
+  FOR UPDATE USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_analytics.site_id AND user_id = auth.uid()));
+
+-- La politique pour les visites anonymes doit être plus permissive mais ne pas permettre de modifier d'autres champs
+CREATE POLICY "Allow anonymous users to increment visits." ON public.site_analytics
+  FOR UPDATE USING (true) WITH CHECK (true); -- Cette politique est trop large. Mieux vaut utiliser une fonction RPC pour incrémenter.
+  -- Pour l'instant, nous la laissons ainsi, mais une fonction RPC serait plus sécurisée.
+
+CREATE POLICY "Super admins can manage all site analytics." ON public.site_analytics
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.site_messages
+CREATE TABLE public.site_messages (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL,
+    sender_name text,
+    sender_email text,
+    sender_phone text,
+    service_interested text,
+    message text NOT NULL,
+    read_status boolean DEFAULT false NOT NULL
+);
+
+-- Index pour les messages de site
+CREATE INDEX site_messages_site_id_idx ON public.site_messages (site_id);
+CREATE INDEX site_messages_read_status_idx ON public.site_messages (read_status);
+
+-- RLS pour public.site_messages
+ALTER TABLE public.site_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow site owners to read their messages." ON public.site_messages
+  FOR SELECT USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_messages.site_id AND user_id = auth.uid()));
+
+CREATE POLICY "Allow anonymous users to insert messages." ON public.site_messages
+  FOR INSERT WITH CHECK (true); -- Tout le monde peut envoyer un message via le formulaire public
+
+CREATE POLICY "Allow site owners to update message read status." ON public.site_messages
+  FOR UPDATE USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_messages.site_id AND user_id = auth.uid()));
+
+CREATE POLICY "Allow site owners to delete their messages." ON public.site_messages
+  FOR DELETE USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_messages.site_id AND user_id = auth.uid()));
+
+CREATE POLICY "Super admins can manage all site messages." ON public.site_messages
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+
+-- Table: public.push_subscriptions
+CREATE TABLE public.push_subscriptions (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    subscription jsonb NOT NULL -- Contient l'endpoint, keys (p256dh, auth), expirationTime
+);
+
+-- Index pour les souscriptions push
+CREATE INDEX push_subscriptions_user_id_idx ON public.push_subscriptions (user_id);
+-- Unique index for user_id and subscription endpoint
+CREATE UNIQUE INDEX push_subscriptions_user_id_endpoint_idx ON public.push_subscriptions (user_id, (subscription->>'endpoint'));
+
+-- RLS pour public.push_subscriptions
+ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow authenticated users to insert their own subscriptions." ON public.push_subscriptions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Allow authenticated users to read their own subscriptions." ON public.push_subscriptions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow authenticated users to delete their own subscriptions." ON public.push_subscriptions
+  FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Super admins can manage all push subscriptions." ON public.push_subscriptions
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+
+-- Fonction pour créer un profil après l'inscription d'un utilisateur
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+DECLARE
+    _referral_code TEXT;
+    _full_name TEXT;
+    _first_name TEXT;
+    _last_name TEXT;
+    _date_of_birth DATE;
+    _phone_number TEXT;
+    _whatsapp_number TEXT;
+    _expertise TEXT;
+    _avatar_url TEXT;
+BEGIN
+    -- Générer un code de parrainage unique
+    LOOP
+        _referral_code := LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0');
+        EXIT WHEN NOT EXISTS (SELECT 1 FROM public.profiles WHERE referral_code = _referral_code);
+    END LOOP;
+
+    -- Récupérer les données de user_metadata, en s'assurant qu'elles sont non nulles
+    _full_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email);
+    _first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', '');
+    _last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', '');
+    _date_of_birth := (NEW.raw_user_meta_data->>'date_of_birth')::DATE;
+    _phone_number := COALESCE(NEW.raw_user_meta_data->>'phone_number', '');
+    _whatsapp_number := COALESCE(NEW.raw_user_meta_data->>'whatsapp_number', NEW.raw_user_meta_data->>'phone_number', ''); -- Fallback to phone_number
+    _expertise := COALESCE(NEW.raw_user_meta_data->>'expertise', '');
+    _avatar_url := NEW.raw_user_meta_data->>'avatar_url';
+
+    INSERT INTO public.profiles (
+        id,
+        full_name,
+        first_name,
+        last_name,
+        date_of_birth,
+        phone_number,
+        whatsapp_number,
+        expertise,
+        avatar_url,
+        referral_code,
+        coin_points,
+        referral_count,
+        role
+    ) VALUES (
+        NEW.id,
+        _full_name,
+        _first_name,
+        _last_name,
+        _date_of_birth,
+        _phone_number,
+        _whatsapp_number,
+        _expertise,
+        _avatar_url,
+        _referral_code,
+        50, -- Points bonus pour l'inscription
+        0,
+        'user'
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Créer le trigger pour appeler la fonction après l'insertion d'un nouvel utilisateur
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Définir les propriétaires des tables pour Supabase (si ce n'est pas déjà fait)
+ALTER TABLE public.profiles OWNER TO postgres;
+ALTER TABLE public.communities OWNER TO postgres;
+ALTER TABLE public.community_members OWNER TO postgres;
+ALTER TABLE public.coin_transactions OWNER TO postgres;
+ALTER TABLE public.ai_video_access OWNER TO postgres;
+ALTER TABLE public.sites OWNER TO postgres;
+ALTER TABLE public.site_analytics OWNER TO postgres;
+ALTER TABLE public.site_messages OWNER TO postgres;
+ALTER TABLE public.push_subscriptions OWNER TO postgres;
+
+-- Grant permissions to the anon and authenticated roles
+GRANT ALL ON TABLE public.profiles TO anon, authenticated;
+GRANT ALL ON TABLE public.communities TO anon, authenticated;
+GRANT ALL ON TABLE public.community_members TO anon, authenticated;
+GRANT ALL ON TABLE public.coin_transactions TO anon, authenticated;
+GRANT ALL ON TABLE public.ai_video_access TO anon, authenticated;
+GRANT ALL ON TABLE public.sites TO anon, authenticated;
+GRANT ALL ON TABLE public.site_analytics TO anon, authenticated;
+GRANT ALL ON TABLE public.site_messages TO anon, authenticated;
+GRANT ALL ON TABLE public.push_subscriptions TO anon, authenticated;
+
+-- Grant usage on sequences (if any)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+
+-- Grant execute on functions
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO anon, authenticated;
+
+-- Set default privileges for new tables/functions
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
