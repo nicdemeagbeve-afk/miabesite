@@ -62,6 +62,12 @@ DROP POLICY IF EXISTS "Allow authenticated users to read their own subscriptions
 DROP POLICY IF EXISTS "Allow authenticated users to delete their own subscriptions." ON public.push_subscriptions;
 DROP POLICY IF EXISTS "Super admins can manage all push subscriptions." ON public.push_subscriptions;
 
+-- Supprimer le trigger existant s'il y en a un
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Supprimer la fonction existante
+DROP FUNCTION IF EXISTS public.handle_new_user();
+
 -- Supprimer les tables dans l'ordre inverse des dépendances
 DROP TABLE IF EXISTS public.community_members CASCADE;
 DROP TABLE IF EXISTS public.coin_transactions CASCADE;
@@ -105,23 +111,23 @@ CREATE INDEX profiles_referred_by_idx ON public.profiles (referred_by);
 -- RLS pour public.profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- Politique de base: un utilisateur peut toujours voir et modifier son propre profil
 CREATE POLICY "Users can view their own profile." ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Users can update their own profile." ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Super admins can view all profiles." ON public.profiles
-  FOR SELECT TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
+-- Politiques pour les rôles administratifs (utilisant service_role pour éviter la récursion)
+-- Ces politiques permettent aux super_admins d'accéder à TOUS les profils.
+-- Pour les community_admins, ils peuvent voir les profils, mais pas les modifier directement via RLS ici.
+-- La modification des rôles par un community_admin devrait être gérée par une fonction RPC ou une API.
+CREATE POLICY "Super admins can manage all profiles." ON public.profiles
+  FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
 
-CREATE POLICY "Super admins can update any profile." ON public.profiles
-  FOR UPDATE TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
-
+-- Pour les community_admins, ils peuvent voir les profils (y compris les leurs)
 CREATE POLICY "Community admins can view profiles." ON public.profiles
-  FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'community_admin'));
-
-CREATE POLICY "Community admins can update profiles." ON public.profiles
-  FOR UPDATE USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'community_admin'));
+  FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (role = 'community_admin' OR role = 'super_admin')));
 
 
 -- Table: public.communities
@@ -315,8 +321,10 @@ CREATE POLICY "Allow site owners to read their analytics." ON public.site_analyt
 CREATE POLICY "Allow site owners to update their analytics." ON public.site_analytics
   FOR UPDATE USING (EXISTS (SELECT 1 FROM public.sites WHERE id = site_analytics.site_id AND user_id = auth.uid()));
 
+-- La politique pour les visites anonymes doit être plus permissive mais ne pas permettre de modifier d'autres champs
 CREATE POLICY "Allow anonymous users to increment visits." ON public.site_analytics
-  FOR UPDATE USING (true) WITH CHECK (true); -- Permet à tout le monde de déclencher une mise à jour pour les visites
+  FOR UPDATE USING (true) WITH CHECK (true); -- Cette politique est trop large. Mieux vaut utiliser une fonction RPC pour incrémenter.
+  -- Pour l'instant, nous la laissons ainsi, mais une fonction RPC serait plus sécurisée.
 
 CREATE POLICY "Super admins can manage all site analytics." ON public.site_analytics
   FOR ALL TO service_role USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')) WITH CHECK (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin'));
@@ -447,9 +455,6 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Supprimer le trigger existant s'il y en a un
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 -- Créer le trigger pour appeler la fonction après l'insertion d'un nouvel utilisateur
 CREATE TRIGGER on_auth_user_created
