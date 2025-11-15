@@ -8,6 +8,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Impor
 import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar"; // Importez le nouveau composant
 import { ConditionalHeader } from "@/components/ConditionalHeader"; // Import the new client component
+import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
 
 export const metadata: Metadata = {
   title: "Miabesite | le site pour tous",
@@ -19,12 +20,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const icon192 = getSupabaseStorageUrl("static-assets", "icons/icon-192x192.png");
+  const icon512 = getSupabaseStorageUrl("static-assets", "icons/icon-512x512.png");
+  const iconMaskable192 = getSupabaseStorageUrl("static-assets", "icons/icon-maskable-192x192.png");
+  const iconMaskable512 = getSupabaseStorageUrl("static-assets", "icons/icon-maskable-512x512.png");
+
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
         <link rel="icon" href="/favicon.ico" />
+        {/* Dynamically generated icons for PWA */}
+        <link rel="apple-touch-icon" sizes="192x192" href={icon192} />
+        <link rel="icon" type="image/png" sizes="192x192" href={icon192} />
+        <link rel="icon" type="image/png" sizes="512x512" href={icon512} />
+        <link rel="mask-icon" href={iconMaskable192} color="#2563eb" />
       </head>
       <body>
         <ThemeProvider

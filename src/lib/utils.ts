@@ -75,7 +75,8 @@ export async function generateUniqueReferralCode(supabase: SupabaseClient): Prom
 export function getSupabaseStorageUrl(bucket: string, path: string): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!supabaseUrl || !path) {
-    return ""; // Retourne une chaîne vide si l'URL ou le chemin n'est pas défini
+    // Fallback for development or missing config
+    return `/public/${path}`; // Assuming a local public folder structure
   }
   // Assure que le chemin n'a pas de slash au début
   const cleanPath = path.startsWith("/") ? path.substring(1) : path;
