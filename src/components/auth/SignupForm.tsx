@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useRouter } from 'next/navigation'; // Assurez-vous d'importer useRouter
-import { createClient } from '@/lib/supabase/client'; // Assurez-vous que le chemin est correct
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { FaGoogle, FaFacebookF, FaInstagram } from 'react-icons/fa';
 import type { Provider } from '@supabase/supabase-js';
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
@@ -33,8 +33,8 @@ import { CalendarIcon } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
-import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
-import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox
+import { cn, generateUniqueReferralCode } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Schéma Zod CORRIGÉ pour correspondre à votre formulaire
 const signupSchema = z.object({
@@ -43,7 +43,7 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Adresse e-mail invalide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
-  dateOfBirth: z.date().optional(), // Utilisez z.date() si vous utilisez un calendrier
+  dateOfBirth: z.date().optional(),
   phoneNumber: z.string().optional(),
   expertise: z.string().optional(),
   termsAccepted: z.boolean().refine(val => val === true, {
@@ -51,18 +51,18 @@ const signupSchema = z.object({
   }),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
-  path: ["confirmPassword"], // Affiche l'erreur sous le champ de confirmation
+  path: ["confirmPassword"],
 });
 
-type SignupFormData = z.infer<typeof signupSchema>; // Define type for form data
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export function SignupForm() {
-  const router = useRouter(); // Initialisez le hook useRouter
-  const supabase = createClient(); // Initialisez le client Supabase
+  const router = useRouter();
+  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<SignupFormData>({ // Use SignupFormData here
+  const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       firstName: "",
@@ -72,7 +72,7 @@ export function SignupForm() {
       confirmPassword: "",
       phoneNumber: "",
       expertise: "",
-      termsAccepted: false, // Default to false
+      termsAccepted: false,
     },
   });
 
@@ -87,16 +87,15 @@ export function SignupForm() {
     } else {
       setDateInput("");
     }
-  }, [form.watch("dateOfBirth")]); // Watch for changes in the form's dateOfBirth
+  }, [form.watch("dateOfBirth")]);
 
   const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setDateInput(value);
 
-    // Attempt to parse the date
     const parsedDate = parse(value, "yyyy/MM/dd", new Date());
 
-    if (isValid(parsedDate) && value.length === 10) { // Only update form if valid and complete
+    if (isValid(parsedDate) && value.length === 10) {
       form.setValue("dateOfBirth", parsedDate, { shouldValidate: true });
     } else if (value === "") {
       form.setValue("dateOfBirth", undefined, { shouldValidate: true });
@@ -107,9 +106,7 @@ export function SignupForm() {
     setIsLoading(true);
     setError(null);
 
-    // Déstructuration des valeurs du formulaire
     const { email, password, firstName, lastName, dateOfBirth, phoneNumber, expertise } = values;
-    // On crée fullName à partir de firstName et lastName
     const fullName = `${firstName} ${lastName}`.trim();
 
     const { error } = await supabase.auth.signUp({
@@ -120,21 +117,22 @@ export function SignupForm() {
           full_name: fullName,
           first_name: firstName,
           last_name: lastName,
-          date_of_birth: dateOfBirth?.toISOString().split('T')[0], // Formatte la date pour la BDD
+          date_of_birth: dateOfBirth?.toISOString().split('T')[0],
           phone_number: phoneNumber,
           expertise: expertise,
         },
-        // L'option emailRedirectTo a été supprimée pour activer la vérification par code (OTP)
-      },
+        redirectTo: 'https://miabesite.site/dashboard/sites', // Using email link verification
+      }
     });
 
     if (error) {
-      // AFFICHER L'ERREUR COMPLÈTE DANS LA CONSOLE
-      console.error("Erreur Supabase Auth:", error); 
+      console.error("Erreur Supabase Auth:", error);
       setError(error.message);
       setIsLoading(false);
     } else {
-      router.push(`/auth/email-sent?email=${encodeURIComponent(values.email)}`);
+      toast.success("Un lien de confirmation a été envoyé à votre adresse e-mail. Veuillez vérifier votre boîte de réception pour activer votre compte.");
+      form.reset();
+      setIsLoading(false);
     }
   }
 
@@ -161,7 +159,7 @@ export function SignupForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}> {/* Explicitly pass the form object */}
+          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
@@ -215,7 +213,7 @@ export function SignupForm() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value} // field.value is Date | undefined
+                          selected={field.value}
                           onSelect={(date: Date | undefined) => {
                             field.onChange(date);
                             if (date) {
