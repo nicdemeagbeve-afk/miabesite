@@ -4,13 +4,14 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const next = requestUrl.searchParams.get('next') || '/dashboard/sites'; // Default redirect to dashboard
+  // Utiliser le paramètre 'next' pour définir la destination finale après l'échange de code
+  const next = requestUrl.searchParams.get('next') || '/dashboard/sites'; // Default redirect to dashboard/sites
 
   if (code) {
     const supabase = createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // If successful, redirect to the 'next' path
+      // Si successful, redirect to the 'next' path
       return NextResponse.redirect(requestUrl.origin + next);
     }
   }

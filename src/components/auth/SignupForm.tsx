@@ -43,7 +43,7 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Adresse e-mail invalide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
-  dateOfBirth: z.date().optional(), // Utilisez z.date() si vous utilisez un calendrier
+  dateOfBirth: z.date().optional().nullable(), // Utilisez z.date() si vous utilisez un calendrier
   phoneNumber: z.string().optional(),
   expertise: z.string().optional(),
   termsAccepted: z.boolean().refine(val => val === true, {
@@ -127,6 +127,9 @@ export function SignupForm() {
     // On crée fullName à partir de firstName et lastName
     const fullName = `${firstName} ${lastName}`.trim();
 
+    // Définir l'URL de redirection vers la route de callback, en spécifiant la destination finale
+    const redirectToUrl = `${window.location.origin}/auth/callback?next=/dashboard/sites`;
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -139,7 +142,7 @@ export function SignupForm() {
           phone_number: phoneNumber,
           expertise: expertise,
         },
-        // L'option emailRedirectTo a été supprimée pour activer la vérification par code (OTP)
+        emailRedirectTo: redirectToUrl, // Utiliser la redirection pour la confirmation par e-mail
       },
     });
 
@@ -149,7 +152,8 @@ export function SignupForm() {
       setError(error.message);
       setIsLoading(false);
     } else {
-      router.push(`/auth/email-sent?email=${encodeURIComponent(values.email)}`);
+      // Rediriger vers une page informant l'utilisateur de vérifier son e-mail
+      router.push(`/auth/check-email?email=${encodeURIComponent(values.email)}`);
     }
   }
 
@@ -230,7 +234,7 @@ export function SignupForm() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value} // field.value is Date | undefined
+                          selected={field.value || undefined} // FIX: Pass undefined if null
                           onSelect={(date: Date | undefined) => {
                             field.onChange(date);
                             if (date) {

@@ -40,8 +40,12 @@ export function ForgotPasswordForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email } = values;
+    
+    // Définir l'URL de redirection vers la route de callback, en spécifiant la destination finale
+    const redirectToUrl = `${window.location.origin}/auth/callback?next=/auth/reset-password`;
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/reset-password`,
+      redirectTo: redirectToUrl,
     });
 
     if (error) {
