@@ -86,6 +86,8 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error("API route error for admin stats:", error);
-    return NextResponse.json({ error: error.message || 'An unexpected error occurred' }, { status: 500 });
+    // Use error.details if available, otherwise fallback to message or generic error
+    const errorMessage = error.message || error.details || 'An unexpected error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
