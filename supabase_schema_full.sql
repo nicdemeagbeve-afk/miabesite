@@ -1,3 +1,7 @@
+BEGIN;
+
+SET search_path = public;
+
 -- Activer les extensions nécessaires
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "moddatetime";
@@ -434,3 +438,4 @@ GRANT EXECUTE ON FUNCTION public.handle_new_user() TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
+COMMIT;
