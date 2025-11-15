@@ -84,7 +84,7 @@ export function SignupForm() {
   );
 
   React.useEffect(() => {
-    const dob = form.getValues("dateOfBirth");
+    const dob = form.watch("dateOfBirth");
     if (dob && isValid(dob)) {
       setDateInput(format(dob, "yyyy/MM/dd"));
     } else {
