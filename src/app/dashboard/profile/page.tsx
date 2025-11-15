@@ -376,6 +376,7 @@ export default function ProfilePage() {
                         </FormLabel>
                         <FormControl>
                           <Input
+                            {...fieldProps}
                             type="file"
                             accept="image/*"
                             className="hidden"
@@ -511,7 +512,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Nouveau Mot de Passe</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} />
+                        <Input type="password" placeholder="********" {...field} autoComplete="new-password" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -524,7 +525,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Confirmer le Nouveau Mot de Passe</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} />
+                        <Input type="password" placeholder="********" {...field} autoComplete="new-password" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

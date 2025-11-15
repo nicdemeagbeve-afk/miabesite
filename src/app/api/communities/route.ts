@@ -14,10 +14,15 @@ export async function GET(request: Request) {
   const category = searchParams.get('category') || 'all';
 
   try {
+    // Fetch communities and check membership status in one go using a lateral join or similar structure
+    // Since we cannot use complex joins easily in the API route without a custom function,
+    // we will fetch the communities and rely on the RLS to filter what the user can see.
+    // We will fetch the member count separately for simplicity and robustness against RLS issues.
+    
     let query = supabase
       .from('communities')
-      .select('*, community_members(count)') // Select communities and count members
-      .or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // User can see public communities, their own, or communities they are a member of
+      .select('*, community_members(user_id)') // Select all community fields and the list of member user_ids
+      .or(`is_public.eq.true,owner_id.eq.${user.id},community_members.user_id.eq.${user.id}`); // RLS should handle this filtering
 
     if (searchTerm) {
       query = query.ilike('name', `%${searchTerm}%`);
@@ -34,35 +39,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Erreur lors du chargement des communautés.' }, { status: 500 });
     }
 
-    // Process communities to include member count and check if user is a member
-    const communitiesWithDetails = await Promise.all(communities.map(async (comm: any) => {
-      // Count members for each community
-      const { count: memberCount, error: countError } = await supabase
-        .from('community_members')
-        .select('id', { count: 'exact' })
-        .eq('community_id', comm.id);
-
-      if (countError) {
-        console.error(`Error counting members for community ${comm.id}:`, countError);
-      }
-
-      // Check if current user is a member
-      const { count: isMemberCount, error: isMemberError } = await supabase
-        .from('community_members')
-        .select('id', { count: 'exact' })
-        .eq('community_id', comm.id)
-        .eq('user_id', user.id);
-
-      if (isMemberError) {
-        console.error(`Error checking membership for community ${comm.id}:`, isMemberError);
-      }
+    // Process communities to calculate member count and check if user is a member
+    const communitiesWithDetails = communities.map((comm: any) => {
+      const members = comm.community_members || [];
+      const memberCount = members.length;
+      const isMember = members.some((member: { user_id: string }) => member.user_id === user.id);
 
       return {
         ...comm,
-        member_count: memberCount || 0,
-        is_member: (isMemberCount || 0) > 0,
+        member_count: memberCount,
+        is_member: isMember,
+        community_members: undefined, // Remove the raw list of members
       };
-    }));
+    });
 
     return NextResponse.json({ communities: communitiesWithDetails }, { status: 200 });
 
