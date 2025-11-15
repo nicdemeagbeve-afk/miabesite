@@ -18,7 +18,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PhoneInputWithCountryCode } from "@/components/PhoneInputWithCountryCode";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, parse, isValid } from "date-fns";
+import { format, parse, isValid, subYears } from "date-fns"; // Import subYears
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn, generateUniqueReferralCode } from "@/lib/utils"; // Import generateUniqueReferralCode
@@ -67,6 +67,7 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
 
   const supportWhatsAppNumber = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_NUMBER || "+22870832482";
+  const eighteenYearsAgo = subYears(new Date(), 18); // Calculate 18 years ago
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -212,7 +213,19 @@ export default function ProfilePage() {
   }, [form.watch("dateOfBirth")]);
 
   const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+    // Auto-insert slashes
+    if (value.length > 4) {
+      value = value.slice(0, 4) + '/' + value.slice(4);
+    }
+    if (value.length > 7) {
+      value = value.slice(0, 7) + '/' + value.slice(7);
+    }
+    value = value.slice(0, 10); // Max length AAAA/MM/JJ
+
+    e.target.value = value; // Update input value visually
+
     setDateInput(value);
 
     const parsedDate = parse(value, "yyyy/MM/dd", new Date());
@@ -455,6 +468,10 @@ export default function ProfilePage() {
                             }
                             initialFocus
                             locale={fr}
+                            defaultMonth={eighteenYearsAgo} // Set default month to 18 years ago
+                            captionLayout="dropdown-buttons" // Enable dropdowns for month/year
+                            fromYear={1900}
+                            toYear={new Date().getFullYear()}
                           />
                         </PopoverContent>
                       </Popover>

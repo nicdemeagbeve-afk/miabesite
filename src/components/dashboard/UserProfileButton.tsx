@@ -94,18 +94,3 @@ export function UserProfileButton({ onLinkClick }: UserProfileButtonProps) {
     </Link>
   );
 }
-
-export function DashboardSidebar() {
-  return (
-    <aside className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-background border-r md:translate-x-0">
-      <div className="h-full px-3 py-4 overflow-y-auto">
-        <nav className="space-y-2">
-          {/* ...existing navigation links... */}
-        </nav>
-        <div className="absolute bottom-4 left-0 w-full px-3">
-          <LogoutButton /> {/* Ajoute le bouton de déconnexion ici */}
-        </div>
-      </div>
-    </aside>
-  );
-}
