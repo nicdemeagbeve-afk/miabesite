@@ -1,66 +1,10 @@
+BEGIN;
+
+SET search_path = public;
+
 -- Activer les extensions nécessaires
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- Not needed if using gen_random_uuid()
 CREATE EXTENSION IF NOT EXISTS "moddatetime";
-
--- Supprimer les politiques RLS existantes pour les tables que nous allons modifier/recréer
--- Cela est nécessaire avant de supprimer les tables ou de modifier leurs colonnes
-ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Users can view their own profile." ON public.profiles;
-DROP POLICY IF EXISTS "Users can update their own profile." ON public.profiles;
-DROP POLICY IF EXISTS "Super admins can view all profiles." ON public.profiles;
-DROP POLICY IF EXISTS "Super admins can update any profile." ON public.profiles;
-DROP POLICY IF EXISTS "Community admins can view profiles." ON public.profiles;
-DROP POLICY IF EXISTS "Community admins can update profiles." ON public.profiles;
-
-ALTER TABLE public.communities DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Enable read access for all users" ON public.communities;
-DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON public.communities;
-DROP POLICY IF EXISTS "Enable update for users based on owner_id" ON public.communities;
-DROP POLICY IF EXISTS "Enable delete for users based on owner_id" ON public.communities;
-DROP POLICY IF EXISTS "Super admins can manage all communities." ON public.communities;
-
-ALTER TABLE public.community_members DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to insert their own membership." ON public.community_members;
-DROP POLICY IF EXISTS "Allow members to read their own community memberships." ON public.community_members;
-DROP POLICY IF EXISTS "Allow community owners to read all members of their community." ON public.community_members;
-DROP POLICY IF EXISTS "Allow community owners to delete members from their community." ON public.community_members;
-DROP POLICY IF EXISTS "Super admins can manage all community memberships." ON public.community_members;
-
-ALTER TABLE public.coin_transactions DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to read their own transactions." ON public.coin_transactions;
-DROP POLICY IF EXISTS "Allow authenticated users to insert transactions." ON public.coin_transactions;
-DROP POLICY IF EXISTS "Super admins can manage all coin transactions." ON public.coin_transactions;
-
-ALTER TABLE public.ai_video_access DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to read their own AI video access." ON public.ai_video_access;
-DROP POLICY IF EXISTS "Super admins can manage AI video access." ON public.ai_video_access;
-
-ALTER TABLE public.sites DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to create a site." ON public.sites;
-DROP POLICY IF EXISTS "Allow authenticated users to read their own sites." ON public.sites;
-DROP POLICY IF EXISTS "Allow authenticated users to update their own sites." ON public.sites;
-DROP POLICY IF EXISTS "Allow authenticated users to delete their own sites." ON public.sites;
-DROP POLICY IF EXISTS "Allow anonymous and authenticated users to read public sites." ON public.sites;
-DROP POLICY IF EXISTS "Super admins can manage all sites." ON public.sites;
-
-ALTER TABLE public.site_analytics DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow site owners to read their analytics." ON public.site_analytics;
-DROP POLICY IF EXISTS "Allow site owners to update their analytics." ON public.site_analytics;
-DROP POLICY IF EXISTS "Allow anonymous users to increment visits." ON public.site_analytics;
-DROP POLICY IF EXISTS "Super admins can manage all site analytics." ON public.site_analytics;
-
-ALTER TABLE public.site_messages DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow site owners to read their messages." ON public.site_messages;
-DROP POLICY IF EXISTS "Allow anonymous users to insert messages." ON public.site_messages;
-DROP POLICY IF EXISTS "Allow site owners to update message read status." ON public.site_messages;
-DROP POLICY IF EXISTS "Allow site owners to delete their messages." ON public.site_messages;
-DROP POLICY IF EXISTS "Super admins can manage all site messages." ON public.site_messages;
-
-ALTER TABLE public.push_subscriptions DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow authenticated users to insert their own subscriptions." ON public.push_subscriptions;
-DROP POLICY IF EXISTS "Allow authenticated users to read their own subscriptions." ON public.push_subscriptions;
-DROP POLICY IF EXISTS "Allow authenticated users to delete their own subscriptions." ON public.push_subscriptions;
-DROP POLICY IF EXISTS "Super admins can manage all push subscriptions." ON public.push_subscriptions;
 
 -- Supprimer le trigger existant s'il y en a un
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
@@ -68,7 +12,7 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 -- Supprimer la fonction existante
 DROP FUNCTION IF EXISTS public.handle_new_user();
 
--- Supprimer les tables dans l'ordre inverse des dépendances
+-- Supprimer les tables dans l'ordre inverse des dépendances, avec CASCADE pour supprimer les politiques RLS associées
 DROP TABLE IF EXISTS public.community_members CASCADE;
 DROP TABLE IF EXISTS public.coin_transactions CASCADE;
 DROP TABLE IF EXISTS public.ai_video_access CASCADE;
@@ -132,7 +76,7 @@ CREATE POLICY "Community admins can view profiles." ON public.profiles
 
 -- Table: public.communities
 CREATE TABLE public.communities (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     owner_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     name text NOT NULL,
@@ -173,7 +117,7 @@ CREATE POLICY "Super admins can manage all communities." ON public.communities
 
 -- Table: public.community_members
 CREATE TABLE public.community_members (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     community_id uuid REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -205,7 +149,7 @@ CREATE POLICY "Super admins can manage all community memberships." ON public.com
 
 -- Table: public.coin_transactions
 CREATE TABLE public.coin_transactions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     sender_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL, -- Peut être NULL si l'admin est le "sender" logique
     recipient_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -234,7 +178,7 @@ CREATE POLICY "Super admins can manage all coin transactions." ON public.coin_tr
 
 -- Table: public.ai_video_access
 CREATE TABLE public.ai_video_access (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
     granted_by uuid REFERENCES public.profiles(id) ON DELETE SET NULL -- L'admin qui a accordé l'accès
@@ -255,7 +199,7 @@ CREATE POLICY "Super admins can manage AI video access." ON public.ai_video_acce
 
 -- Table: public.sites
 CREATE TABLE public.sites (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     subdomain text UNIQUE NOT NULL,
@@ -297,7 +241,7 @@ CREATE POLICY "Super admins can manage all sites." ON public.sites
 
 -- Table: public.site_analytics
 CREATE TABLE public.site_analytics (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     last_updated timestamp with time zone DEFAULT now() NOT NULL,
     site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL UNIQUE,
@@ -332,7 +276,7 @@ CREATE POLICY "Super admins can manage all site analytics." ON public.site_analy
 
 -- Table: public.site_messages
 CREATE TABLE public.site_messages (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     site_id uuid REFERENCES public.sites(id) ON DELETE CASCADE NOT NULL,
     sender_name text,
@@ -368,15 +312,16 @@ CREATE POLICY "Super admins can manage all site messages." ON public.site_messag
 
 -- Table: public.push_subscriptions
 CREATE TABLE public.push_subscriptions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-    subscription jsonb NOT NULL, -- Contient l'endpoint, keys (p256dh, auth), expirationTime
-    UNIQUE (user_id, (subscription->>'endpoint')) -- Assure qu'un utilisateur n'a qu'une seule souscription par endpoint
+    subscription jsonb NOT NULL -- Contient l'endpoint, keys (p256dh, auth), expirationTime
 );
 
 -- Index pour les souscriptions push
 CREATE INDEX push_subscriptions_user_id_idx ON public.push_subscriptions (user_id);
+-- Unique index for user_id and subscription endpoint
+CREATE UNIQUE INDEX push_subscriptions_user_id_endpoint_idx ON public.push_subscriptions (user_id, (subscription->>'endpoint'));
 
 -- RLS pour public.push_subscriptions
 ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
@@ -493,3 +438,4 @@ GRANT EXECUTE ON FUNCTION public.handle_new_user() TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
+COMMIT;
