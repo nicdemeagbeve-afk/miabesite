@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster
 import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Import CookieConsentBanner
 import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
-import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar"; // Importez le nouveau composant
+import ServiceWorkerClientRegistrar from "@/components/ServiceWorkerClientRegistrar"; // Importez le nouveau composant client
 import { ConditionalHeader } from "@/components/ConditionalHeader"; // Import the new client component
 // import { getSupabaseStorageUrl } from "@/lib/utils"; // Removed import as we use static paths
 
@@ -53,7 +53,7 @@ export default function RootLayout({
           <div className="fixed bottom-6 left-6 z-50">
             <PushNotificationInitializer />
           </div>
-          <ServiceWorkerRegistrar />
+          <ServiceWorkerClientRegistrar />
         </ThemeProvider>
       </body>
     </html>

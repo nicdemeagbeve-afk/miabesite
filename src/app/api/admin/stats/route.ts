@@ -88,6 +88,7 @@ export async function GET(request: Request) {
     console.error("API route error for admin stats:", error);
     // Use error.details if available, otherwise fallback to message or generic error
     const errorMessage = error.message || error.details || 'An unexpected error occurred';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    // Return the error message in the response for debugging
+    return NextResponse.json({ error: `Internal Server Error: ${errorMessage}` }, { status: 500 });
   }
 }
