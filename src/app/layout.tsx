@@ -8,7 +8,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner"; // Impor
 import { PushNotificationInitializer } from "@/components/PushNotificationInitializer"; // Import PushNotificationInitializer
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar"; // Importez le nouveau composant
 import { ConditionalHeader } from "@/components/ConditionalHeader"; // Import the new client component
-import { getSupabaseStorageUrl } from "@/lib/utils"; // Import getSupabaseStorageUrl
+// import { getSupabaseStorageUrl } from "@/lib/utils"; // Removed import as we use static paths
 
 export const metadata: Metadata = {
   title: "Miabesite | le site pour tous",
@@ -20,10 +20,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const icon192 = getSupabaseStorageUrl("static-assets", "icons/icon-192x192.png");
-  const icon512 = getSupabaseStorageUrl("static-assets", "icons/icon-512x512.png");
-  const iconMaskable192 = getSupabaseStorageUrl("static-assets", "icons/icon-maskable-192x192.png");
-  const iconMaskable512 = getSupabaseStorageUrl("static-assets", "icons/icon-maskable-512x512.png");
+  // Use static paths for PWA icons
+  const icon192 = "/icons/icon-192x192.png";
+  const icon512 = "/icons/icon-512x512.png";
+  const iconMaskable192 = "/icons/icon-maskable-192x192.png";
+  const iconMaskable512 = "/icons/icon-maskable-512x512.png";
 
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
