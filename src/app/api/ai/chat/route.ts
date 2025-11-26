@@ -71,10 +71,15 @@ export async function POST(request: Request) {
   const supabase = createClient();
 
   try {
-    const { message, history, current_site_subdomain, tool_code, tool_args } = await request.json(); // Added tool_code and tool_args
+    const { message, current_site_subdomain, tool_code, tool_args } = await request.json();
 
-    if (!message && !tool_code) { // Allow direct tool calls without a message
+    if (!message && !tool_code) {
       return NextResponse.json({ error: 'Message or tool_code is required' }, { status: 400 });
+    }
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const genAI = getNextGeminiClient();
@@ -82,6 +87,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'L\'API Gemini n\'est pas configurée. Veuillez vérifier la clé API.' }, { status: 500 });
     }
 
+    // --- 1. Fetch existing chat history ---
+    let existingHistory: any[] = [];
+    let historyId: string | null = null;
+
+    const { data: chatData, error: fetchChatError } = await supabase
+      .from('ai_chat_history')
+      .select('id, history')
+      .eq('user_id', user.id)
+      .eq('site_subdomain', current_site_subdomain || '') // Match on subdomain or empty string if none
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchChatError && fetchChatError.code !== 'PGRST116') {
+      console.error("Error fetching chat history:", fetchChatError);
+      // Continue without history if fetching fails
+    } else if (chatData) {
+      existingHistory = chatData.history || [];
+      historyId = chatData.id;
+    }
+
+    // --- Prepare system instruction and chat ---
     const systemInstruction = `
       Vous êtes Maître Control (MC), un assistant IA expert pour Miabesite, une plateforme de création et de gestion de sites web.
       Votre objectif principal est d'aider les utilisateurs à créer des sites web avec des accroches percutantes, des textes marketing et des designs attrayants.
@@ -166,14 +193,18 @@ export async function POST(request: Request) {
     });
 
     const chat = model.startChat({
-      history: history || [],
+      history: existingHistory, // Use fetched history
     });
 
     let response;
+    let userMessagePart: any = { role: 'user', parts: [{ text: message || '' }] };
+    let finalResponseText: string | undefined;
+
     if (tool_code === "generate_rewritten_text" && tool_args) {
       // If it's a direct tool call from the frontend for rewriting text
       const { current_text, field_name, subdomain } = tool_args;
       const rewritePrompt = `En tant que Maître Market, réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre extrêmement accrocheur, vendeur et marketing, tout en conservant l'idée générale et le contexte de l'utilisateur. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
+      userMessagePart = { role: 'user', parts: [{ text: rewritePrompt }] };
       response = await chat.sendMessage(rewritePrompt);
     } else {
       // Normal chat message
@@ -188,14 +219,6 @@ export async function POST(request: Request) {
     if (functionCalls && functionCalls.length > 0) {
       const functionCall = functionCalls[0].functionCall!; // Added non-null assertion here
 
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        return NextResponse.json({
-          response: "Je ne peux pas effectuer cette action car vous n'êtes pas connecté. Veuillez vous connecter d'abord.",
-          tool_code: "UNAUTHORIZED"
-        }, { status: 200 });
-      }
-
       if (functionCall.name === "list_user_sites") {
         const { data: sitesData, error: fetchSitesError } = await supabase
           .from('sites')
@@ -204,74 +227,93 @@ export async function POST(request: Request) {
 
         if (fetchSitesError) {
           console.error("Error fetching user sites from Supabase:", fetchSitesError);
-          return NextResponse.json({
-            response: "Désolé, je n'ai pas pu récupérer la liste de vos sites pour le moment. Veuillez réessayer plus tard.",
-            tool_code: "API_ERROR"
-          }, { status: 200 });
-        }
-
-        let responseText = "";
-        if (!sitesData || sitesData.length === 0) {
-          responseText = "Vous n'avez aucun site enregistré dans votre compte.";
+          finalResponseText = "Désolé, je n'ai pas pu récupérer la liste de vos sites pour le moment. Veuillez réessayer plus tard.";
         } else {
-          responseText = `Vous avez ${sitesData.length} site(s) : \n\n`;
-          sitesData.forEach((site: any) => {
-            responseText += `Nom public: ${site.publicName || 'Non défini'} \n`;
-            responseText += `Sous-domaine: ${site.subdomain} \n`;
-            responseText += `Statut: ${site.status} \n`;
-            responseText += `Template: ${site.template_type} \n\n`;
-          });
+          let responseText = "";
+          if (!sitesData || sitesData.length === 0) {
+            responseText = "Vous n'avez aucun site enregistré dans votre compte.";
+          } else {
+            responseText = `Vous avez ${sitesData.length} site(s) : \n\n`;
+            sitesData.forEach((site: any) => {
+              responseText += `Nom public: ${site.site_data?.publicName || 'Non défini'} \n`;
+              responseText += `Sous-domaine: ${site.subdomain} \n`;
+              responseText += `Statut: ${site.status} \n`;
+              responseText += `Template: ${site.template_type} \n\n`;
+            });
+          }
+          finalResponseText = responseText;
         }
-        
-        return NextResponse.json({ response: responseText }, { status: 200 });
-
       } else if (functionCall.name === "get_site_stats") {
         const subdomain = (functionCall.args as { subdomain?: string }).subdomain || current_site_subdomain;
 
         if (!subdomain) {
-          return NextResponse.json({
-            response: "Veuillez spécifier le sous-domaine du site pour lequel vous souhaitez les statistiques.",
-            tool_code: "MISSING_SUBDOMAIN"
-          }, { status: 200 });
+          finalResponseText = "Veuillez spécifier le sous-domaine du site pour lequel vous souhaitez les statistiques.";
+        } else {
+          const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/dashboard/stats?subdomain=${subdomain}`, {
+            headers: {},
+          });
+
+          if (!apiResponse.ok) {
+            const errorData = await apiResponse.json();
+            console.error(`Error fetching stats for ${subdomain}:`, apiResponse.status, errorData);
+            finalResponseText = `Désolé, je n'ai pas pu récupérer les statistiques pour le site "${subdomain}". ${errorData.error || 'Veuillez vérifier le sous-domaine et réessayer.'}`;
+          } else {
+            const statsData = await apiResponse.json();
+            finalResponseText = `Voici les statistiques pour le site ${subdomain} : \n` +
+                                 `Ventes totales : ${statsData.totalSales} \n` +
+                                 `Visites totales : ${statsData.totalVisits} \n` +
+                                 `Contacts totaux : ${statsData.totalContacts} \n\n`;
+          }
         }
-
-        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/dashboard/stats?subdomain=${subdomain}`, {
-          headers: {
-            // No specific headers needed as Supabase server client handles auth
-          },
-        });
-
-        if (!apiResponse.ok) {
-          const errorData = await apiResponse.json();
-          console.error(`Error fetching stats for ${subdomain}:`, apiResponse.status, errorData);
-          return NextResponse.json({
-            response: `Désolé, je n'ai pas pu récupérer les statistiques pour le site "${subdomain}". ${errorData.error || 'Veuillez vérifier le sous-domaine et réessayer.'}`,
-            tool_code: "API_ERROR"
-          }, { status: 200 });
-        }
-
-        const statsData = await apiResponse.json();
-
-        const formattedStats = `Voici les statistiques pour le site ${subdomain} : \n` +
-                               `Ventes totales : ${statsData.totalSales} \n` +
-                               `Visites totales : ${statsData.totalVisits} \n` +
-                               `Contacts totaux : ${statsData.totalContacts} \n\n`;
-        
-        return NextResponse.json({ response: formattedStats }, { status: 200 });
-
       } else if (functionCall.name === "generate_rewritten_text") {
         const { current_text, field_name, subdomain } = functionCall.args as { current_text: string; field_name: string; subdomain?: string; };
         const rewritePrompt = `En tant que Maître Market, réécris le texte suivant pour le champ "${field_name}" du site "${subdomain || 'non spécifié'}" afin de le rendre extrêmement accrocheur, vendeur et marketing, tout en conservant l'idée générale et le contexte de l'utilisateur. Le texte original est : "${current_text}". Ne réponds qu'avec le nouveau texte réécrit, sans préambule ni fioritures.`;
         const rewriteResponse = await chat.sendMessage(rewritePrompt);
         // Access text from the response object
-        const rewrittenText = rewriteResponse.response.candidates?.[0]?.content?.parts?.[0]?.text;
-        return NextResponse.json({ response: rewrittenText }, { status: 200 });
+        finalResponseText = rewriteResponse.response.candidates?.[0]?.content?.parts?.[0]?.text;
+      }
+    } else {
+      // Access text from the response object for regular chat messages
+      finalResponseText = response.response.candidates?.[0]?.content?.parts?.[0]?.text;
+    }
+
+    if (!finalResponseText) {
+      finalResponseText = "Désolé, je n'ai pas pu générer de réponse pour le moment.";
+    }
+
+    // --- 2. Update chat history in Supabase ---
+    const modelResponsePart = { role: 'model', parts: [{ text: finalResponseText }] };
+    const newHistory = [...existingHistory, userMessagePart, modelResponsePart];
+
+    const historyToSave = newHistory.slice(-20); // Keep only the last 20 messages for context size management
+
+    if (historyId) {
+      // Update existing history
+      const { error: updateHistoryError } = await supabase
+        .from('ai_chat_history')
+        .update({ history: historyToSave, model_used: 'gemini-2.5-flash' })
+        .eq('id', historyId);
+
+      if (updateHistoryError) {
+        console.error("Error updating chat history:", updateHistoryError);
+      }
+    } else {
+      // Insert new history
+      const { error: insertHistoryError } = await supabase
+        .from('ai_chat_history')
+        .insert({
+          user_id: user.id,
+          site_subdomain: current_site_subdomain || '',
+          history: historyToSave,
+          model_used: 'gemini-2.5-flash',
+        });
+
+      if (insertHistoryError) {
+        console.error("Error inserting chat history:", insertHistoryError);
       }
     }
 
-    // Access text from the response object for regular chat messages
-    const text = response.response.candidates?.[0]?.content?.parts?.[0]?.text;
-    return NextResponse.json({ response: text }, { status: 200 });
+    return NextResponse.json({ response: finalResponseText }, { status: 200 });
   } catch (error: any) {
     console.error("API route error for AI chat with Gemini:", error);
     return NextResponse.json({ error: 'Une erreur est survenue lors de la génération de la réponse par l\'IA. Veuillez réessayer.' }, { status: 500 });
