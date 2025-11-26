@@ -11,11 +11,6 @@ import type { Metadata } from 'next';
 import { TrackSiteVisit } from '@/components/TrackSiteVisit'; // Import the new component
 import { getSupabaseStorageUrl } from '@/lib/utils'; // Import getSupabaseStorageUrl
 
-// Removed the PageProps interface as it's now inlined
-// interface PageProps {
-//   params: { subdomain: string };
-// }
-
 // Function to generate dynamic metadata
 export async function generateMetadata({ params }: { params: { subdomain: string } }): Promise<Metadata> {
   const { subdomain } = params;
@@ -113,8 +108,9 @@ export default async function DynamicSitePage({ params }: { params: { subdomain:
       case 'service-portfolio':
         return ServicePortfolioTemplate;
       case 'professional-portfolio':
-      case 'artisan-ecommerce':
         return ProfessionalPortfolioTemplate;
+      case 'artisan-ecommerce':
+        return ArtisanEcommerceTemplate;
       case 'default':
       default:
         return DefaultTemplate;
